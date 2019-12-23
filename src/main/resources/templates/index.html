@@ -91,6 +91,7 @@
         <table class="table is-striped is-hoverable is-fullwidth ">
             <thead>
             <tr>
+                <th>#</th>
                 <th>代码</th>
                 <th>名字</th>
                 <th>K</th>
@@ -167,6 +168,7 @@
                     aEle.href = link;
                     aEle.text = "详情";
                     let $tr = $('<tr>').append(
+                        $('<td>').text(i+1),
                         $('<td>').text(item.stockCode),
                         $('<td>').text(item.stockName),
                         $('<td>').text(item.k),
