@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import tk.mybatis.mapper.entity.Example;
 import top.duwd.dutil.date.DateUtil;
 import top.duwd.dutil.stock.tushare.ApiTushare;
@@ -25,24 +26,30 @@ public class StockDailyService {
     @Autowired
     private ApiTushare apiTushare;
 
+
     /**
      * 获取 截止当前的所有 市场上的股票 基本信息
      *
      * @return
      */
-    public List<StockCandleModel> getStockDailyList(String tsCode, String startDate, String endDate) {
+    public List<StockCandleModel> getStockDailyList(String tsCode, String startDate, String endDate, String day) {
         //20190101
         Date date = new Date();
         String now = DateUtil.getStringFromDatePattern(date, DateUtil.PATTERN_yyyyMMdd);
-        log.info("获取 {} 日线信息 ,当前日期 {}", tsCode, now);
         List<StockCandleModel> list = null;
         try {
-            list = apiTushare.daily(tsCode, startDate, endDate);
+            if (StringUtils.isEmpty(day)) {
+                log.info("{} 获取 {} 日线信息 个股模式", tsCode, now);
+                list = apiTushare.daily(tsCode, startDate, endDate);
+            } else {
+                log.info("{} 获取 {} 日线信息 日期模式", now, day);
+                list = apiTushare.daily(day);
+            }
         } catch (IOException e) {
             log.error("获取 {} 日线信息 异常", tsCode);
             e.printStackTrace();
         }
-        log.info("获取 {} 日线信息 ,当前日期 {} List<StockCandleModel> ={}", tsCode, now,JSON.toJSONString(list));
+        log.info("List<StockCandleModel> size={}", list == null ? 0 : list.size());
         return list;
     }
 
@@ -134,7 +141,7 @@ public class StockDailyService {
      * @return
      */
     public List<StockCandleModel> listRemote(String tsCode, String startDate, String endDate) {
-        List<StockCandleModel> list = this.getStockDailyList(tsCode, startDate, endDate);
+        List<StockCandleModel> list = this.getStockDailyList(tsCode, startDate, endDate,null);
         saveList(list);
         return list;
     }

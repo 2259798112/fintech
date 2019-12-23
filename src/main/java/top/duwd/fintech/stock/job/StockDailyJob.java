@@ -20,24 +20,17 @@ public class StockDailyJob {
     @Autowired
     private StockDailyService stockDailyService;
 
-    public void run(){
+    public void run() {
         List<StockBasicEntity> basicEntityList = stockBasicService.listDB();
-        for (StockBasicEntity basicEntity : basicEntityList) {
-            Date now = new Date();
-            Date start15 = DateUtil.addDay(now, -15);
-            String end = DateUtil.getStringFromDatePattern(now, DateUtil.PATTERN_yyyyMMdd);
-            String start = DateUtil.getStringFromDatePattern(start15, DateUtil.PATTERN_yyyyMMdd);
-            List<StockCandleModel> stockDailyList = stockDailyService.getStockDailyList(basicEntity.getTsCode(), start, end);
-            if (stockDailyList == null || stockDailyList.isEmpty()){
-                continue;
-            }
-            stockDailyService.saveList(stockDailyList);
-        }
+        Date now = new Date();
+        String end = DateUtil.getStringFromDatePattern(now, DateUtil.PATTERN_yyyyMMdd);
+        List<StockCandleModel> stockDailyList = stockDailyService.getStockDailyList(null, null, null, end);
+        stockDailyService.saveList(stockDailyList);
     }
 
     //0 0 18 * * ?
     @Scheduled(cron = "0 20 16 * * ?")
-    public void run18(){
+    public void run18() {
         run();
     }
 
