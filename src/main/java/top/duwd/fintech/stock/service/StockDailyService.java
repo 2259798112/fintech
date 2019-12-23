@@ -42,6 +42,7 @@ public class StockDailyService {
             log.error("获取 {} 日线信息 异常", tsCode);
             e.printStackTrace();
         }
+        log.info("获取 {} 日线信息 ,当前日期 {} List<StockCandleModel> ={}", tsCode, now,JSON.toJSONString(list));
         return list;
     }
 
