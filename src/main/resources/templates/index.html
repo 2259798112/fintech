@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="css/bulma-calendar.min.css">
 
     <script src="css/font/all.js"></script>
-    <script src="js/bulma-calendar.js"></script>
+    <script src="js/bulma-calendar.min.js"></script>
     <script src="js/jquery-1.11.1.js"></script>
 
 </head>
@@ -188,10 +188,14 @@
     })
 
     $("#ibGen").click(function () {
+        alert("每日会自动生成数据")
+        /*
         let url = "/stock" + "/kdj/day/list/gen?k=10&d=10&j=10";
         $.get(url, function (data) {
             alert(JSON.stringify(data));
         });
+
+         */
     })
 
 </script>
