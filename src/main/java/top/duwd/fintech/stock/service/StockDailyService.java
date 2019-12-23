@@ -87,7 +87,7 @@ public class StockDailyService {
             log.error("batchInsert arrayList size = 0");
             return 0;
         } else {
-            log.info("batchInsert StockDailyCandleEntity {} ", JSON.toJSONString(arrayList));
+            log.info("batchInsert arrayList size {} ", JSON.toJSONString(arrayList));
             return stockDailyCandleMapper.insertList(arrayList);
         }
     }
@@ -119,9 +119,13 @@ public class StockDailyService {
         Date start = DateUtil.getDateFromStringPattern(startDate, DateUtil.PATTERN_yyyyMMdd);
         Date end = DateUtil.getDateFromStringPattern(endDate, DateUtil.PATTERN_yyyyMMdd);
         example.createCriteria()
-                .andEqualTo("tsCode", tsCode)
                 .andGreaterThanOrEqualTo("dataDate", start)
                 .andLessThanOrEqualTo("dataDate", end);
+        if (StringUtils.isEmpty(tsCode)){
+
+        }else {
+            example.createCriteria().andEqualTo("tsCode", tsCode);
+        }
 
         if (isAsc) {
             example.orderBy("dataTime").asc();

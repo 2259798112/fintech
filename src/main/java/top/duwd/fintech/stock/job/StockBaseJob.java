@@ -17,7 +17,8 @@ public class StockBaseJob {
 
     //每日6单
     //0 0 18 * * ?
-    @Scheduled(cron = "0 10 16 * * ?")
+    @Scheduled(cron = "0 10 17 * * ?")
+    //@Scheduled(cron = "0 10 16 * * ?")
     public void run18(){
         stockBasicService.getAndSave();
     }
