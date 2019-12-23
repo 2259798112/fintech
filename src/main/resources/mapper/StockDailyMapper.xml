@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="top.duwd.fintech.stock.mapper.StockDailyCandleMapper" >
+    <resultMap id="BaseResultMap" type="top.duwd.fintech.stock.model.entity.StockDailyCandleEntity" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+        <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+        <result column="ts_code" property="tsCode" jdbcType="VARCHAR" />
+        <result column="chg" property="chg" jdbcType="NUMERIC" />
+        <result column="pct_chg" property="pctChg" jdbcType="NUMERIC" />
+        <result column="vol" property="vol" jdbcType="NUMERIC" />
+        <result column="amount" property="amount" jdbcType="NUMERIC" />
+        <result column="period" property="period" jdbcType="INTEGER" />
+        <result column="data_date" property="dataDate" jdbcType="TIMESTAMP" />
+        <result column="data_time" property="dataTime" jdbcType="VARCHAR" />
+        <result column="open" property="open" jdbcType="NUMERIC" />
+        <result column="close" property="close" jdbcType="NUMERIC" />
+        <result column="high" property="high" jdbcType="NUMERIC" />
+        <result column="low" property="low" jdbcType="NUMERIC" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        id, create_date, update_date, ts_code, chg, pct_chg, vol, amount, period, data_date, data_time, open, close, high, low
+    </sql>
+
+    <insert id="insertList" parameterType="java.util.List" >
+        insert into stock_daily (
+        <include refid="Base_Column_List"/>
+        )
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            ( #{item.id}, #{item.createDate}, #{item.updateDate}, #{item.tsCode}, #{item.chg}, #{item.pctChg}, #{item.vol}, #{item.amount}, #{item.period}, #{item.dataDate}, #{item.dataTime}, #{item.open}, #{item.close}, #{item.high}, #{item.low} )
+        </foreach>
+    </insert>
+
+</mapper>

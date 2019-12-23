@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="top.duwd.fintech.stock.mapper.KdjStockMapper" >
+    <resultMap id="BaseResultMap" type="top.duwd.fintech.stock.model.entity.KdjStockEntity" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+
+        <result column="k" property="k" jdbcType="NUMERIC" />
+        <result column="d" property="d" jdbcType="NUMERIC" />
+        <result column="j" property="j" jdbcType="NUMERIC" />
+        <result column="open" property="open" jdbcType="NUMERIC" />
+        <result column="close" property="close" jdbcType="NUMERIC" />
+        <result column="high" property="high" jdbcType="NUMERIC" />
+        <result column="low" property="low" jdbcType="NUMERIC" />
+        <result column="data_date" property="dataDate" jdbcType="TIMESTAMP" />
+        <result column="data_time" property="dataTime" jdbcType="VARCHAR" />
+        <result column="stock_name" property="stockName" jdbcType="VARCHAR" />
+        <result column="stock_code" property="stockCode" jdbcType="VARCHAR" />
+        <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+        <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        id, k, d, j, open, close, high, low, data_date, data_time, stock_name, stock_code, create_date, update_date
+    </sql>
+
+    <insert id="insertList" parameterType="java.util.List" >
+        insert into kdj_stock (
+        <include refid="Base_Column_List"/>
+        )
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            ( #{item.id},#{item.k},#{item.d},#{item.j},#{item.open},#{item.close},#{item.high},#{item.low},#{item.dataDate},#{item.dataTime},#{item.stockName},#{item.stockCode},#{item.createDate},#{item.updateDate} )
+        </foreach>
+    </insert>
+
+</mapper>
