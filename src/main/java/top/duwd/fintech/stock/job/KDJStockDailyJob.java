@@ -22,13 +22,13 @@ public class KDJStockDailyJob {
     private KdjStockDayService kdjStockDayService;
 
     //每日18点 获取 当日所有数据
-    @Scheduled(cron = "0 0 18 * * ?")
+    @Scheduled(cron = "0 30 16 * * ?")
     public void calc(){
         kdjStockService.dayJob();
     }
 
     //每日18点 计算数据
-    @Scheduled(cron = "0 30 18 * * ?")
+    @Scheduled(cron = "0 50 16 * * ?")
     public void check(){
         String today = DateUtil.getStringFromDatePattern(new Date(), DateUtil.PATTERN_yyyyMMdd);
         List<KDJStockDayEntity> list = kdjStockDayService.list(today);

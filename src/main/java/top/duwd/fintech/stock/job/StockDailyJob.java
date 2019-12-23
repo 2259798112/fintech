@@ -36,7 +36,7 @@ public class StockDailyJob {
     }
 
     //0 0 18 * * ?
-    @Scheduled(cron = "0 30 17 * * ?")
+    @Scheduled(cron = "0 10 16 * * ?")
     public void run18(){
         run();
     }
