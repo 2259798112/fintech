@@ -38,7 +38,7 @@ public class DailyJob {
         kdjStockService.dayJob();
 
         Map<String, Map<String, KdjStockEntity>> result = kdjStockService.checkKDJBack(10, 10, 10);
-        if (result !=null && result.isEmpty()){
+        if (result !=null && !result.isEmpty()){
             //存储， 发邮件
             kdjStockDayService.saveAndUpdate(result);
             if (DateUtil.getDayOfWeek() < 6){
@@ -47,8 +47,15 @@ public class DailyJob {
         }
     }
 
-    @Scheduled(cron = "0 03 22 * * ?")
+    @Scheduled(cron = "0 30 16 * * ?")
     public void run(){
+        getDayK();
+        getDayKDJ();
+    }
+
+
+    @Scheduled(cron = "0 0 17 * * ?")
+    public void run1(){
         getDayK();
         getDayKDJ();
     }

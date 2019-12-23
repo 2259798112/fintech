@@ -82,37 +82,39 @@ public class KdjStockService {
         }
 
         for (StockBasicEntity basicEntity : basicList) {
-            log.info("stock code ",basicEntity.getTsCode());
+            String tsCode = basicEntity.getTsCode();
+            log.info("stock code {}",tsCode);
             //先检查是否 kdj 有过初始化
             int count = 0;
-            if (kdjStockMap.get(basicEntity.getTsCode()) == null){
+            if (kdjStockMap.get(tsCode) == null){
                 count = 0;
             }else {
-                count = kdjStockMap.get(basicEntity.getTsCode()).size();
+                count = kdjStockMap.get(tsCode).size();
             }
             if (count == 0) {//还没有初始化过
                 initByCode(basicEntity);
             } else {//已经有过初始化
 
                 //判断是否有未计算的日线数据
-                if (kdjStockMap.get(basicEntity.getTsCode()) == null
-                        || kdjStockMap.get(basicEntity.getTsCode()) == null) {
+                if (kdjStockMap.get(tsCode) == null
+                        || dailyStockMap.get(tsCode) == null) {
                     log.error("{} 日线数据异常，为空", JSON.toJSONString(basicEntity));
                     continue;
                 } else {
                     //获取最新一天的日线数据
-                    StockDailyCandleEntity lastDaily = dailyStockMap.get(basicEntity.getTsCode()).get(0);
+                    StockDailyCandleEntity lastDaily = dailyStockMap.get(tsCode).get(0);
                     //获取最新一天的日线KDJ数据
-                    KdjStockEntity lastKdj = kdjStockMap.get(basicEntity.getTsCode()).get(0);
+                    KdjStockEntity lastKdj = kdjStockMap.get(tsCode).get(0);
 
                     if (lastDaily.getDataTime().equals(lastKdj.getDataTime())) {
                         //日期匹配， 已经有了最新kdj 数据
-                        log.info("{} - {} 日期匹配， 已经有了最新kdj 数据", basicEntity.getTsCode(), basicEntity.getName());
+                        log.info("{} - {} 日期匹配， 已经有了最新kdj 数据", tsCode, basicEntity.getName());
                     } else {
-                        List<CandleModel> candleModels = new ArrayList<>(dailyStockMap.get(basicEntity.getTsCode()).size());
-                        for (int i = 0; i < dailyStockMap.get(basicEntity.getTsCode()).size(); i++) {
+                        List<StockDailyCandleEntity> dailyCandleEntityList = dailyStockMap.get(tsCode);
+                        List<CandleModel> candleModels = new ArrayList<>(dailyCandleEntityList.size());
+                        for (int i = 0; i < dailyCandleEntityList.size(); i++) {
                             CandleModel candleModel = new CandleModel();
-                            BeanUtils.copyProperties(dailyStockMap.get(basicEntity.getTsCode()).get(dailyStockMap.get(basicEntity.getTsCode()).size() - 1 - i), candleModel);
+                            BeanUtils.copyProperties(dailyCandleEntityList.get(dailyCandleEntityList.size() - 1 - i), candleModel);
                             candleModels.add(candleModel);
                         }
                         //计算最新的nRSV （时间 从早到晚）
@@ -226,12 +228,12 @@ public class KdjStockService {
         Example example = new Example(KdjStockEntity.class);
         Date start = DateUtil.getDateFromStringPattern(startDate, DateUtil.PATTERN_yyyyMMdd);
         Date end = DateUtil.getDateFromStringPattern(endDate, DateUtil.PATTERN_yyyyMMdd);
-        example.createCriteria()
-                .andGreaterThanOrEqualTo("dataDate", start)
+        Example.Criteria criteria = example.createCriteria();
+                criteria.andGreaterThanOrEqualTo("dataDate", start)
                 .andLessThanOrEqualTo("dataDate", end);
 
         if (!StringUtils.isEmpty(stockCode)){
-            example.createCriteria().andEqualTo("stockCode", stockCode);
+            criteria.andEqualTo("stockCode", stockCode);
         }
 
         if (isAsc) {
@@ -371,10 +373,11 @@ public class KdjStockService {
      */
     private List<KdjStockEntity> checkKdjStockEntityList(double k, double d, double j, Date start, Date end, String tsCode) {
         Example example = new Example(KdjStockEntity.class);
+        Example.Criteria criteria = example.createCriteria();
         if (!StringUtils.isEmpty(tsCode)) {
-            example.createCriteria().andEqualTo("stockCode", tsCode);
+            criteria.andEqualTo("stockCode", tsCode);
         }
-        example.createCriteria().andLessThanOrEqualTo("k", k)
+        criteria.andLessThanOrEqualTo("k", k)
                 .andLessThanOrEqualTo("d", d)
                 .andLessThanOrEqualTo("j", j)
                 .andLessThanOrEqualTo("dataDate", end)
@@ -394,9 +397,24 @@ public class KdjStockService {
         Map<String, KdjStockEntity> map = this.check(k, d, j);
 
         Map<String, KdjStockEntity> backMap = new HashMap<>();
+
+        List<KdjStockEntity> kdjStockEntityListDB = checkKdjStockEntityList(k, d, j, DateUtil.addDay(now, -120), DateUtil.addDay(now, -10), null);
+        HashMap<String, List<KdjStockEntity>> kdjStockEntityListMap = new HashMap<>();
+        for (KdjStockEntity kdjStockEntity : kdjStockEntityListDB) {
+            String stockCode = kdjStockEntity.getStockCode();
+            List<KdjStockEntity> kdjStockEntityList = kdjStockEntityListMap.get(stockCode);
+            if (kdjStockEntityList==null){
+                ArrayList<KdjStockEntity> kdjStockEntities = new ArrayList<>();
+                kdjStockEntities.add(kdjStockEntity);
+                kdjStockEntityListMap.put(stockCode,kdjStockEntities);
+            }else {
+                kdjStockEntityList.add(kdjStockEntity);
+            }
+        }
         //遍历背离
         for (String code : map.keySet()) {
-            List<KdjStockEntity> list = checkKdjStockEntityList(k, d, j, DateUtil.addDay(now, -21), DateUtil.addDay(now, -100), code);
+
+            List<KdjStockEntity> list = kdjStockEntityListMap.get(code);
             if (list == null || list.isEmpty()) {
                 continue;
             }

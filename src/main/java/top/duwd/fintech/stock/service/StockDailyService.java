@@ -118,13 +118,14 @@ public class StockDailyService {
         Example example = new Example(StockDailyCandleEntity.class);
         Date start = DateUtil.getDateFromStringPattern(startDate, DateUtil.PATTERN_yyyyMMdd);
         Date end = DateUtil.getDateFromStringPattern(endDate, DateUtil.PATTERN_yyyyMMdd);
-        example.createCriteria()
+        Example.Criteria criteria = example.createCriteria();
+        criteria
                 .andGreaterThanOrEqualTo("dataDate", start)
                 .andLessThanOrEqualTo("dataDate", end);
         if (StringUtils.isEmpty(tsCode)){
 
         }else {
-            example.createCriteria().andEqualTo("tsCode", tsCode);
+            criteria.andEqualTo("tsCode", tsCode);
         }
 
         if (isAsc) {
