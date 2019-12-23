@@ -16,14 +16,6 @@ public class StockBaseJob {
     private StockBasicService stockBasicService;
 
     //每日6单
-    //0 0 6 * * ?
-    @Scheduled(cron = "0 0 5 * * ?")
-    public void run6(){
-        stockBasicService.getAndSave();
-    }
-
-
-    //每日6单
     //0 0 18 * * ?
     @Scheduled(cron = "0 0 17 * * ?")
     public void run18(){
