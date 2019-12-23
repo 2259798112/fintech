@@ -88,7 +88,14 @@ public class StockBasicService {
         entity.setCreateDate(date);
         entity.setUpdateDate(date);
         log.info("stock basic insert {}",JSON.toJSONString(entity));
-        return stockBasicMapper.insert(entity);
+        int insert = 0;
+        try {
+            insert = stockBasicMapper.insert(entity);
+        } catch (Exception e) {
+            log.error("stock basic insert [error] {}",JSON.toJSONString(entity));
+            e.printStackTrace();
+        }
+        return insert;
     }
 
     /**

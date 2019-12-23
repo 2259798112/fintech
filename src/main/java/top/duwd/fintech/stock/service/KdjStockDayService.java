@@ -1,5 +1,6 @@
 package top.duwd.fintech.stock.service;
 
+import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,7 +77,13 @@ public class KdjStockDayService {
                 KDJStockDayEntity dbEntity = kdjStockDayMapper.selectOne(dayEntity);
                 if (dbEntity == null) {
                     dayEntity.setId(null);
-                    save(dayEntity);
+                    try {
+                        log.info("saveAndUpdate save(dayEntity) ={}", JSON.toJSONString(dayEntity));
+                        save(dayEntity);
+                    } catch (Exception e) {
+                        log.error("saveAndUpdate [error] save(dayEntity) {}", JSON.toJSONString(dayEntity));
+                        e.printStackTrace();
+                    }
                 }
             }
 
@@ -89,7 +96,13 @@ public class KdjStockDayService {
                 KDJStockDayEntity dbEntity = kdjStockDayMapper.selectOne(dayEntity);
                 if (dbEntity != null) {
                     dbEntity.setIsBack(KdjStockService.IS_BACK);
-                    this.update(dbEntity);
+                    try {
+                        log.info("saveAndUpdate update(dbEntity) ={}", JSON.toJSONString(dbEntity));
+                        this.update(dbEntity);
+                    } catch (Exception e) {
+                        log.error("saveAndUpdate [error] update(dbEntity) ={}", JSON.toJSONString(dbEntity));
+                        e.printStackTrace();
+                    }
                 }
             }
         }

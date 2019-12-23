@@ -108,7 +108,15 @@ public class KdjStockService {
             entity.setCreateDate(date);
             entity.setUpdateDate(date);
             entity.setId(null);
-            return kdjStockMapper.insert(entity);
+            int insert = 0;
+            try {
+                log.info("kdjStockMapper.insert(entity) {} ",JSON.toJSONString(entity));
+                insert = kdjStockMapper.insert(entity);
+            } catch (Exception e) {
+                log.error("kdjStockMapper.insert(entity) [error] {} ",JSON.toJSONString(entity));
+                e.printStackTrace();
+            }
+            return insert;
         } else {
             return 1;
         }
@@ -184,7 +192,14 @@ public class KdjStockService {
 
     public int batchInsert(List<KdjStockEntity> list) {
         log.info("batchInsert KdjStockEntity size={}, first={} ", list.size(), JSON.toJSONString(list.get(0)));
-        return kdjStockMapper.insertList(list);
+        int i = 0;
+        try {
+            i = kdjStockMapper.insertList(list);
+        } catch (Exception e) {
+            log.error("batchInsert [error] KdjStockEntity size={}, first={} ", list.size(), JSON.toJSONString(list.get(0)));
+            e.printStackTrace();
+        }
+        return i;
     }
 
     /**

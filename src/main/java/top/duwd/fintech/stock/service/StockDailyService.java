@@ -75,12 +75,18 @@ public class StockDailyService {
             entity.setUpdateDate(date);
             arrayList.add(entity);
         }
-        log.info("batchInsert StockDailyCandleEntity {} ", JSON.toJSONString(arrayList));
-        return stockDailyCandleMapper.insertList(arrayList);
+        if (arrayList.size() == 0) {
+            log.error("batchInsert arrayList size = 0");
+            return 0;
+        } else {
+            log.info("batchInsert StockDailyCandleEntity {} ", JSON.toJSONString(arrayList));
+            return stockDailyCandleMapper.insertList(arrayList);
+        }
     }
 
     /**
      * 根据 code 和 日期 查询日线数据
+     *
      * @param code
      * @param time
      * @return
