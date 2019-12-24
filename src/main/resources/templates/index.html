@@ -156,19 +156,19 @@
                 let arr = data["data"];
                 $("#iTable").empty();
                 $.each(arr, function (i, item) {
-                    if(item.isBack == null){
+                    if (item.isBack == null) {
                         item.isBack = '否';
-                    }else {
+                    } else {
                         item.isBack = '是';
                     }
 
                     let codes = item.stockCode.split('.');
-                    let link = "https://xueqiu.com/S/" +codes[1]+ codes[0];
+                    let link = "https://xueqiu.com/S/" + codes[1] + codes[0];
                     let aEle = document.createElement("a");
                     aEle.href = link;
                     aEle.text = "详情";
                     let $tr = $('<tr>').append(
-                        $('<td>').text(i+1),
+                        $('<td>').text(i + 1),
                         $('<td>').text(item.stockCode),
                         $('<td>').text(item.stockName),
                         $('<td>').text(item.k),
@@ -178,14 +178,57 @@
                         $('<td>').text(item.dataTime),
                         $('<td>').text(item.isBack),
                         $('<td>').append(aEle)
-
                     );
                     $("#iTable").append($tr);
                 });
 
             }
+            colorData();
         });
     })
+
+
+    function colorData() {
+
+        let iT = document.querySelector("#iTable");
+        let trList = iT.querySelectorAll("tr");
+        if (trList.length > 0) {
+            for (let j = 0; j < trList.length; j++) {
+                let tdList = trList[j].querySelectorAll("td");
+                let reg = /^[-]?[\d|\.]*$/;
+                for (let i = 0; i < tdList.length; i++) {
+                    let textContent = tdList[i].textContent;
+                    if (i > 5 || i < 3 ) {
+                        if (i===8){
+                            if (textContent === '是'){
+                                tdList[i].setAttribute("class", "has-background-danger");
+                            }
+                        }
+                        continue;
+                    }
+
+
+
+                    let b = reg.test(textContent);
+                    if (b) {
+                        let number = parseFloat(textContent);
+                        console.log(textContent + '-' + number);
+                        if (number <= 5) {
+                            tdList[i].setAttribute("class", "has-background-danger");
+                        } else if (number <= 10 && number > 5) {
+                            tdList[i].setAttribute("class", "has-background-warning");
+                        } else if (number <= 15 && number > 10) {
+                            tdList[i].setAttribute("class", "has-background-success");
+                        }
+                    }
+
+                }
+            }
+
+        }
+
+
+    }
 
     $("#ibGen").click(function () {
         alert("每日会自动生成数据")
