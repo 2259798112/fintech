@@ -1,6 +1,7 @@
 package top.duwd.fintech.stock.job;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import top.duwd.dutil.date.DateUtil;
@@ -24,6 +25,13 @@ public class DailyJob {
     @Autowired
     private KdjStockDayService kdjStockDayService;
 
+    @Value("${kdj.k}")
+    private double k;
+    @Value("${kdj.d}")
+    private double d;
+    @Value("${kdj.j}")
+    private double j;
+
     public String getTodayString(){
         return DateUtil.getStringFromDatePattern(new Date(), DateUtil.PATTERN_yyyyMMdd);
     }
@@ -37,7 +45,7 @@ public class DailyJob {
         //生产kdj day 数据
         kdjStockService.dayJob();
 
-        Map<String, Map<String, KdjStockEntity>> result = kdjStockService.checkKDJBack(10, 10, 10);
+        Map<String, Map<String, KdjStockEntity>> result = kdjStockService.checkKDJBack(k,d,j);
         if (result !=null && !result.isEmpty()){
             //存储， 发邮件
             kdjStockDayService.saveAndUpdate(result);
