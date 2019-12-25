@@ -1,5 +1,6 @@
 package top.duwd.fintech.coin.service;
 
+import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ public class OkexKdjCoinService {
     public Map<String, List<CandleModel>> getKdjBackMap(String symbol, int period, String start, String end,int limit) {
         int granularity = period * 60;
         List<CandleModel> candleList = okexApiUtil.getCandleList(symbol, Integer.toString(granularity), start, end);
+        log.info("okexApiUtil.getCandleList size = {}, last = {}",candleList.size(), JSON.toJSONString(candleList.get(0)));
         if (candleList != null && candleList.size() > 20) {
             KDJModel[] kdjModels = KDJ.kdjDefault(candleList, false);
             if (kdjModels != null) {
