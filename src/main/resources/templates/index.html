@@ -141,7 +141,9 @@
         let url = "/stock" + "/kdj/day/list";
         let date = $("#iDate").val();
         if (date.length === 0) {
-
+            let current_datetime = new Date()
+            let formatted_date = current_datetime.getFullYear()  + (current_datetime.getMonth() + 1) + current_datetime.getDate();
+            url = url + "?day=" + formatted_date;
         } else {
             let strings = date.split("/");
             date = strings[2] + strings[0] + strings[1];
