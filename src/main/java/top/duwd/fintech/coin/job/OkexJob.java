@@ -25,9 +25,15 @@ public class OkexJob {
 
     @Autowired
     private WxService wxService;
+    /*
+    2019-12-25 21:04:55
+    2019-12-25 21:09:55
+    2019-12-25 21:14:55
+     */
     //15min
+    @Scheduled(cron = "55 4/5 * * * ? ")
     public void run15m(){
-        int limit = 96;//一天
+        int limit = 300;//一天
         Map<String, List<CandleModel>> map = okexKdjCoinService.getKdjBackMap(symbol, 15, null, null, limit);
         List<CandleModel> lowList = map.get(LOW);
         List<CandleModel> highList = map.get(HIGH);
@@ -41,10 +47,15 @@ public class OkexJob {
         }
     }
 
+    /*
+    2019-12-25 21:59:00
+    2019-12-25 22:59:00
+    2019-12-25 23:59:00
+     */
     //4h
-    @Scheduled(cron = "1 0/4 * * * ?")
+    @Scheduled(cron = "0 59 * * * ?")
     public void run4h(){
-        int limit = 270;//一天
+        int limit = 300;//一天
         Map<String, List<CandleModel>> map = okexKdjCoinService.getKdjBackMap(symbol, 240, null, null, limit);
         List<CandleModel> lowList = map.get(LOW);
         List<CandleModel> highList = map.get(HIGH);
@@ -57,19 +68,25 @@ public class OkexJob {
             wxService.sendText("4h high 背离");
         }
     }
-    //4h
+    /*
+    2019-12-26 00:00:00
+    2019-12-26 04:00:00
+    2019-12-26 08:00:00
+     */
+    //1d
+    @Scheduled(cron = "0 0 0/4 * * ? ")
     public void run1d(){
-        int limit = 60;//一天
+        int limit = 120;//一天
         Map<String, List<CandleModel>> map = okexKdjCoinService.getKdjBackMap(symbol, 1440, null, null, limit);
         List<CandleModel> lowList = map.get(LOW);
         List<CandleModel> highList = map.get(HIGH);
 
         if (!lowList.isEmpty()){
-            wxService.sendText("4h low 背离");
+            wxService.sendText("1day low 背离");
         }
 
         if (!highList.isEmpty()){
-            wxService.sendText("4h high 背离");
+            wxService.sendText("1day high 背离");
         }
     }
 }
