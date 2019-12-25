@@ -1,4 +1,4 @@
-package top.duwd.fintech.stock.config;
+package top.duwd.fintech.common;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

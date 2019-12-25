@@ -2,7 +2,7 @@ package top.duwd.fintech.stock.model.entity;
 
 
 import lombok.Data;
-import top.duwd.dutil.stock.model.BaseCandle;
+import top.duwd.dutil.common.model.BaseCandle;
 
 import javax.persistence.Id;
 import javax.persistence.Table;

@@ -7,7 +7,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import tk.mybatis.spring.annotation.MapperScan;
 @SpringBootApplication
 @EnableScheduling
-@MapperScan({"top.duwd.fintech.stock.mapper","top.duwd.fintech.coin.mapper"})
+@MapperScan({"top.duwd.fintech.stock.mapper","top.duwd.fintech.coin.mapper","top.duwd.fintech.common.mapper"})
 @EnableAsync
 public class FintechApplication {
 
