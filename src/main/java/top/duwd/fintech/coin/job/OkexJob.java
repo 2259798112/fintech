@@ -73,7 +73,7 @@ public class OkexJob {
     }
 
     public void run(String symbol, String time, int period, int limit) {
-        Map<String, List<CandleModel>> map = okexKdjCoinService.getKdjBackMap(symbol, 1440, null, null, limit);
+        Map<String, List<CandleModel>> map = okexKdjCoinService.getKdjBackMap(symbol, period, null, null, limit);
         List<CandleModel> lowList = map.get(LOW);
         List<CandleModel> highList = map.get(HIGH);
 
