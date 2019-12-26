@@ -35,8 +35,8 @@ public class OkexKdjCoinService {
     }
 
     private Map<String, List<CandleModel>> calKdjBack(List<CandleModel> candleList, KDJModel[] kdjModels,int limit) {
-        double high = 80;
-        double low = 20;
+        double high = 70;
+        double low = 30;
         KDJModel targetKdj = kdjModels[0];
         CandleModel targetCandle = candleList.get(0);
 
@@ -58,6 +58,7 @@ public class OkexKdjCoinService {
             //高位
             if (targetKdj.getK() > high && targetKdj.getD() < high && targetKdj.getJ() < high) {
                 if (targetCandle.getClose() > candleModel.getClose()
+                        && targetCandle.getVol() < candleModel.getVol()
                         && targetKdj.getK() < kdj.getK()
                         && targetKdj.getD() < kdj.getD()
                         && targetKdj.getJ() < kdj.getJ()) {
