@@ -16,8 +16,9 @@ import java.util.Map;
 public class OkexJob {
     @Autowired
     private OkexKdjCoinService okexKdjCoinService;
-    private String BTC = "BTC-USD-200337";
-    private String BCH = "BCH-USD-200337";
+    private String END = "-USD-200327";
+    private String BTC = "BTC" + END;
+    private String BCH = "BCH" + END;
 
     public static final String LOW = "low";
     public static final String HIGH = "high";
@@ -36,8 +37,8 @@ public class OkexJob {
     public void run15m() {
         log.info("15m run start");
         int limit = 300;//一天
-        this.run(BTC,"15M",15,limit);
-        this.run(BCH,"15M",15,limit);
+        this.run(BTC, "15M", 15, limit);
+        this.run(BCH, "15M", 15, limit);
         log.info("15m run end");
     }
 
@@ -51,8 +52,8 @@ public class OkexJob {
     public void run4h() {
         log.info("4h run start");
         int limit = 300;//一天
-        this.run(BTC,"4H",240,limit);
-        this.run(BCH,"4H",240,limit);
+        this.run(BTC, "4H", 240, limit);
+        this.run(BCH, "4H", 240, limit);
         log.info("4h run start");
     }
 
@@ -66,8 +67,8 @@ public class OkexJob {
     public void run1d() {
         log.info("1d run start");
         int limit = 120;//一天
-        this.run(BTC,"1Day",1440,limit);
-        this.run(BCH,"1Day",1440,limit);
+        this.run(BTC, "1Day", 1440, limit);
+        this.run(BCH, "1Day", 1440, limit);
         log.info("1d run end");
     }
 
