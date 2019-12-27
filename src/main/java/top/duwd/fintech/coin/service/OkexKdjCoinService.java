@@ -53,7 +53,7 @@ public class OkexKdjCoinService {
                 if (targetCandle.getClose() < candleModel.getClose()
                         && targetKdj.getK() > kdj.getK()
                         && targetKdj.getD() > kdj.getD()
-                        && Math.abs(kdj.getK() - kdj.getD()) < diff) {
+                        && Math.abs(targetKdj.getK() - targetKdj.getD()) < diff) {
                     lowList.add(candleModel);
                 }
             }
@@ -64,7 +64,7 @@ public class OkexKdjCoinService {
                         && targetCandle.getVol() < candleModel.getVol()
                         && targetKdj.getK() < kdj.getK()
                         && targetKdj.getD() < kdj.getD()
-                        && Math.abs(kdj.getK() - kdj.getD()) < diff) {
+                        && Math.abs(targetKdj.getK() - targetKdj.getD()) < diff) {
                     highList.add(candleModel);
                 }
             }
