@@ -27,10 +27,26 @@ public class OkexJob {
     private WxService wxService;
 
     /*
-2019-12-26 12:14:50
-2019-12-26 12:29:50
-2019-12-26 12:44:50
-2019-12-26 12:59:50
+        2019-12-26 12:14:50
+        2019-12-26 12:29:50
+        2019-12-26 12:44:50
+        2019-12-26 12:59:50
+     */
+    //15min
+    @Scheduled(cron = "55 4,9,14,19,24,29,34,39,44,49,54,59 * * * ?")
+    public void run5m() {
+        log.info("5m run start");
+        int limit = 300;//一天
+        this.run(BTC, "5M", 5, limit);
+        this.run(BCH, "5M", 5, limit);
+        log.info("5m run end");
+    }
+
+    /*
+        2019-12-26 12:14:50
+        2019-12-26 12:29:50
+        2019-12-26 12:44:50
+        2019-12-26 12:59:50
      */
     //15min
     @Scheduled(cron = "50 14,29,44,59 * * * ?")
@@ -43,9 +59,9 @@ public class OkexJob {
     }
 
     /*
-    2019-12-27 03:59:50
-    2019-12-27 07:59:50
-    2019-12-27 11:59:50
+        2019-12-27 03:59:50
+        2019-12-27 07:59:50
+        2019-12-27 11:59:50
      */
     //4h
     @Scheduled(cron = "50 59 3,7,11,15,19,23 * * ?")
@@ -58,9 +74,9 @@ public class OkexJob {
     }
 
     /*
-    2019-12-26 23:59:50
-    2019-12-27 23:59:50
-    2019-12-28 23:59:50
+        2019-12-26 23:59:50
+        2019-12-27 23:59:50
+        2019-12-28 23:59:50
      */
     //1d
     @Scheduled(cron = "50 59 7,19 * * ?")
@@ -78,11 +94,15 @@ public class OkexJob {
         List<CandleModel> highList = map.get(HIGH);
 
         if (!lowList.isEmpty()) {
-            wxService.sendText(time + " low 背离");
+            String content = time + " low 背离";
+            log.info(content);
+            wxService.sendText(content);
         }
 
         if (!highList.isEmpty()) {
-            wxService.sendText(time + " high 背离");
+            String content = time + " high 背离";
+            log.info(content);
+            wxService.sendText(content);
         }
     }
 
