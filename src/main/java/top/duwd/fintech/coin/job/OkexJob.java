@@ -1,5 +1,7 @@
 package top.duwd.fintech.coin.job;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -8,6 +10,7 @@ import top.duwd.dutil.common.model.CandleModel;
 import top.duwd.fintech.coin.service.OkexKdjCoinService;
 import top.duwd.fintech.common.msg.wx.qiye.WxService;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -94,13 +97,13 @@ public class OkexJob {
         List<CandleModel> highList = map.get(HIGH);
 
         if (!lowList.isEmpty()) {
-            String content = time + " low 背离";
+            String content = symbol + time + " low 背离 " + JSON.toJSONString(new Date(), SerializerFeature.WriteDateUseDateFormat);
             log.info(content);
             wxService.sendText(content);
         }
 
         if (!highList.isEmpty()) {
-            String content = time + " high 背离";
+            String content = symbol + time + " high 背离 " + JSON.toJSONString(new Date(), SerializerFeature.WriteDateUseDateFormat);
             log.info(content);
             wxService.sendText(content);
         }
