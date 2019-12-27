@@ -21,36 +21,39 @@ public class OkexKdjCoinService {
     private OkexApiUtil okexApiUtil;
 
     //计算 kdj , CRUD
-    public Map<String, List<CandleModel>> getKdjBackMap(String symbol, int period, String start, String end,int limit) {
+    public Map<String, List<CandleModel>> getKdjBackMap(String symbol, int period, String start, String end, int limit) {
         int granularity = period * 60;
         List<CandleModel> candleList = okexApiUtil.getCandleList(symbol, Integer.toString(granularity), start, end);
-        log.info("okexApiUtil.getCandleList size = {}, last = {}",candleList.size(), JSON.toJSONString(candleList.get(0)));
+        log.info("okexApiUtil.getCandleList size = {}, last = {}", candleList.size(), JSON.toJSONString(candleList.get(0)));
         if (candleList != null && candleList.size() > 20) {
             KDJModel[] kdjModels = KDJ.kdjDefault(candleList, false);
             if (kdjModels != null) {
-               return this.calKdjBack(candleList, kdjModels,limit);
+                return this.calKdjBack(candleList, kdjModels, limit);
             }
         }
         return null;
     }
 
-    private Map<String, List<CandleModel>> calKdjBack(List<CandleModel> candleList, KDJModel[] kdjModels,int limit) {
+    private Map<String, List<CandleModel>> calKdjBack(List<CandleModel> candleList, KDJModel[] kdjModels, int limit) {
         double high = 70;
         double low = 30;
-        KDJModel targetKdj = kdjModels[0];
+        int diff = 1;
+        //最新数据
+        KDJModel targetKdj = kdjModels[kdjModels.length - 1];
         CandleModel targetCandle = candleList.get(0);
 
         List<CandleModel> lowList = new ArrayList<>();
         List<CandleModel> highList = new ArrayList<>();
-        for (int i = 1; i < limit; i++) {
+        for (int i = 20; i < limit; i++) {
+            //从 历史 遍历 到现在
             KDJModel kdj = kdjModels[i];
-            CandleModel candleModel = candleList.get(i);
+            CandleModel candleModel = candleList.get(kdjModels.length - 1 - i);
             //低位
             if (targetKdj.getK() < low && targetKdj.getD() < low && targetKdj.getJ() < low) {
                 if (targetCandle.getClose() < candleModel.getClose()
                         && targetKdj.getK() > kdj.getK()
                         && targetKdj.getD() > kdj.getD()
-                        && targetKdj.getJ() > kdj.getJ()) {
+                        && Math.abs(kdj.getK() - kdj.getD()) < diff) {
                     lowList.add(candleModel);
                 }
             }
@@ -61,7 +64,7 @@ public class OkexKdjCoinService {
                         && targetCandle.getVol() < candleModel.getVol()
                         && targetKdj.getK() < kdj.getK()
                         && targetKdj.getD() < kdj.getD()
-                        && targetKdj.getJ() < kdj.getJ()) {
+                        && Math.abs(kdj.getK() - kdj.getD()) < diff) {
                     highList.add(candleModel);
                 }
             }
