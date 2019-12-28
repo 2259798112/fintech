@@ -97,13 +97,13 @@ public class OkexJob {
         List<CandleModel> highList = map.get(HIGH);
 
         if (!lowList.isEmpty()) {
-            String content = symbol + time + " low 背离 " + JSON.toJSONString(new Date(), SerializerFeature.WriteDateUseDateFormat);
+            String content = symbol + time + " low Back " + JSON.toJSONString(new Date(), SerializerFeature.WriteDateUseDateFormat);
             log.info(content);
             wxService.sendText(content);
         }
 
         if (!highList.isEmpty()) {
-            String content = symbol + time + " high 背离 " + JSON.toJSONString(new Date(), SerializerFeature.WriteDateUseDateFormat);
+            String content = symbol + time + " high Back " + JSON.toJSONString(new Date(), SerializerFeature.WriteDateUseDateFormat);
             log.info(content);
             wxService.sendText(content);
         }

@@ -61,7 +61,6 @@ public class OkexKdjCoinService {
             //高位
             if (targetKdj.getK() > high && targetKdj.getD() < high && targetKdj.getJ() < high) {
                 if (targetCandle.getClose() > candleModel.getClose()
-                        && targetCandle.getVol() < candleModel.getVol()
                         && targetKdj.getK() < kdj.getK()
                         && targetKdj.getD() < kdj.getD()
                         && Math.abs(targetKdj.getK() - targetKdj.getD()) < diff) {
