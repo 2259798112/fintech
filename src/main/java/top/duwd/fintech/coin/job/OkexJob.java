@@ -39,7 +39,7 @@ public class OkexJob {
     @Scheduled(cron = "55 4,9,14,19,24,29,34,39,44,49,54,59 * * * ?")
     public void run5m() {
         log.info("5m run start");
-        int limit = 300;//一天
+        int limit = 100;//一天
         this.run(BTC, "5M", 5, limit);
         this.run(BCH, "5M", 5, limit);
         log.info("5m run end");
@@ -55,7 +55,7 @@ public class OkexJob {
     @Scheduled(cron = "50 14,29,44,59 * * * ?")
     public void run15m() {
         log.info("15m run start");
-        int limit = 300;//一天
+        int limit = 100;//一天
         this.run(BTC, "15M", 15, limit);
         this.run(BCH, "15M", 15, limit);
         log.info("15m run end");
@@ -70,7 +70,7 @@ public class OkexJob {
     @Scheduled(cron = "50 59 3,7,11,15,19,23 * * ?")
     public void run4h() {
         log.info("4h run start");
-        int limit = 300;//一天
+        int limit = 100;//一天
         this.run(BTC, "4H", 240, limit);
         this.run(BCH, "4H", 240, limit);
         log.info("4h run start");
@@ -85,7 +85,7 @@ public class OkexJob {
     @Scheduled(cron = "50 59 7,19 * * ?")
     public void run1d() {
         log.info("1d run start");
-        int limit = 120;//一天
+        int limit = 100;//一天
         this.run(BTC, "1Day", 1440, limit);
         this.run(BCH, "1Day", 1440, limit);
         log.info("1d run end");
@@ -97,13 +97,13 @@ public class OkexJob {
         List<CandleModel> highList = map.get(HIGH);
 
         if (!lowList.isEmpty()) {
-            String content = symbol + time + " low Back " + JSON.toJSONString(new Date(), SerializerFeature.WriteDateUseDateFormat);
+            String content = symbol + "-" + time + " low Back " + JSON.toJSONString(new Date(), SerializerFeature.WriteDateUseDateFormat);
             log.info(content);
             wxService.sendText(content);
         }
 
         if (!highList.isEmpty()) {
-            String content = symbol + time + " high Back " + JSON.toJSONString(new Date(), SerializerFeature.WriteDateUseDateFormat);
+            String content = symbol + "-" +  time + " high Back " + JSON.toJSONString(new Date(), SerializerFeature.WriteDateUseDateFormat);
             log.info(content);
             wxService.sendText(content);
         }

@@ -8,6 +8,7 @@ import top.duwd.dutil.coin.okex.OkexApiUtil;
 import top.duwd.dutil.common.indicator.KDJ;
 import top.duwd.dutil.common.model.CandleModel;
 import top.duwd.dutil.common.model.KDJModel;
+import top.duwd.fintech.coin.job.OkexJob;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,9 +36,8 @@ public class OkexKdjCoinService {
     }
 
     private Map<String, List<CandleModel>> calKdjBack(List<CandleModel> candleList, KDJModel[] kdjModels, int limit) {
-        double high = 70;
-        double low = 30;
-        int diff = 1;
+        double high = 80;
+        double low = 20;
         //最新数据
         KDJModel targetKdj = kdjModels[kdjModels.length - 1];
         CandleModel targetCandle = candleList.get(0);
@@ -49,29 +49,29 @@ public class OkexKdjCoinService {
             KDJModel kdj = kdjModels[i];
             CandleModel candleModel = candleList.get(kdjModels.length - 1 - i);
             //低位
-            if (targetKdj.getK() < low && targetKdj.getD() < low && targetKdj.getJ() < low) {
+            if (targetKdj.getK() < low && targetKdj.getD() < low) {
                 if (targetCandle.getClose() < candleModel.getClose()
                         && targetKdj.getK() > kdj.getK()
                         && targetKdj.getD() > kdj.getD()
-                        && Math.abs(targetKdj.getK() - targetKdj.getD()) < diff) {
+                        && targetKdj.getK() > targetKdj.getD()) {
                     lowList.add(candleModel);
                 }
             }
 
             //高位
-            if (targetKdj.getK() > high && targetKdj.getD() < high && targetKdj.getJ() < high) {
+            if (targetKdj.getK() > high && targetKdj.getD() > high) {
                 if (targetCandle.getClose() > candleModel.getClose()
                         && targetKdj.getK() < kdj.getK()
                         && targetKdj.getD() < kdj.getD()
-                        && Math.abs(targetKdj.getK() - targetKdj.getD()) < diff) {
+                        && targetKdj.getK() < targetKdj.getD()) {
                     highList.add(candleModel);
                 }
             }
 
         }
         Map<String, List<CandleModel>> map = new HashMap<>();
-        map.put("high", highList);
-        map.put("low", lowList);
+        map.put(OkexJob.HIGH, highList);
+        map.put(OkexJob.LOW, lowList);
         return map;
     }
 }
