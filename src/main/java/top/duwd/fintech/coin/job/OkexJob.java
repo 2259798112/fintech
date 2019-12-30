@@ -91,6 +91,16 @@ public class OkexJob {
         log.info("1d run end");
     }
 
+    //1d
+    @Scheduled(cron = "50 59 7,19 * * ?")
+    public void run3d() {
+        log.info("3d run start");
+        int limit = 100;//一天
+        this.run(BTC, "3Day", 1440 * 3, limit);
+        this.run(BCH, "3Day", 1440 * 3, limit);
+        log.info("3d run end");
+    }
+
     public void run(String symbol, String time, int period, int limit) {
         Map<String, List<CandleModel>> map = okexKdjCoinService.getKdjBackMap(symbol, period, null, null, limit);
         List<CandleModel> lowList = map.get(LOW);
@@ -103,7 +113,7 @@ public class OkexJob {
         }
 
         if (!highList.isEmpty()) {
-            String content = symbol + "-" +  time + " high Back " + JSON.toJSONString(new Date(), SerializerFeature.WriteDateUseDateFormat);
+            String content = symbol + "-" + time + " high Back " + JSON.toJSONString(new Date(), SerializerFeature.WriteDateUseDateFormat);
             log.info(content);
             wxService.sendText(content);
         }
