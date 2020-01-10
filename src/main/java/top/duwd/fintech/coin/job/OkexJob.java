@@ -141,7 +141,7 @@ public class OkexJob {
     2020-01-10 18:01:00
     2020-01-10 18:02:00
      */
-    @Scheduled(cron = "0 1-5 * * * ?")
+    @Scheduled(cron = "10 * * * * ?")
     public void check1h() {
         String content = BTC + "- 1h 2b -" + getTime();
         log.info(content);
@@ -161,7 +161,7 @@ public class OkexJob {
     2020-01-10 20:01:00
     2020-01-10 20:02:00
      */
-    @Scheduled(cron = "0 1-10 */2 * * ?")
+    @Scheduled(cron = "20 * * * * ?")
     public void check2h() {
         String content = BTC + "- 2h 2b -" + getTime();
         log.info(content);
@@ -172,7 +172,7 @@ public class OkexJob {
         }
     }
 
-    @Scheduled(cron = "0 1-15 */4 * * ?")
+    @Scheduled(cron = "40 * * * * ?")
     public void check4h() {
         String content = BTC + "- 4h 2b -" + getTime();
         log.info(content);
