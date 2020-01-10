@@ -127,7 +127,8 @@ public class OkexJob {
 
     public boolean check2b(String symbol, int period, int limit) {
         List<CandleModel> candleList = okexApiUtil.getCandleList(symbol, String.valueOf(period * 60), null, null);
-        return I2B.b2(candleList, limit);
+        List<CandleModel> list = candleList.subList(0, 50);
+        return I2B.b2(list, limit);
     }
 
     /*
