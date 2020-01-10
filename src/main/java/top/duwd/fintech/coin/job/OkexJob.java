@@ -142,7 +142,6 @@ public class OkexJob {
     2020-01-10 18:02:00
      */
     @Scheduled(cron = "0 1-5 * * * ?")
-    @Scheduled(cron = "0 1-5 * * * ?")
     public void check1h() {
         String content = BTC + "- 1h 2b -" + getTime();
         log.info(content);
