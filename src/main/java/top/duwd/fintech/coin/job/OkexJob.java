@@ -125,7 +125,7 @@ public class OkexJob {
         }
     }
 
-    public boolean check2b(String symbol, int period, int limit) {
+    public int check2b(String symbol, int period, int limit) {
         List<CandleModel> candleList = okexApiUtil.getCandleList(symbol, String.valueOf(period * 60), null, null);
         List<CandleModel> list = candleList.subList(0, limit);
         return I2B.b2(list, limit);
@@ -145,10 +145,18 @@ public class OkexJob {
     public void check1h() {
         String content = BTC + "- 1h 2b -" + getTime();
         log.info(content);
-        boolean b = this.check2b(BTC, 60, 48);
-        if (b) {
-            log.info(content + " [success]");
-            wxService.sendText(content);
+        int b = this.check2b(BTC, 60, 48);
+        checkStatus(content, b);
+    }
+
+    private void checkStatus(String content, int b) {
+        if (b == 1) {
+            log.info(content + " [success] high");
+            wxService.sendText(content + " [success] high");
+        }
+        if (b == -1) {
+            log.info(content + " [success] low");
+            wxService.sendText(content + " [success] low");
         }
     }
 
@@ -165,11 +173,8 @@ public class OkexJob {
     public void check2h() {
         String content = BTC + "- 2h 2b -" + getTime();
         log.info(content);
-        boolean b = this.check2b(BTC, 60 * 2, 36);
-        if (b) {
-            log.info(content + " [success]");
-            wxService.sendText(content);
-        }
+        int b = this.check2b(BTC, 60 * 2, 36);
+        checkStatus(content, b);
     }
 
     @Scheduled(cron = "40 * * * * ?")
@@ -177,16 +182,13 @@ public class OkexJob {
         String content = BTC + "- 4h 2b -" + getTime();
         log.info(content);
 
-        boolean b = this.check2b(BTC, 60 * 4, 24);
-        if (b) {
-            log.info(content + " [success]");
-            wxService.sendText(content);
-        }
+        int b = this.check2b(BTC, 60 * 2, 20);
+        checkStatus(content, b);
     }
 
     public static String getTime() {
         DateTime now = DateTime.now();
-        return now.getYear() + "-" + now.getMonthOfYear() + "-" + now.getDayOfYear() + " " + now.getHourOfDay();
+        return now.getYear() + "-" + now.getMonthOfYear() + "-" + now.getDayOfYear() + " " + now.getHourOfDay() + "时";
     }
 
 }
