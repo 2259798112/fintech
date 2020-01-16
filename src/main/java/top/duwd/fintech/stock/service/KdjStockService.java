@@ -422,10 +422,12 @@ public class KdjStockService {
             KdjStockEntity target = map.get(code);
             ArrayList<KdjStockEntity> backKdjList = new ArrayList<>();
             for (KdjStockEntity kdjStockEntity : list) {
+                //价格新低  kdj高
                 if (kdjStockEntity.getK() < target.getK()
                         && kdjStockEntity.getD() < target.getD()
                         && kdjStockEntity.getJ() < target.getJ()
                         && kdjStockEntity.getClose() > target.getClose()) {
+                    log.info("kdj back = {}",JSON.toJSONString(kdjStockEntity));
                     backKdjList.add(kdjStockEntity);
                 }
             }
