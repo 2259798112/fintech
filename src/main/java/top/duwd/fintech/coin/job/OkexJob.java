@@ -27,7 +27,6 @@ public class OkexJob {
     private OkexKdjCoinService okexKdjCoinService;
     private String END = "-USD-200327";
     private String BTC = "BTC" + END;
-    private String BCH = "BCH" + END;
 
     public static final String LOW = "low";
     public static final String HIGH = "high";
@@ -42,12 +41,11 @@ public class OkexJob {
         2019-12-26 12:59:50
      */
     //15min
-    //@Scheduled(cron = "55 4,9,14,19,24,29,34,39,44,49,54,59 * * * ?")
+    @Scheduled(cron = "25,55 * * * * ?")
     public void run5m() {
         log.info("5m run start");
         int limit = 100;//一天
         this.run(BTC, "5M", 5, limit);
-        this.run(BCH, "5M", 5, limit);
         log.info("5m run end");
     }
 
@@ -58,54 +56,14 @@ public class OkexJob {
         2019-12-26 12:59:50
      */
     //15min
-    //@Scheduled(cron = "50 14,29,44,59 * * * ?")
+    @Scheduled(cron = "25,55 * * * * ?")
     public void run15m() {
         log.info("15m run start");
         int limit = 100;//一天
         this.run(BTC, "15M", 15, limit);
-        this.run(BCH, "15M", 15, limit);
         log.info("15m run end");
     }
 
-    /*
-        2019-12-27 03:59:50
-        2019-12-27 07:59:50
-        2019-12-27 11:59:50
-     */
-    //4h
-    //@Scheduled(cron = "50 59 3,7,11,15,19,23 * * ?")
-    public void run4h() {
-        log.info("4h run start");
-        int limit = 100;//一天
-        this.run(BTC, "4H", 240, limit);
-        this.run(BCH, "4H", 240, limit);
-        log.info("4h run start");
-    }
-
-    /*
-        2019-12-26 23:59:50
-        2019-12-27 23:59:50
-        2019-12-28 23:59:50
-     */
-    //1d
-    //@Scheduled(cron = "50 59 7,19 * * ?")
-    public void run1d() {
-        log.info("1d run start");
-        int limit = 100;//一天
-        this.run(BTC, "1Day", 1440, limit);
-        this.run(BCH, "1Day", 1440, limit);
-        log.info("1d run end");
-    }
-
-    //1d
-    //@Scheduled(cron = "50 59 7,19 * * ?")
-    public void run3d() {
-        log.info("3d run start");
-        int limit = 100;//一天
-        this.run(BTC, "3Day", 1440 * 3, limit);
-        this.run(BCH, "3Day", 1440 * 3, limit);
-        log.info("3d run end");
-    }
 
     public void run(String symbol, String time, int period, int limit) {
         Map<String, List<CandleModel>> map = okexKdjCoinService.getKdjBackMap(symbol, period, null, null, limit);
@@ -113,13 +71,13 @@ public class OkexJob {
         List<CandleModel> highList = map.get(HIGH);
 
         if (!lowList.isEmpty()) {
-            String content = symbol + "-" + time + " low Back " + JSON.toJSONString(new Date(), SerializerFeature.WriteDateUseDateFormat);
+            String content = symbol + " - " + time + " low Back " + JSON.toJSONString(new Date(), SerializerFeature.WriteDateUseDateFormat);
             log.info(content);
             wxService.sendText(content);
         }
 
         if (!highList.isEmpty()) {
-            String content = symbol + "-" + time + " high Back " + JSON.toJSONString(new Date(), SerializerFeature.WriteDateUseDateFormat);
+            String content = symbol + " - " + time + " high Back " + JSON.toJSONString(new Date(), SerializerFeature.WriteDateUseDateFormat);
             log.info(content);
             wxService.sendText(content);
         }
@@ -182,7 +140,7 @@ public class OkexJob {
         String content = BTC + "- 4h 2b -" + getTime();
         log.info(content);
 
-        int b = this.check2b(BTC, 60 * 2, 20);
+        int b = this.check2b(BTC, 60 * 4, 20);
         checkStatus(content, b);
     }
 
