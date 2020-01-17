@@ -51,9 +51,9 @@ public class OkexJob {
             isSend = true;
         }
         if (isSend){
-            log.info(content);
             wxService.sendText(content);
         }
+        log.info(content);
     }
 
     public int check2b(String symbol, int period, int limit) {
