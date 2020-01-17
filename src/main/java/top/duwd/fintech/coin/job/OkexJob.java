@@ -1,7 +1,7 @@
 package top.duwd.fintech.coin.job;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +13,7 @@ import top.duwd.dutil.common.model.CandleModel;
 import top.duwd.fintech.coin.service.OkexKdjCoinService;
 import top.duwd.fintech.common.msg.wx.qiye.WxService;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 @Component
 @Slf4j
@@ -28,56 +26,31 @@ public class OkexJob {
     private String END = "-USD-200327";
     private String BTC = "BTC" + END;
 
-    public static final String LOW = "low";
-    public static final String HIGH = "high";
-
     @Autowired
     private WxService wxService;
 
-    /*
-        2019-12-26 12:14:50
-        2019-12-26 12:29:50
-        2019-12-26 12:44:50
-        2019-12-26 12:59:50
-     */
     //15min
-    @Scheduled(cron = "25,55 * * * * ?")
-    public void run5m() {
-        log.info("5m run start");
-        int limit = 100;//一天
-        this.run(BTC, "5M", 5, limit);
-        log.info("5m run end");
-    }
-
-    /*
-        2019-12-26 12:14:50
-        2019-12-26 12:29:50
-        2019-12-26 12:44:50
-        2019-12-26 12:59:50
-     */
-    //15min
-    @Scheduled(cron = "25,55 * * * * ?")
+    @Scheduled(cron = "50 14,29,44,59 * * * ?")
     public void run15m() {
         log.info("15m run start");
-        int limit = 100;//一天
-        this.run(BTC, "15M", 15, limit);
+        run(BTC,15,20,80);
         log.info("15m run end");
     }
 
 
-    public void run(String symbol, String time, int period, int limit) {
-        Map<String, List<CandleModel>> map = okexKdjCoinService.getKdjBackMap(symbol, period, null, null, limit);
-        List<CandleModel> lowList = map.get(LOW);
-        List<CandleModel> highList = map.get(HIGH);
-
-        if (!lowList.isEmpty()) {
-            String content = symbol + " - " + time + " low Back " + JSON.toJSONString(new Date(), SerializerFeature.WriteDateUseDateFormat);
-            log.info(content);
-            wxService.sendText(content);
+    public void run(String symbol, int minutes, int low, int up) {
+        JSONObject jsonObject = okexKdjCoinService.kdjBack(symbol, minutes, low, up);
+        String content = JSON.toJSONString(jsonObject);
+        Boolean isSend = false;
+        if (jsonObject.getInteger("status") == 1){
+            log.info("high kdj back");
+            isSend = true;
         }
-
-        if (!highList.isEmpty()) {
-            String content = symbol + " - " + time + " high Back " + JSON.toJSONString(new Date(), SerializerFeature.WriteDateUseDateFormat);
+        if (jsonObject.getInteger("status") == -1){
+            log.info("low kdj back");
+            isSend = true;
+        }
+        if (isSend){
             log.info(content);
             wxService.sendText(content);
         }
