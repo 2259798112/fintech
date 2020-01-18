@@ -11,6 +11,8 @@ import top.duwd.dutil.common.model.CandleModel;
 import top.duwd.dutil.common.model.KDJModel;
 import top.duwd.dutil.http.api.ApiResult;
 import top.duwd.dutil.http.api.ApiResultManager;
+import top.duwd.fintech.coin.domain.vo.TokenPctVo;
+import top.duwd.fintech.coin.service.OkexTokenService;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -22,9 +24,17 @@ import java.util.List;
 public class OkexController {
     @Autowired
     private OkexApiUtil okexApiUtil;
+
+    @Autowired
+    private OkexTokenService okexTokenService;
     @Autowired
     private ApiResultManager apm;
 
+    @GetMapping("/token/pct")
+    public ApiResult tokenPct(){
+        List<TokenPctVo> vos = okexTokenService.tokenPct();
+        return apm.success(vos);
+    }
 
     @GetMapping("/kdj/contact/{symbol}/{period}/{high}/{low}/{diff}")
     public ApiResult kdjFilter(@PathVariable String symbol, @PathVariable Integer period

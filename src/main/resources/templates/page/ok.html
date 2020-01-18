@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Hello Bulma!</title>
+    <link rel="stylesheet" href="http://q46j5cesa.bkt.clouddn.com/bulma.min.css">
+
+    <script type="text/javascript" src="http://q46j5cesa.bkt.clouddn.com/jquery-1.11.1.js"></script>
+
+</head>
+<body>
+<nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+        <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false"
+           data-target="navbarBasicExample">
+            <span aria-hidden="true"></span>
+        </a>
+    </div>
+
+    <div id="navbarBasicExample" class="navbar-menu">
+        <div class="navbar-start">
+            <a class="navbar-item">
+                首页
+            </a>
+        </div>
+
+    </div>
+</nav>
+
+
+<section class="section" id="iSelect">
+    <div class="container ">
+        <div class="field is-horizontal">
+            <div class="field-body">
+                <div class="field">
+                    <button class="button is-primary control" id="ibQuery">
+                        确认
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+</section>
+
+
+<section class="section" id="iResult">
+    <div class="container">
+        <table class="table is-striped is-hoverable is-fullwidth ">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>token</th>
+                <th>in</th>
+                <th>now</th>
+                <th>pct</th>
+            </tr>
+            </thead>
+            <tbody id="iTable">
+            </tbody>
+        </table>
+    </div>
+
+
+</section>
+
+<script type="text/javascript">
+
+    $("#ibQuery").click(function () {
+        let url = "/okex/token/pct";
+        $.get(url, function (data) {
+            // alert(JSON.stringify(data));
+            // let apiResult = JSON.parse(data);
+            if (data != null) {
+                let arr = data["data"];
+                $("#iTable").empty();
+                $.each(arr, function (i, item) {
+                    let $tr = $('<tr>').append(
+                        $('<td>').text(i + 1),
+                        $('<td>').text(item.token),
+                        $('<td>').text(item.buy),
+                        $('<td>').text(item.now),
+                        $('<td>').text(item.pct)
+                    );
+                    $("#iTable").append($tr);
+                });
+            }
+        });
+    })
+
+
+</script>
+</body>
+</html>
