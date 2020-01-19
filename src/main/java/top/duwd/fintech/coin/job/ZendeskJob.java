@@ -1,6 +1,7 @@
 package top.duwd.fintech.coin.job;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -31,8 +32,11 @@ public class ZendeskJob {
             for (int i = 0; i < list.size(); i++) {
                 String link = list.get(i).getLink();
                 list.get(i).setLink(String.format(a, link));
+                list.get(i).setId(null);
+                list.get(i).setCreateDate(null);
+
             }
-            wxService.sendText(JSON.toJSONString(list));
+            wxService.sendText(JSON.toJSONString(list, SerializerFeature.PrettyFormat));
         }
         log.info("zendesk run end");
     }
