@@ -26,7 +26,12 @@ public class ZendeskJob {
         log.info("zendesk run start");
         List<ZendeskEntity> list = zenService.check();
 
-        if (list !=null && list.size() > 0){
+        String a = "<a href=%s>连接</a>";
+        if (list != null && list.size() > 0) {
+            for (int i = 0; i < list.size(); i++) {
+                String link = list.get(i).getLink();
+                list.get(i).setLink(String.format(a, link));
+            }
             wxService.sendText(JSON.toJSONString(list));
         }
         log.info("zendesk run end");
