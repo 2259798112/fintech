@@ -2,6 +2,7 @@ package top.duwd.fintech.coin.job;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import top.duwd.dutil.coin.okex.OkexApiUtil;
 import top.duwd.dutil.common.indicator.I2B;
+import top.duwd.dutil.common.indicator.KForm;
 import top.duwd.dutil.common.model.CandleModel;
 import top.duwd.fintech.coin.service.OkexKdjCoinService;
 import top.duwd.fintech.common.msg.wx.qiye.WxService;
@@ -25,6 +27,11 @@ public class OkexJob {
     private OkexKdjCoinService okexKdjCoinService;
     private String END = "-USD-200327";
     private String BTC = "BTC" + END;
+    private String LTC = "LTC" + END;
+    private String BCH = "BCH" + END;
+
+    public static final String LOW = "low";
+    public static final String HIGH = "high";
 
     @Autowired
     private WxService wxService;
@@ -122,4 +129,29 @@ public class OkexJob {
         return now.getYear() + "-" + now.getMonthOfYear() + "-" + now.getDayOfYear() + " " + now.getHourOfDay() + "时";
     }
 
+    @Scheduled(cron = "0 58 3,7,11,15,19,23 * * ?")
+    public void check4hTT() {
+        checkTT(BTC, 60 * 4);
+        checkTT(LTC, 60 * 4);
+    }
+
+
+    @Scheduled(cron = "0 58 7 * * ?")
+    public void check1dTT() {
+        checkTT(BTC, 60 * 24);
+        checkTT(LTC, 60 * 24);
+    }
+
+
+    private void checkTT(String symbol, int minutes) {
+        List<CandleModel> candleList = okexApiUtil.getCandleList(symbol, String.valueOf(minutes * 60), null, null);
+        if (candleList != null && candleList.size() > 0) {
+            if (KForm.TT(candleList.get(0), false, 0.01)) {
+                wxService.sendText(symbol + " " + minutes + " 锤子 " + JSON.toJSONString(candleList.get(0).getDataDate(), SerializerFeature.WriteDateUseDateFormat));
+            }
+            if (KForm.TT(candleList.get(0), true, 0.01)) {
+                wxService.sendText(symbol + " " + minutes + " 倒锤子 " + JSON.toJSONString(candleList.get(0).getDataDate(), SerializerFeature.WriteDateUseDateFormat));
+            }
+        }
+    }
 }
