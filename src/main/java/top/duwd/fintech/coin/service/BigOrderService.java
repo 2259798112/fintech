@@ -41,36 +41,34 @@ public class BigOrderService {
         }
     }
 
-    @Scheduled(fixedRate = 200)
-    public void run() {
-        log.info("run");
 
+    @Scheduled(fixedRate = 150)
+    public void okRun(){
         List<BigOrderModel> okList = okexApiUtil.tradeList("BTC-USD-200327", 100, 100);
         if (okList != null) {
             for (BigOrderModel model : okList) {
                 save(model);
             }
         }
+    }
 
-
+    @Scheduled(fixedRate = 150)
+    public void hbRun(){
         List<BigOrderModel> hbList = huobiApiUtil.tradeList(HuobiApiUtil.BTC_CQ, 100, 100);
         if (hbList != null) {
             for (BigOrderModel model : hbList) {
                 save(model);
             }
         }
-
-
-
+    }
+    @Scheduled(fixedRate = 150)
+    public void bnRun(){
         List<BigOrderModel> bnList = binanceApiUtil.tradeList("BTCUSDT", 100, 100);
         if (bnList != null) {
             for (BigOrderModel model : bnList) {
                 save(model);
             }
         }
-
-
-
     }
 
 }
