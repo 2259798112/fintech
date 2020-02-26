@@ -44,7 +44,12 @@ public class BigOrderService {
 
     @Scheduled(fixedRate = 150)
     public void okRun(){
-        List<BigOrderModel> okList = okexApiUtil.tradeList("BTC-USD-200327", 100, 100);
+        List<BigOrderModel> okList = null;
+        try {
+            okList = okexApiUtil.tradeList("BTC-USD-200327", 100, 100);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         if (okList != null) {
             for (BigOrderModel model : okList) {
                 save(model);
@@ -54,7 +59,12 @@ public class BigOrderService {
 
     @Scheduled(fixedRate = 150)
     public void hbRun(){
-        List<BigOrderModel> hbList = huobiApiUtil.tradeList(HuobiApiUtil.BTC_CQ, 100, 100);
+        List<BigOrderModel> hbList = null;
+        try {
+            hbList = huobiApiUtil.tradeList(HuobiApiUtil.BTC_CQ, 100, 100);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         if (hbList != null) {
             for (BigOrderModel model : hbList) {
                 save(model);
@@ -63,7 +73,12 @@ public class BigOrderService {
     }
     @Scheduled(fixedRate = 150)
     public void bnRun(){
-        List<BigOrderModel> bnList = binanceApiUtil.tradeList("BTCUSDT", 100, 100);
+        List<BigOrderModel> bnList = null;
+        try {
+            bnList = binanceApiUtil.tradeList("BTCUSDT", 100, 100);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         if (bnList != null) {
             for (BigOrderModel model : bnList) {
                 save(model);
