@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 import top.duwd.dutil.coin.okex.OkexApiUtil;
 import top.duwd.dutil.common.indicator.I2B;
 import top.duwd.dutil.common.indicator.KForm;
@@ -17,7 +16,7 @@ import top.duwd.fintech.common.msg.wx.qiye.WxService;
 
 import java.util.List;
 
-@Component
+//@Component
 @Slf4j
 public class OkexJob {
     @Autowired

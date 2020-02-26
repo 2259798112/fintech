@@ -5,14 +5,13 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 import top.duwd.fintech.coin.domain.entity.ZendeskEntity;
 import top.duwd.fintech.coin.service.ZenService;
 import top.duwd.fintech.common.msg.wx.qiye.WxService;
 
 import java.util.List;
 
-@Component
+//@Component
 @Slf4j
 public class ZendeskJob {
 
