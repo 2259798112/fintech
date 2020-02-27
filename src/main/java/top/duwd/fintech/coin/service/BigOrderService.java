@@ -19,9 +19,9 @@ import top.duwd.dutil.math.MathUtil;
 import top.duwd.fintech.common.domain.BigOrderEntity;
 import top.duwd.fintech.common.mapper.BigOrderMapper;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 
 
@@ -61,7 +61,7 @@ public class BigOrderService {
     }
 
     public static final Integer MIN_QTY = 100;
-    public static final HashSet<String> ids = new HashSet<>();
+    public static final ArrayList<String> ids = new ArrayList<>();
 
     @Async("bigOK")
     @Scheduled(fixedDelay = 150)
@@ -94,9 +94,14 @@ public class BigOrderService {
     }
 
     //15min
-    @Scheduled(cron = "0 */5 * * * ?")
+    @Scheduled(cron = "0 */2 * * * ?")
     public void refresh() {
-        ids.clear();
+        if (ids.size() > 500) {
+            int limit = ids.size() - 500;
+            for (int i = 0; i < limit; i++) {
+                ids.remove(0);
+            }
+        }
     }
 
     //根据 开始 结束 时间，平台 计算 多空
@@ -142,4 +147,5 @@ public class BigOrderService {
         }
         return jsonObject;
     }
+
 }
