@@ -39,6 +39,7 @@ public class BigOrderService {
 
         if (mapper.selectByPrimaryKey(entity.getId()) == null) {
             log.info(JSON.toJSONString(entity));
+            entity.setAmount(entity.getSize() * 100 / entity.getPrice());
             return mapper.insert(entity);
         } else {
             return 0;

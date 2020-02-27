@@ -16,4 +16,5 @@ public class BigOrderEntity {
     private String plat;
     @Id
     private String id;
+    private Double amount;
 }
