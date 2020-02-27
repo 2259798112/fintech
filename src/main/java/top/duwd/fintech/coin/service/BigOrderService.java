@@ -46,7 +46,8 @@ public class BigOrderService {
         }
     }
 
-    public static final Integer MIN_QTY = 1000;
+    public static final Integer MIN_QTY = 100;
+
     @Async("bigOK")
     @Scheduled(fixedDelay = 150)
     public void okRun(){
