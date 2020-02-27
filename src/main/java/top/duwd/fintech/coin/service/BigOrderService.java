@@ -67,8 +67,8 @@ public class BigOrderService {
             }
         }
     }
-    @Async("bigBN")
-    @Scheduled(fixedDelay = 150)
+//    @Async("bigBN")
+//    @Scheduled(fixedDelay = 150)
     public void bnRun(){
         List<BigOrderModel> bnList = binanceApiUtil.tradeList(requestBuilder,"BTCUSDT", 100, MIN_QTY);
         if (bnList != null) {

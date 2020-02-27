@@ -11,7 +11,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 @Configuration
 @EnableAsync
 public class BigOrderPool {
-    @Bean
+    @Bean(name = "bigOK")
     public Executor bigOK() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setThreadNamePrefix("big-");
@@ -21,7 +21,7 @@ public class BigOrderPool {
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.DiscardPolicy());
         return executor;
     }
-    @Bean
+    @Bean(name = "bigHB")
     public Executor bigHB() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setThreadNamePrefix("big-");
@@ -31,7 +31,7 @@ public class BigOrderPool {
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.DiscardPolicy());
         return executor;
     }
-    @Bean
+    @Bean(name = "bigBN")
     public Executor bigBN() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setThreadNamePrefix("big-");
