@@ -31,14 +31,5 @@ public class BigOrderPool {
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.DiscardPolicy());
         return executor;
     }
-    @Bean(name = "bigBN")
-    public Executor bigBN() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setThreadNamePrefix("big-bn-");
-        executor.setMaxPoolSize(50);
-        executor.setCorePoolSize(20);
-        executor.setQueueCapacity(0);
-        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.DiscardPolicy());
-        return executor;
-    }
+
 }
