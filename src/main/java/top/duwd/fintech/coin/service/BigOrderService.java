@@ -38,8 +38,8 @@ public class BigOrderService {
         BeanUtils.copyProperties(model, entity);
 
         if (mapper.selectByPrimaryKey(entity.getId()) == null) {
-            log.info(JSON.toJSONString(entity));
             entity.setAmount(entity.getSize() * 100 / entity.getPrice());
+            log.info(JSON.toJSONString(entity));
             return mapper.insert(entity);
         } else {
             return 0;

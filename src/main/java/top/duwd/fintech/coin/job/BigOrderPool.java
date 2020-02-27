@@ -14,7 +14,7 @@ public class BigOrderPool {
     @Bean(name = "bigOK")
     public Executor bigOK() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setThreadNamePrefix("big-");
+        executor.setThreadNamePrefix("big-ok-");
         executor.setMaxPoolSize(50);
         executor.setCorePoolSize(20);
         executor.setQueueCapacity(0);
@@ -24,7 +24,7 @@ public class BigOrderPool {
     @Bean(name = "bigHB")
     public Executor bigHB() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setThreadNamePrefix("big-");
+        executor.setThreadNamePrefix("big-hb-");
         executor.setMaxPoolSize(50);
         executor.setCorePoolSize(20);
         executor.setQueueCapacity(0);
@@ -34,7 +34,7 @@ public class BigOrderPool {
     @Bean(name = "bigBN")
     public Executor bigBN() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setThreadNamePrefix("big-");
+        executor.setThreadNamePrefix("big-bn-");
         executor.setMaxPoolSize(50);
         executor.setCorePoolSize(20);
         executor.setQueueCapacity(0);
