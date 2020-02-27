@@ -12,13 +12,33 @@ import java.util.concurrent.ThreadPoolExecutor;
 @EnableAsync
 public class BigOrderPool {
     @Bean
-    public Executor big() {
+    public Executor bigOK() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setThreadNamePrefix("big-");
         executor.setMaxPoolSize(50);
         executor.setCorePoolSize(20);
         executor.setQueueCapacity(0);
-        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.DiscardPolicy());
+        return executor;
+    }
+    @Bean
+    public Executor bigHB() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setThreadNamePrefix("big-");
+        executor.setMaxPoolSize(50);
+        executor.setCorePoolSize(20);
+        executor.setQueueCapacity(0);
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.DiscardPolicy());
+        return executor;
+    }
+    @Bean
+    public Executor bigBN() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setThreadNamePrefix("big-");
+        executor.setMaxPoolSize(50);
+        executor.setCorePoolSize(20);
+        executor.setQueueCapacity(0);
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.DiscardPolicy());
         return executor;
     }
 }

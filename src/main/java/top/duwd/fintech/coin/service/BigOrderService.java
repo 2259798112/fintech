@@ -43,7 +43,7 @@ public class BigOrderService {
     }
 
     public static final Integer MIN_QTY = 1000;
-    @Async("big")
+    @Async("bigOK")
     @Scheduled(fixedDelay = 150)
     public void okRun(){
         List<BigOrderModel> okList = okexApiUtil.tradeList("BTC-USD-200327", 100, MIN_QTY);
@@ -53,7 +53,7 @@ public class BigOrderService {
             }
         }
     }
-    @Async("big")
+    @Async("bigHB")
     @Scheduled(fixedDelay = 150)
     public void hbRun(){
         List<BigOrderModel> hbList = huobiApiUtil.tradeList(HuobiApiUtil.BTC_CQ, 100, MIN_QTY);
@@ -63,7 +63,7 @@ public class BigOrderService {
             }
         }
     }
-    @Async("big")
+    @Async("bigBN")
     @Scheduled(fixedDelay = 150)
     public void bnRun(){
         List<BigOrderModel> bnList = binanceApiUtil.tradeList("BTCUSDT", 100, MIN_QTY);
