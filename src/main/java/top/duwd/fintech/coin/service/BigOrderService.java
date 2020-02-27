@@ -70,7 +70,7 @@ public class BigOrderService {
         if (okList != null) {
             for (BigOrderModel model : okList) {
                 if (!ids.contains(model.getId())) {
-                    System.out.println("ids size " + ids.size());
+                    log.info("ids size " + ids.size());
                     ids.add(model.getId());
                     save(model);
                 }
@@ -85,7 +85,7 @@ public class BigOrderService {
         if (hbList != null) {
             for (BigOrderModel model : hbList) {
                 if (!ids.contains(model.getId())) {
-                    System.out.println("ids size " + ids.size());
+                    log.info("ids size " + ids.size());
                     ids.add(model.getId());
                     save(model);
                 }
