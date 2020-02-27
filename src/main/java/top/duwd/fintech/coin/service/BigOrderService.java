@@ -94,7 +94,7 @@ public class BigOrderService {
     }
 
     //15min
-    @Scheduled(cron = "0 */2 * * * ?")
+    @Scheduled(cron = "0 */5 * * * ?")
     public void refresh() {
         ids.clear();
     }
