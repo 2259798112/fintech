@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import top.duwd.dutil.coin.binance.BinanceApiUtil;
@@ -42,7 +43,7 @@ public class BigOrderService {
     }
 
     public static final Integer MIN_QTY = 1000;
-
+    @Async("big")
     @Scheduled(fixedDelay = 150)
     public void okRun(){
         List<BigOrderModel> okList = okexApiUtil.tradeList("BTC-USD-200327", 100, MIN_QTY);
@@ -52,7 +53,7 @@ public class BigOrderService {
             }
         }
     }
-
+    @Async("big")
     @Scheduled(fixedDelay = 150)
     public void hbRun(){
         List<BigOrderModel> hbList = huobiApiUtil.tradeList(HuobiApiUtil.BTC_CQ, 100, MIN_QTY);
@@ -62,6 +63,7 @@ public class BigOrderService {
             }
         }
     }
+    @Async("big")
     @Scheduled(fixedDelay = 150)
     public void bnRun(){
         List<BigOrderModel> bnList = binanceApiUtil.tradeList("BTCUSDT", 100, MIN_QTY);
