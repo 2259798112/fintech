@@ -41,7 +41,7 @@ public class BigOrderService {
         }
     }
 
-    public static final int MIN_QTY = 1000;
+    public static final Integer MIN_QTY = 1000;
 
     @Scheduled(fixedRate = 150)
     public void okRun(){
