@@ -66,7 +66,7 @@ public class BigOrderService {
     @Async("bigOK")
     @Scheduled(fixedDelay = 150)
     public void okRun() {
-        List<BigOrderModel> okList = okexApiUtil.tradeList(requestBuilder, "BTC-USD-200327", 100, MIN_QTY);
+        List<BigOrderModel> okList = okexApiUtil.tradeList(requestBuilder, "BTC-USD-200626", 100, MIN_QTY);
         if (okList != null) {
             for (BigOrderModel model : okList) {
                 if (!ids.contains(model.getId())) {
@@ -94,7 +94,7 @@ public class BigOrderService {
     }
 
     //15min
-    @Scheduled(cron = "0 */2 * * * ?")
+    @Scheduled(cron = "0 */5 * * * ?")
     public void refresh() {
         if (ids.size() > 500) {
             int limit = ids.size() - 500;
@@ -147,5 +147,6 @@ public class BigOrderService {
         }
         return jsonObject;
     }
+
 
 }
