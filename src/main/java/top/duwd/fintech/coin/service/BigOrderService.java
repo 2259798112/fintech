@@ -94,7 +94,7 @@ public class BigOrderService {
     }
 
     //15min
-    @Scheduled(cron = "0 */5 * * * ?")
+    @Scheduled(cron = "0 */2 * * * ?")
     public void refresh() {
         if (ids.size() > 500) {
             int limit = ids.size() - 500;
