@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Hello Bulma!</title>
+    <link rel="stylesheet" href="https://dwdcsv.oss-cn-shanghai.aliyuncs.com/fintech/bulma-calendar.min.css">
+    <link rel="stylesheet" href="https://dwdcsv.oss-cn-shanghai.aliyuncs.com/fintech/bulma.min.css">
+
+    <script type="text/javascript" src="https://dwdcsv.oss-cn-shanghai.aliyuncs.com/fintech/all.js"></script>
+    <script type="text/javascript"
+            src="https://dwdcsv.oss-cn-shanghai.aliyuncs.com/fintech/bulma-calendar.min.js"></script>
+    <script type="text/javascript" src="https://dwdcsv.oss-cn-shanghai.aliyuncs.com/fintech/jquery-1.11.1.js"></script>
+
+</head>
+<body>
+<nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+        <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false"
+           data-target="navbarBasicExample">
+            <span aria-hidden="true"></span>
+        </a>
+    </div>
+
+    <div id="navbarBasicExample" class="navbar-menu">
+        <div class="navbar-start">
+            <a class="navbar-item">
+                首页
+            </a>
+        </div>
+
+        <div class="navbar-end">
+            <div class="navbar-item">
+                <div class="buttons">
+                    <a class="button is-primary">
+                        <strong>Sign up</strong>
+                    </a>
+                    <a class="button is-light">
+                        Log in
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+
+<section class="section" id="iSelect">
+    <div class="container ">
+        <div class="field is-horizontal">
+
+            <div class="field-body">
+                <div class="field-label">
+                    <label class="label">起</label>
+                </div>
+                <div class="field">
+                    <p>
+                        <input class="control" type="text" id="iStartDate" placeholder="yyyy-MM-dd">
+                        <input class="control" type="text" id="iStartTime" placeholder="HH:mm:ss">
+                    </p>
+                </div>
+
+                <div class="field-label">
+                    <label class="label">止</label>
+                </div>
+                <div class="field">
+                    <p>
+                        <input class="control" type="text" id="iEndDate" placeholder="yyyy-MM-dd">
+                        <input class="control" type="text" id="iEndTime" placeholder="HH:mm:ss">
+                    </p>
+                </div>
+                <div class="field">
+                    <input class="input is-small control" type="text" id="iMin" placeholder="最小值">
+                </div>
+                <div class="field">
+                    <input class="input is-small control" type="text" id="iPlat" placeholder="平台">
+                </div>
+                <div class="field">
+                    <button class="button is-primary control" id="ibQuery">
+                        确认
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container">
+        <div class="field is-horizontal">
+
+            <div class="field-body">
+
+                <div class="field">
+                    <label class="label">Buy 开多/平空
+                        <input class="input control" type="text" id="iBuySum" placeholder="总买">
+                    </label>
+                </div>
+
+                <div class="field">
+                    <label class="label">Sell 开空/平多
+                        <input class="input control" type="text" id="iSellSum" placeholder="总卖">
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+
+<section class="section" id="iResult">
+    <div class="container">
+        <table class="table is-striped is-hoverable is-fullwidth ">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>时间</th>
+                <th>平台</th>
+                <th>开多/平空</th>
+                <th>价格</th>
+                <th>数量</th>
+                <th>开空/平多</th>
+                <th>价格</th>
+                <th>数量</th>
+            </tr>
+            </thead>
+            <tbody id="iTable">
+            </tbody>
+        </table>
+    </div>
+
+
+</section>
+
+
+<script src="/js/laydate/laydate.js"></script> <!-- 改成你的路径 -->
+<script>
+    function gettime(t) {
+        let _time = new Date(t);
+        let year = _time.getFullYear();//2017
+        let month = _time.getMonth() + 1;//7
+        let date = _time.getDate();//10
+        let hour = _time.getHours();//10
+        hour = hour < 10 ? '0' + hour : hour;
+        let minute = _time.getMinutes();//56
+        minute = minute < 10 ? '0' + minute : minute;
+        let second = _time.getSeconds();//15
+        second = second < 10 ? '0' + second : second;
+        return year + "年" + month + "月" + date + "日   " + hour + ":" + minute + ":" + second;//这里自己按自己需要的格式拼接
+    }
+
+
+    //时间选择器
+    laydate.render({
+        elem: '#iStartDate'
+        , format: 'yyyyMMdd'
+    });
+    //时间选择器
+    laydate.render({
+        elem: '#iStartTime'
+        , type: 'time'
+        , format: 'HHmmss'
+    });
+    //时间选择器
+    laydate.render({
+        elem: '#iEndDate'
+        , format: 'yyyyMMdd'
+    });
+    //时间选择器
+    laydate.render({
+        elem: '#iEndTime'
+        , type: 'time'
+        , format: 'HHmmss'
+    });
+
+
+    function bigCal() {
+        let url = "/big" + "/cal";
+
+        let start = $("#iStartDate").val() + $("#iStartTime").val();
+        let end = $("#iEndDate").val() + $("#iEndTime").val();
+        let min = $("#iMin").val();
+        let plat = $("#iPlat").val();
+
+        $.ajax({
+            url: url,
+            type: "get", //send it through get method
+            data: {
+                start: start,
+                end: end,
+                min: min,
+                plat: plat
+            },
+            success: function (data) {
+                if (data != null) {
+                    let obj = data["data"];
+                    $("#iBuySum").val(obj.buy);
+                    $("#iSellSum").val(obj.sell);
+                }
+            },
+            error: function (data) {
+                //Do Something to handle error
+                console.log("error")
+            }
+        });
+
+    }
+
+    function bigList() {
+        let url = "/big" + "/list";
+
+        let start = $("#iStartDate").val() + $("#iStartTime").val();
+        let end = $("#iEndDate").val() + $("#iEndTime").val();
+        let min = $("#iMin").val();
+        let plat = $("#iPlat").val();
+
+        $.ajax({
+            url: url,
+            type: "get", //send it through get method
+            data: {
+                start: start,
+                end: end,
+                min: min,
+                plat: plat
+            },
+            success: function (data) {
+                if (data != null) {
+                    let arr = data["data"];
+                    $("#iTable").empty();
+
+
+                    $.each(arr, function (i, item) {
+                        let ts = gettime(item.ts);
+
+                        if ('sell' === item.side) {
+                            let $tr = $('<tr>').append(
+                                $('<td>').text(i + 1),
+                                $('<td>').text(ts),
+                                $('<td>').text(item.plat),
+                                $('<td>').text("-"),
+                                $('<td>').text("-"),
+                                $('<td>').text("-"),
+                                $('<td class="has-background-success">').text(item.side),
+                                $('<td>').text(item.price),
+                                $('<td>').text(item.amount)
+                            );
+                            $("#iTable").append($tr);
+                        } else {
+                            let $tr = $('<tr>').append(
+                                $('<td>').text(i + 1),
+                                $('<td>').text(ts),
+                                $('<td>').text(item.plat),
+                                $('<td class="has-background-danger">').text(item.side),
+                                $('<td>').text(item.price),
+                                $('<td>').text(item.amount),
+                                $('<td>').text("-"),
+                                $('<td>').text("-"),
+                                $('<td>').text("-")
+                            );
+                            $("#iTable").append($tr);
+                        }
+                    });
+                }
+            },
+            error: function (data) {
+                //Do Something to handle error
+                console.log("error")
+            }
+        });
+
+    }
+
+    $("#ibQuery").click(function () {
+        bigList();
+        bigCal();
+    })
+</script>
+
+</body>
+</html>
