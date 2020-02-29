@@ -30,6 +30,12 @@ public class BigOrderController {
     @GetMapping("/list")
     public ApiResult list(@RequestParam String plat, @RequestParam Date start, @RequestParam Date end, @RequestParam Integer min) {
         List<BigOrderEntity> list = bigOrderService.list(start, end, plat, min);
+
+        if (list!=null && list.size() > 100) {
+            BigOrderEntity bigOrderEntity = list.get(list.size() - 1);
+            list = list.subList(0,100);
+            list.add(bigOrderEntity);
+        }
         return new ApiResultManager().success(list);
     }
 
