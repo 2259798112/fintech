@@ -101,6 +101,11 @@
                         <input class="input control" type="text" id="iSellSum" placeholder="总卖">
                     </label>
                 </div>
+                <div class="field">
+                    <label class="label">净值(buy-sell)
+                        <input class="input control" type="text" id="iSum" placeholder="净值">
+                    </label>
+                </div>
             </div>
         </div>
     </div>
@@ -196,6 +201,7 @@
                     let obj = data["data"];
                     $("#iBuySum").val(obj.buy);
                     $("#iSellSum").val(obj.sell);
+                    $("#iSum").val(obj.buy - obj.sell);
                 }
             },
             error: function (data) {
@@ -231,7 +237,8 @@
 
                     $.each(arr, function (i, item) {
                         let ts = gettime(item.ts);
-
+                        let _time = new Date(ts);
+                        let minute = _time.getMinutes();//56
                         if ('sell' === item.side) {
                             let $tr = $('<tr>').append(
                                 $('<td>').text(i + 1),
@@ -258,6 +265,9 @@
                                 $('<td>').text("-")
                             );
                             $("#iTable").append($tr);
+                            if (minute % 2 === 0){
+
+                            }
                         }
                     });
                 }
