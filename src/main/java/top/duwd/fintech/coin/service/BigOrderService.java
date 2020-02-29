@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
@@ -62,8 +63,8 @@ public class BigOrderService {
     public static final Integer MIN_QTY = 100;
     public static final ArrayList<String> ids = new ArrayList<>();
 
-//    @Async("bigOK")
-//    @Scheduled(fixedDelay = 150)
+    @Async("bigOK")
+    @Scheduled(fixedDelay = 150)
     public void okRun() {
         List<BigOrderModel> okList = okexApiUtil.tradeList(requestBuilder, "BTC-USD-200626", 100, MIN_QTY);
         if (okList != null) {
@@ -77,8 +78,8 @@ public class BigOrderService {
         }
     }
 
-//    @Async("bigHB")
-//    @Scheduled(fixedDelay = 150)
+    @Async("bigHB")
+    @Scheduled(fixedDelay = 150)
     public void hbRun() {
         List<BigOrderModel> hbList = huobiApiUtil.tradeList(requestBuilder, HuobiApiUtil.BTC_CQ, 100, MIN_QTY);
         if (hbList != null) {
