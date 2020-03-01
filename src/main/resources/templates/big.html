@@ -73,7 +73,8 @@
                     <input class="input is-small control" type="text" id="iMin" placeholder="最小值">
                 </div>
                 <div class="field">
-                    <input class="input is-small control has-background-primary" type="text" id="iLast" value="0" placeholder="最近">
+                    <input class="input is-small control has-background-primary" type="text" id="iLast" value="0"
+                           placeholder="最近">
                 </div>
                 <div class="field">
                     <input class="input is-small control" type="text" id="iPlat" placeholder="平台">
@@ -188,6 +189,7 @@
         let start = $("#iStartDate").val() + $("#iStartTime").val();
         let end = $("#iEndDate").val() + $("#iEndTime").val();
         let min = $("#iMin").val();
+        let last = $("#iLast").val();
         let plat = $("#iPlat").val();
 
         $.ajax({
@@ -197,6 +199,7 @@
                 start: start,
                 end: end,
                 min: min,
+                last: last,
                 plat: plat
             },
             success: function (data) {
@@ -232,7 +235,7 @@
                 end: end,
                 min: min,
                 plat: plat,
-                last:last
+                last: last
             },
             success: function (data) {
                 if (data != null) {
@@ -270,7 +273,7 @@
                                 $('<td>').text("-")
                             );
                             $("#iTable").append($tr);
-                            if (minute % 2 === 0){
+                            if (minute % 2 === 0) {
 
                             }
                         }

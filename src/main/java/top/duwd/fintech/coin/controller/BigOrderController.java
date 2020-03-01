@@ -23,7 +23,11 @@ public class BigOrderController {
     private BigOrderService bigOrderService;
 
     @GetMapping("/cal")
-    public ApiResult cal(@RequestParam String plat, @RequestParam Date start, @RequestParam Date end, @RequestParam Integer min) {
+    public ApiResult cal(@RequestParam String plat, @RequestParam Date start, @RequestParam Date end, @RequestParam Integer min,Integer last) {
+        if (last !=null && last > 0){
+            end = new Date();
+            start = DateUtil.addMin(end,-last);
+        }
         JSONObject cal = bigOrderService.cal(start, end, plat, min);
         return new ApiResultManager().success(cal);
     }
