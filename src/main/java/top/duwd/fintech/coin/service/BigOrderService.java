@@ -3,10 +3,10 @@ package top.duwd.fintech.coin.service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
@@ -63,8 +63,8 @@ public class BigOrderService {
     public static final Integer MIN_QTY = 100;
     public static final ArrayList<String> ids = new ArrayList<>();
 
-    @Async("bigOK")
-    @Scheduled(fixedDelay = 150)
+//    @Async("bigOK")
+//    @Scheduled(fixedDelay = 150)
     public void okRun() {
         List<BigOrderModel> okList = okexApiUtil.tradeList(requestBuilder, "BTC-USD-200626", 100, MIN_QTY);
         if (okList != null) {
@@ -78,8 +78,8 @@ public class BigOrderService {
         }
     }
 
-    @Async("bigHB")
-    @Scheduled(fixedDelay = 150)
+//    @Async("bigHB")
+//    @Scheduled(fixedDelay = 150)
     public void hbRun() {
         List<BigOrderModel> hbList = huobiApiUtil.tradeList(requestBuilder, HuobiApiUtil.BTC_CQ, 100, MIN_QTY);
         if (hbList != null) {
@@ -149,6 +149,14 @@ public class BigOrderService {
     }
 
 
+    /**
+     * 获取记录列表，以时间倒序，最多200
+     * @param start
+     * @param end
+     * @param plat
+     * @param min
+     * @return
+     */
     public List<BigOrderEntity> list(Date start, Date end, String plat, Integer min) {
         Example example = new Example(BigOrderEntity.class);
         example.createCriteria()
@@ -157,7 +165,9 @@ public class BigOrderService {
                 .andGreaterThan("ts", start)
                 .andLessThanOrEqualTo("ts", end);
 
-        List<BigOrderEntity> list = mapper.selectByExample(example);
+        example.orderBy("ts").desc();
+
+        List<BigOrderEntity> list = mapper.selectByExampleAndRowBounds(example,new RowBounds(RowBounds.NO_ROW_OFFSET,200));
 
         return list;
     }

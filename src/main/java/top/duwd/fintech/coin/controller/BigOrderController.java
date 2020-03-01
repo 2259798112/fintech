@@ -12,7 +12,6 @@ import top.duwd.dutil.http.api.ApiResultManager;
 import top.duwd.fintech.coin.service.BigOrderService;
 import top.duwd.fintech.common.domain.BigOrderEntity;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -41,15 +40,6 @@ public class BigOrderController {
         }
 
         List<BigOrderEntity> list = bigOrderService.list(start, end, plat, min);
-        if (list!=null && list.size() > 100) {
-            BigOrderEntity bigOrderEntity = list.get(list.size() - 1);
-            list = list.subList(0,100);
-            list.add(bigOrderEntity);
-        }
-
-        if (last !=null){
-            Collections.reverse(list);
-        }
         return new ApiResultManager().success(list);
     }
 
