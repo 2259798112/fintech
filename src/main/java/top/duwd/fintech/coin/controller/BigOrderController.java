@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import top.duwd.dutil.date.DateUtil;
 import top.duwd.dutil.http.api.ApiResult;
 import top.duwd.dutil.http.api.ApiResultManager;
 import top.duwd.fintech.coin.service.BigOrderService;
@@ -28,9 +29,13 @@ public class BigOrderController {
     }
 
     @GetMapping("/list")
-    public ApiResult list(@RequestParam String plat, @RequestParam Date start, @RequestParam Date end, @RequestParam Integer min) {
-        List<BigOrderEntity> list = bigOrderService.list(start, end, plat, min);
+    public ApiResult list(@RequestParam String plat, @RequestParam Date start, @RequestParam Date end, @RequestParam Integer min,Integer last) {
+        if (last !=null && last > 0){
+            end = new Date();
+            start = DateUtil.addMin(end,-last);
+        }
 
+        List<BigOrderEntity> list = bigOrderService.list(start, end, plat, min);
         if (list!=null && list.size() > 100) {
             BigOrderEntity bigOrderEntity = list.get(list.size() - 1);
             list = list.subList(0,100);
