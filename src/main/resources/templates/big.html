@@ -11,6 +11,7 @@
     <script type="text/javascript"
             src="https://dwdcsv.oss-cn-shanghai.aliyuncs.com/fintech/bulma-calendar.min.js"></script>
     <script type="text/javascript" src="https://dwdcsv.oss-cn-shanghai.aliyuncs.com/fintech/jquery-1.11.1.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@4.6.0/dist/echarts.js"></script>
 
 </head>
 <body>
@@ -117,6 +118,16 @@
 </section>
 
 
+<section class="section">
+    <div class="container">
+        <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+        <div id="iK" style="width: 1280px;height:600px;">
+
+        </div>
+    </div>
+</section>
+
+
 <section class="section" id="iResult">
     <div class="container">
         <table class="table is-striped is-hoverable is-fullwidth ">
@@ -144,6 +155,110 @@
 
 <script src="/js/laydate/laydate.js"></script> <!-- 改成你的路径 -->
 <script>
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('iK'));
+    myChart.showLoading();
+
+    function k() {
+        let url = "/big/list/detail";
+
+        let start = $("#iStartDate").val() + $("#iStartTime").val();
+        let end = $("#iEndDate").val() + $("#iEndTime").val();
+        let min = $("#iMin").val();
+        let last = $("#iLast").val();
+        let plat = $("#iPlat").val();
+
+        $.ajax({
+            url: url,
+            type: "get", //send it through get method
+            data: {
+                start: start,
+                end: end,
+                min: min,
+                last: last,
+                plat: plat
+            },
+            success: function (data) {
+                myChart.hideLoading();
+                if (data != null) {
+                    option = {
+                        tooltip: {
+                            trigger: 'axis',
+                            axisPointer: {
+                                type: 'shadow',
+                                label: {
+                                    show: true
+                                }
+                            }
+                        },
+                        toolbox: {
+                            show: true,
+                            feature: {
+                                mark: {show: true},
+                                dataView: {show: true, readOnly: false},
+                                magicType: {show: true, type: ['line', 'bar']},
+                                restore: {show: true},
+                                saveAsImage: {show: true}
+                            }
+                        },
+                        calculable: true,
+                        legend: {
+                            data: ['vol', 'buy', 'sell'],
+                            itemGap: 5
+                        },
+                        grid: {
+                            top: '12%',
+                            left: '1%',
+                            right: '10%',
+                            containLabel: true
+                        },
+                        xAxis: [
+                            {
+                                type: 'value',
+                                data: data.dateList
+                            }
+                        ],
+                        yAxis: [
+                            {
+                                type: 'value',
+                                name: 'vol'
+                            }
+                        ],
+                        dataZoom: [
+                            {
+                                show: true,
+                                start: 0,
+                                end: 100
+                            },
+                            {
+                                type: 'inside',
+                                start: 0,
+                                end: 100
+                            }
+                        ],
+                        series: [
+                            {
+                                name: 'buy',
+                                type: 'bar',
+                                data: data.buyList
+                            },
+                            {
+                                name: 'sell',
+                                type: 'bar',
+                                data: data.sellList
+                            }
+                        ]
+                    };
+                    myChart.setOption(option);
+                }
+            },
+            error: function (data) {
+                //Do Something to handle error
+                console.log("error")
+            }
+        });
+    }
+
     function gettime(t) {
         let _time = new Date(t);
         let year = _time.getFullYear();//2017
@@ -291,6 +406,7 @@
     $("#ibQuery").click(function () {
         bigList();
         bigCal();
+        k();
     })
 </script>
 

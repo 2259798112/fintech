@@ -2,12 +2,12 @@ package top.duwd.fintech.coin.service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
@@ -15,15 +15,15 @@ import top.duwd.dutil.coin.binance.BinanceApiUtil;
 import top.duwd.dutil.coin.huobi.HuobiApiUtil;
 import top.duwd.dutil.coin.okex.OkexApiUtil;
 import top.duwd.dutil.common.model.BigOrderModel;
+import top.duwd.dutil.date.DateUtil;
 import top.duwd.dutil.http.RequestBuilder;
 import top.duwd.dutil.math.MathUtil;
 import top.duwd.fintech.common.domain.BigOrderEntity;
 import top.duwd.fintech.common.mapper.BigOrderMapper;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 
 @Service
@@ -63,9 +63,9 @@ public class BigOrderService {
 
     public static final Integer MIN_QTY = 100;
     public static final ArrayList<String> ids = new ArrayList<>();
-
-    @Async("bigOK")
-    @Scheduled(fixedDelay = 150)
+//
+//    @Async("bigOK")
+//    @Scheduled(fixedDelay = 150)
     public void okRun() {
         List<BigOrderModel> okList = okexApiUtil.tradeList(requestBuilder, "BTC-USD-200626", 100, MIN_QTY);
         if (okList != null) {
@@ -79,8 +79,8 @@ public class BigOrderService {
         }
     }
 
-    @Async("bigHB")
-    @Scheduled(fixedDelay = 150)
+//    @Async("bigHB")
+//    @Scheduled(fixedDelay = 150)
     public void hbRun() {
         List<BigOrderModel> hbList = huobiApiUtil.tradeList(requestBuilder, HuobiApiUtil.BTC_CQ, 100, MIN_QTY);
         if (hbList != null) {
@@ -152,6 +152,7 @@ public class BigOrderService {
 
     /**
      * 获取记录列表，以时间倒序，最多200
+     *
      * @param start
      * @param end
      * @param plat
@@ -161,15 +162,52 @@ public class BigOrderService {
     public List<BigOrderEntity> list(Date start, Date end, String plat, Integer min) {
         Example example = new Example(BigOrderEntity.class);
         example.createCriteria()
-                .andEqualTo("plat",plat)
+                .andEqualTo("plat", plat)
                 .andGreaterThanOrEqualTo("amount", min)
                 .andGreaterThan("ts", start)
                 .andLessThanOrEqualTo("ts", end);
 
         example.orderBy("ts").desc();
 
-        List<BigOrderEntity> list = mapper.selectByExampleAndRowBounds(example,new RowBounds(RowBounds.NO_ROW_OFFSET,200));
+        List<BigOrderEntity> list = mapper.selectByExampleAndRowBounds(example, new RowBounds(RowBounds.NO_ROW_OFFSET, 200));
 
         return list;
+    }
+
+    /**
+     * 大单切分
+     */
+    public Map<Object, Object> bigOrderFilterByMinutes(List<BigOrderEntity> list, int min, Date start, Date end) {
+        ArrayList<Double> buyList = new ArrayList<>();
+        ArrayList<Object> sellList = new ArrayList<>();
+        ArrayList<Object> sumList = new ArrayList<>();
+
+        ArrayList<Date> dates = new ArrayList<>();
+
+        String s = JSON.toJSONString(start, SerializerFeature.WriteDateUseDateFormat);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+        String format = sdf.format(new Date());
+        try {
+            start = sdf.parse(format);
+            dates.add(start);
+
+            Date temp = start;
+            while (temp.before(end)) {
+                Date date = DateUtil.addMin(temp, min);
+                temp = date;
+                dates.add(temp);
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println(JSON.toJSONString(dates,SerializerFeature.WriteDateUseDateFormat) + "\n");
+        return null;
+    }
+
+    public static void main(String[] args) {
+        BigOrderService bigOrderService = new BigOrderService();
+        bigOrderService.bigOrderFilterByMinutes(null, 15, DateUtil.addDay(new Date(),-1), new Date());
     }
 }
