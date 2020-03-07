@@ -63,7 +63,8 @@ public class BigOrderService {
 
     public static final Integer MIN_QTY = 100;
     public static final ArrayList<String> ids = new ArrayList<>();
-//
+
+    //
 //    @Async("bigOK")
 //    @Scheduled(fixedDelay = 150)
     public void okRun() {
@@ -79,7 +80,7 @@ public class BigOrderService {
         }
     }
 
-//    @Async("bigHB")
+    //    @Async("bigHB")
 //    @Scheduled(fixedDelay = 150)
     public void hbRun() {
         List<BigOrderModel> hbList = huobiApiUtil.tradeList(requestBuilder, HuobiApiUtil.BTC_CQ, 100, MIN_QTY);
@@ -159,7 +160,7 @@ public class BigOrderService {
      * @param min
      * @return
      */
-    public List<BigOrderEntity> list(Date start, Date end, String plat, Integer min) {
+    public List<BigOrderEntity> list(Date start, Date end, String plat, Integer min, Integer limit) {
         Example example = new Example(BigOrderEntity.class);
         example.createCriteria()
                 .andEqualTo("plat", plat)
@@ -169,9 +170,14 @@ public class BigOrderService {
 
         example.orderBy("ts").desc();
 
-        List<BigOrderEntity> list = mapper.selectByExampleAndRowBounds(example, new RowBounds(RowBounds.NO_ROW_OFFSET, 200));
-
-        return list;
+        if (limit == null) {
+            return mapper.selectByExampleAndRowBounds(example, new RowBounds(RowBounds.NO_ROW_OFFSET, 200));
+        } else {
+            return mapper.selectByExampleAndRowBounds(example, new RowBounds(RowBounds.NO_ROW_OFFSET, limit));
+        }
+    }
+    public List<BigOrderEntity> list(Date start, Date end, String plat, Integer min){
+        return list(start, end, plat, min,null);
     }
 
     /**
@@ -202,12 +208,12 @@ public class BigOrderService {
             e.printStackTrace();
         }
 
-        System.out.println(JSON.toJSONString(dates,SerializerFeature.WriteDateUseDateFormat) + "\n");
+        System.out.println(JSON.toJSONString(dates, SerializerFeature.WriteDateUseDateFormat) + "\n");
         return null;
     }
 
     public static void main(String[] args) {
         BigOrderService bigOrderService = new BigOrderService();
-        bigOrderService.bigOrderFilterByMinutes(null, 15, DateUtil.addDay(new Date(),-1), new Date());
+        bigOrderService.bigOrderFilterByMinutes(null, 15, DateUtil.addDay(new Date(), -1), new Date());
     }
 }
