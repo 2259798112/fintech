@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +25,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/big")
+@Slf4j
 public class BigOrderController {
 
     @Autowired
@@ -54,6 +56,7 @@ public class BigOrderController {
     public ApiResult listDetail(@RequestParam String plat, @RequestParam Date start, @RequestParam Date end, @RequestParam Integer min, Integer last) {
         //获取 时间
         List<Date> kDate = DateUtil.getCandleDate(start, end, last);
+        log.info("/list/detail {}",JSON.toJSONString(kDate,SerializerFeature.WriteDateUseDateFormat));
         int size = kDate.size();
         double[] volumes = new double[size - 1];
         //获取 对应的K线
@@ -97,6 +100,7 @@ public class BigOrderController {
         for (Date date : kDate) {
             dates.add(JSON.toJSONString(date,SerializerFeature.WriteDateUseDateFormat).replaceAll("\"",""));
         }
+        log.info("/list/detail {}",JSON.toJSONString(dates,SerializerFeature.WriteDateUseDateFormat));
         K k = new K();
         k.setDates(dates);
         k.setData(datas);
