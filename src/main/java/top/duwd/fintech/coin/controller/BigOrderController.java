@@ -56,7 +56,6 @@ public class BigOrderController {
     public ApiResult listDetail(@RequestParam String plat, @RequestParam Date start, @RequestParam Date end, @RequestParam Integer min, Integer last) {
         //获取 时间
         List<Date> kDate = DateUtil.getCandleDate(start, end, last);
-        log.info("/list/detail {}",JSON.toJSONString(kDate,SerializerFeature.WriteDateUseDateFormat));
         int size = kDate.size();
         double[] volumes = new double[size - 1];
         //获取 对应的K线
@@ -100,7 +99,6 @@ public class BigOrderController {
         for (Date date : kDate) {
             dates.add(JSON.toJSONString(date,SerializerFeature.WriteDateUseDateFormat).replaceAll("\"",""));
         }
-        log.info("/list/detail {}",JSON.toJSONString(dates,SerializerFeature.WriteDateUseDateFormat));
         K k = new K();
         k.setDates(dates);
         k.setData(datas);
