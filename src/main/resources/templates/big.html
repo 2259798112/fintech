@@ -185,8 +185,10 @@
                 data: ['日K', 'MA5', 'MA10', 'MA20', 'MA30']
             },
             tooltip: {
-                trigger:'axis',
-                triggerOn: 'mousemove',
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross'
+                },
                 transitionDuration: 0,
                 confine: true,
                 bordeRadius: 4,
@@ -199,7 +201,6 @@
                 }
             },
             axisPointer: {
-                type: 'cross',
                 link: [{
                     xAxisIndex: [0, 1]
                 }]
