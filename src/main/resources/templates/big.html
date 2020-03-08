@@ -209,7 +209,7 @@
                 type: 'slider',
                 xAxisIndex: [0, 1],
                 realtime: false,
-                start: 70,
+                start: 50,
                 end: 100,
                 top: 65,
                 height: 20,
@@ -230,7 +230,7 @@
                 axisLine: { lineStyle: { color: '#777' } },
                 axisLabel: {
                     formatter: function (value) {
-                        return echarts.format.formatTime('yyyy-MM-dd hh:mm:ss', value);
+                        return echarts.format.formatTime('MM-dd hh:mm', value);
                     }
                 },
                 min: 'dataMin',
