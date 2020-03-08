@@ -168,13 +168,16 @@
         var dates = result.data.dates;
         var data = result.data.data;
         var volumes = result.data.volumes;
+        var buy_volumes = result.data.buyList;
+        var sell_volumes = result.data.sellList;
+        var all_volumes = result.data.allVolumes;
 
         var dataMA5 = calculateMA(5, data);
         var dataMA10 = calculateMA(10, data);
         var dataMA20 = calculateMA(20, data);
 
         var option = {
-            animation: false,
+            animation: true,
             color: colorList,
             title: {
                 left: 'center',
@@ -198,26 +201,26 @@
                 textStyle: {
                     fontSize: 12,
                     color: '#333'
-                }
+                },
+                position: [0, '10%']
             },
             axisPointer: {
                 link: [{
-                    xAxisIndex: [0, 1]
+                    xAxisIndex: [0, 1,2]
                 }]
             },
             dataZoom: [{
                 type: 'slider',
-                xAxisIndex: [0, 1],
+                xAxisIndex: [0, 1,2],
                 realtime: false,
                 start: 50,
                 end: 100,
                 top: 65,
                 height: 20,
-                handleIcon: 'M10.7,11.9H9.3c-4.9,0.3-8.8,4.4-8.8,9.4c0,5,3.9,9.1,8.8,9.4h1.3c4.9-0.3,8.8-4.4,8.8-9.4C19.5,16.3,15.6,12.2,10.7,11.9z M13.3,24.4H6.7V23h6.6V24.4z M13.3,19.6H6.7v-1.4h6.6V19.6z',
                 handleSize: '120%'
             }, {
                 type: 'inside',
-                xAxisIndex: [0, 1],
+                xAxisIndex: [0, 1,2],
                 start: 40,
                 end: 70,
                 top: 30,
@@ -253,7 +256,30 @@
                 max: 'dataMax',
                 axisPointer: {
                     type: 'shadow',
-                    label: {show: false},
+                    label: {show: true},
+                    triggerTooltip: true,
+                    handle: {
+                        show: false,
+                        margin: 30,
+                        color: '#B80C00'
+                    }
+                }
+            }, {
+                type: 'category',
+                gridIndex: 2,
+                data: dates,
+                scale: true,
+                boundaryGap : true,
+                splitLine: {show: true},
+                axisLabel: {show: true},
+                axisTick: {show: false},
+                axisLine: { lineStyle: { color: '#777' } },
+                splitNumber: 20,
+                min: 'dataMin',
+                max: 'dataMax',
+                axisPointer: {
+                    type: 'shadow',
+                    label: {show: true},
                     triggerTooltip: true,
                     handle: {
                         show: true,
@@ -280,18 +306,30 @@
                 axisLine: {show: true},
                 axisTick: {show: true},
                 splitLine: {show: true}
+            }, {
+                scale: true,
+                gridIndex: 2,
+                splitNumber: 2,
+                axisLabel: {show: true,},
+                axisLine: {show: true},
+                axisTick: {show: true},
+                splitLine: {show: true}
             }],
             grid: [{
-                left: '5%',
+                left: '15%',
                 right: '2%',
-                top: '10%',
-                height: '60%'
+                top: '15%',
+                height: '45%'
             }, {
-                left: '5%',
+                left: '15%',
                 right: '2%',
-                top:'75%',
-                height: '20%',
-                bottom: '5%'
+                top:'65%',
+                height: '20%'
+            }, {
+                left: '15%',
+                right: '2%',
+                top:'90%',
+                height: '7%'
             }],
             graphic: [{
                 type: 'group',
@@ -322,9 +360,42 @@
                 xAxisIndex: 1,
                 yAxisIndex: 1,
                 itemStyle: {
-                    color: '#ff9966'
+                    color: '#ff9933'
                 },
                 data: volumes
+            }, {
+                name: 'sell',
+                type: 'line',
+                xAxisIndex: 1,
+                yAxisIndex: 1,
+                itemStyle: {
+                    color: '#14B143'
+                },
+                lineStyle:{
+                    width: 1
+                },
+                data: sell_volumes
+            }, {
+                name: 'buy',
+                type: 'line',
+                xAxisIndex: 1,
+                yAxisIndex: 1,
+                itemStyle: {
+                    color: '#EF232A'
+                },
+                lineStyle:{
+                    width: 1
+                },
+                data: buy_volumes
+            },{
+                name: 'all',
+                type: 'bar',
+                xAxisIndex: 2,
+                yAxisIndex: 2,
+                itemStyle: {
+                    color: '#808080'
+                },
+                data: all_volumes
             }, {
                 type: 'candlestick',
                 name: '日K',

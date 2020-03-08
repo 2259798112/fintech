@@ -16,6 +16,7 @@ import top.duwd.dutil.date.DateUtil;
 import top.duwd.dutil.http.RequestBuilder;
 import top.duwd.dutil.http.api.ApiResult;
 import top.duwd.dutil.http.api.ApiResultManager;
+import top.duwd.dutil.math.MathUtil;
 import top.duwd.fintech.coin.service.BigOrderService;
 import top.duwd.fintech.common.domain.BigOrderEntity;
 
@@ -58,6 +59,9 @@ public class BigOrderController {
         List<Date> kDate = DateUtil.getCandleDate(start, end, last);
         int size = kDate.size();
         double[] volumes = new double[size - 1];
+        double[] buyVolumes = new double[size - 1];
+        double[] sellVolumes = new double[size - 1];
+        List<Double> allVolumes = new ArrayList<>();
         //获取 对应的K线
         List<BigOrderEntity> list = bigOrderService.list(start, end, plat, min,1000000);
         for (int i = 0; i < size - 1; i++) {
@@ -68,8 +72,10 @@ public class BigOrderController {
                 if (ts.getTime() >= kDate.get(i).getTime() && ts.getTime() < kDate.get(i + 1).getTime()){ //有效
                     if ("sell".equalsIgnoreCase(side)){
                         volumes[i] = volumes[i] - amount;
+                        sellVolumes[i] = sellVolumes[i] + amount;
                     }else {
                         volumes[i] = volumes[i] + amount;
+                        buyVolumes[i] = buyVolumes[i] + amount;
                     }
                 }
             }
@@ -84,6 +90,7 @@ public class BigOrderController {
         }
         List<CandleModel> kList = huobiApiUtil.getKList(requestBuilder, HuobiApiUtil.BTC_CQ, period, null, kDate.get(0), kDate.get(size - 2));
         List<double[]> datas = new ArrayList<>();
+
         for (CandleModel candleModel : kList) {
             double[] ds = new double[5];
             ds[0]=candleModel.getOpen();
@@ -91,6 +98,7 @@ public class BigOrderController {
             ds[2]=candleModel.getLow();
             ds[3]=candleModel.getHigh();
             ds[4]=candleModel.getAmount();
+            allVolumes.add(MathUtil.round(ds[4],2));
             datas.add(ds);
         }
         kDate.remove(size - 1);
@@ -102,7 +110,17 @@ public class BigOrderController {
         K k = new K();
         k.setDates(dates);
         k.setData(datas);
+
+        for (int i = 0; i < volumes.length; i++) {
+            volumes[i] = MathUtil.round(volumes[i],2);
+            buyVolumes[i] = MathUtil.round(buyVolumes[i],2);
+            sellVolumes[i] = MathUtil.round(sellVolumes[i],2);
+        }
+
         k.setVolumes(volumes);
+        k.setBuyList(buyVolumes);
+        k.setSellList(sellVolumes);
+        k.setAllVolumes(allVolumes);
 
         return new ApiResultManager().success(k);
     }
@@ -113,6 +131,9 @@ public class BigOrderController {
         private List<String> dates;
         private List<double[]> data; //[[17512.58,17633.11,17434.27,17642.81,86160000]] 开收低高量
         private double[] volumes; //
+        private double[] buyList; //
+        private double[] sellList; //
+        private List<Double> allVolumes; //all 市场成交量
     }
 
 }
