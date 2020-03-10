@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Hello Bulma!</title>
+    <!--    css-->
+    <link rel="stylesheet" href="https://dwdcsv.oss-cn-shanghai.aliyuncs.com/fintech/bulma.min.css">
+    <link rel="stylesheet" href="/ext/dist/css/bulma-extensions.min.css">
+    <!--    font css-->
+    <script type="text/javascript" src="https://dwdcsv.oss-cn-shanghai.aliyuncs.com/fintech/all.js"></script>
+    <!--    jquery-->
+    <script type="text/javascript" src="https://dwdcsv.oss-cn-shanghai.aliyuncs.com/fintech/jquery-1.11.1.js"></script>
+    <script type="text/javascript" src="/ext/dist/js/bulma-extensions.min.js"></script>
+    <style>
+        .section {
+            padding: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+        <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false"
+           data-target="navbarBasicExample">
+            <span aria-hidden="true"></span>
+        </a>
+    </div>
+
+    <div id="navbarBasicExample" class="navbar-menu">
+        <div class="navbar-start">
+            <a class="navbar-item">
+                首页
+            </a>
+        </div>
+
+        <div class="navbar-end">
+            <div class="navbar-item">
+                <div class="buttons">
+                    <a class="button is-primary">
+                        <strong>Sign up</strong>
+                    </a>
+                    <a class="button is-light">
+                        Log in
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+
+<section class="section">
+    <div class="level">
+        <div class="level-item">
+            <div class="control">
+                <p class="heading">标的</p>
+                <input class="input" type="text" placeholder="BTC/同花顺">
+            </div>
+        </div>
+        <div class="level-item">
+            <div class="control">
+                <p class="heading">平台</p>
+                <input class="input" type="text" placeholder="火币/创业板">
+            </div>
+        </div>
+        <div class="level-item">
+            <div class="control">
+                <p class="heading">类型</p>
+                <input class="input" type="text" placeholder="合约/币币/股票">
+            </div>
+        </div>
+        <div class="level-item">
+            <div class="control">
+                <p class="heading">创建时间</p>
+                <input class="input" type="text" readonly placeholder="创建时间">
+            </div>
+        </div>
+        <div class="level-item">
+            <div class="control">
+                <p class="heading">更新时间</p>
+                <input class="input" type="text" readonly placeholder="更新时间">
+            </div>
+        </div>
+    </div>
+    <div class="level">
+        <div class="level-item">
+            <div>
+                <p class="heading">周期(min)</p>
+                <input class="input" type="number" placeholder="周期">
+            </div>
+        </div>
+        <div class="level-item">
+            <div>
+                <p class="heading">压力位低</p>
+                <input class="input is-success" type="number" placeholder="压力位低">
+            </div>
+        </div>
+        <div class="level-item">
+            <div>
+                <p class="heading">压力位高</p>
+                <input class="input is-danger" type="number" placeholder="压力位高">
+            </div>
+        </div>
+        <div class="level-item">
+            <div>
+                <p class="heading">支撑位低</p>
+                <input class="input is-success" type="number" placeholder="支撑位低">
+            </div>
+        </div>
+        <div class="level-item">
+            <div>
+                <p class="heading">支撑位高</p>
+                <input class="input is-danger" type="number" placeholder="支撑位高">
+            </div>
+        </div>
+    </div>
+    <div class="level">
+        <div class="level-item">
+            <div>
+                <p class="heading">开仓价</p>
+                <input class="input" type="number" placeholder="开仓价">
+            </div>
+        </div>
+        <div class="level-item">
+            <div>
+                <p class="heading">目标价</p>
+                <input class="input" type="number" placeholder="目标价">
+            </div>
+        </div>
+        <div class="level-item">
+            <div>
+                <p class="heading">止损价</p>
+                <input class="input" type="number" placeholder="止损价">
+            </div>
+        </div>
+        <div class="level-item">
+            <div>
+                <p class="heading">仓位(1-20)</p>
+                <input class="input" type="number" placeholder="仓位">
+            </div>
+        </div>
+        <div class="level-item">
+            <div>
+                <p class="heading">杠杆</p>
+                <input class="input" type="number" placeholder="杠杆">
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="field">
+            <label class="label">成交量分析</label>
+            <div class="control">
+                <textarea class="textarea" placeholder="成交量分析" rows="2"></textarea>
+            </div>
+        </div>
+        <div class="field">
+            <label class="label">其他</label>
+            <div class="control">
+                <textarea class="textarea" placeholder="其他" rows="2"></textarea>
+            </div>
+        </div>
+        <div class="field">
+            <label class="label">复盘</label>
+            <div class="control">
+                <textarea class="textarea" placeholder="复盘信息" rows="2"></textarea>
+            </div>
+        </div>
+        <div class="field">
+            <div class="buttons is-right control">
+                <button class="button is-primary">提交</button>
+                <button class="button">更新</button>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+
+<script src="/js/laydate/laydate.js"></script>
+<script>
+
+    //时间选择器
+    laydate.render({
+        elem: '#iOpenDateTime'
+        , type: 'datetime'
+    });    //时间选择器
+    laydate.render({
+        elem: '#iCloseDateTime'
+        , type: 'datetime'
+    });
+</script>
+
+</body>
+</html>
