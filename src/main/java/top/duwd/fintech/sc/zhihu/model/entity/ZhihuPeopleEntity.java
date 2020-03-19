@@ -1,4 +1,4 @@
-package top.duwd.fintech.sc.zhihu.model;
+package top.duwd.fintech.sc.zhihu.model.entity;
 
 import lombok.Data;
 

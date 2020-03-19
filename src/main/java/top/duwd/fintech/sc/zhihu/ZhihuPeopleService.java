@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import top.duwd.dutil.http.RequestBuilder;
-import top.duwd.fintech.sc.zhihu.model.ZhihuPeopleEntity;
+import top.duwd.fintech.sc.zhihu.model.entity.ZhihuPeopleEntity;
 
 import java.io.IOException;
 import java.util.ArrayList;
