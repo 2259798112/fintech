@@ -10,7 +10,7 @@ public class ZhihuQuestionVo {
     private String title;
     private Integer followers;
     private Integer views;
-    private Integer questionComment;
+    private String questionComment;
     private List<String> topics;
     private List<SimilarQuestionDto> similarQuestionsList;
 }

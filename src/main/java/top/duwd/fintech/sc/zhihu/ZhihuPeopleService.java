@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import top.duwd.dutil.http.RequestBuilder;
+import top.duwd.fintech.common.mapper.zhihu.ZhihuPeopleMapper;
 import top.duwd.fintech.sc.zhihu.model.entity.ZhihuPeopleEntity;
 
 import java.io.IOException;
@@ -21,6 +22,8 @@ import java.util.List;
 public class ZhihuPeopleService {
     @Autowired
     private RequestBuilder requestBuilder;
+    @Autowired
+    private ZhihuPeopleMapper zhihuPeopleMapper;
 
     public ZhihuPeopleEntity parse(String url) {
         String page = null;
@@ -45,7 +48,7 @@ public class ZhihuPeopleService {
         entity.setHeadline(headline);
         entity.setUrl(url);
         String[] uids = url.split("/");
-        entity.setUid(uids[uids.length-1]);
+        entity.setUid(uids[uids.length - 1]);
         entity.setImg(img);
 
         ArrayList<String> companyList = new ArrayList<>();
@@ -56,7 +59,7 @@ public class ZhihuPeopleService {
             for (Element element : com) {
                 List<TextNode> textNodes = element.parent().parent().textNodes();
                 for (TextNode textNode : textNodes) {
-                    log.info("text node ={}",textNode.text());
+                    log.info("text node ={}", textNode.text());
                     companyList.add(textNode.text());
                 }
             }
@@ -65,7 +68,7 @@ public class ZhihuPeopleService {
             for (Element element : edu) {
                 List<TextNode> textNodes = element.parent().parent().textNodes();
                 for (TextNode textNode : textNodes) {
-                    log.info("edu node ={}",textNode.text());
+                    log.info("edu node ={}", textNode.text());
                     educationList.add(textNode.text());
                 }
             }
@@ -92,27 +95,27 @@ public class ZhihuPeopleService {
             text = text.trim().replaceAll(" ", "");
             if (text.startsWith("回答")) {
                 answers = Integer.parseInt(text.replaceAll("回答", ""));
-                log.info("answers={}",answers);
+                log.info("answers={}", answers);
             }
             if (text.startsWith("视频")) {
                 videos = Integer.parseInt(text.replaceAll("视频", ""));
-                log.info("videos={}",videos);
+                log.info("videos={}", videos);
             }
             if (text.startsWith("提问")) {
                 asks = Integer.parseInt(text.replaceAll("提问", ""));
-                log.info("asks={}",asks);
+                log.info("asks={}", asks);
             }
             if (text.startsWith("文章")) {
                 posts = Integer.parseInt(text.replaceAll("文章", ""));
-                log.info("posts={}",posts);
+                log.info("posts={}", posts);
             }
             if (text.startsWith("专栏")) {
                 columns = Integer.parseInt(text.replaceAll("专栏", ""));
-                log.info("columns={}",columns);
+                log.info("columns={}", columns);
             }
             if (text.startsWith("想法")) {
                 pins = Integer.parseInt(text.replaceAll("想法", ""));
-                log.info("pins={}",pins);
+                log.info("pins={}", pins);
             }
         }
         entity.setAnswers(answers);
@@ -131,30 +134,30 @@ public class ZhihuPeopleService {
         Element side = body.getElementsByClass("Profile-sideColumn").first();
         Elements card = side.getElementsByClass("Card");
         String s = card.get(0).text().replaceAll(" ", "")
-                .replaceAll("个人成就","").replaceAll("获得", "")
-                .replaceAll(",","").replaceAll("，","");
+                .replaceAll("个人成就", "").replaceAll("获得", "")
+                .replaceAll(",", "").replaceAll("，", "");
 
-        log.info("s = {}",s);
+        log.info("s = {}", s);
 
         String[] zans = s.split("次赞同");
         zan = Integer.parseInt(zans[0]);
-        log.info("zan={}",zan);
+        log.info("zan={}", zan);
 
         String[] likes = zans[1].split("次喜欢");
         like = Integer.parseInt(likes[0]);
-        log.info("like={}",like);
+        log.info("like={}", like);
 
         String[] favs = likes[1].split("次收藏");
         fav = Integer.parseInt(favs[0]);
-        log.info("fav={}",fav);
+        log.info("fav={}", fav);
 
 
         String[] follows = card.get(1).text().replaceAll(" ", "")
-                .replaceAll(",","").replaceAll("关注了","").split("关注者");
+                .replaceAll(",", "").replaceAll("关注了", "").split("关注者");
         following = Integer.parseInt(follows[0]);
-        log.info("following={}",following);
+        log.info("following={}", following);
         followers = Integer.parseInt(follows[1]);
-        log.info("followers={}",followers);
+        log.info("followers={}", followers);
 
         entity.setZan(zan);
         entity.setLike(like);
@@ -164,4 +167,16 @@ public class ZhihuPeopleService {
         return entity;
     }
 
+    public int save(ZhihuPeopleEntity entity) {
+        if (entity == null) {
+            return 0;
+        }
+
+
+        ZhihuPeopleEntity dbEntity = zhihuPeopleMapper.selectByPrimaryKey(entity.getUid());
+        if (dbEntity != null) {
+            return 1;
+        }
+        return zhihuPeopleMapper.insert(entity);
+    }
 }

@@ -24,8 +24,10 @@ public class ZhihuQuestionService {
 
         ZhihuQuestionEntity entity = new ZhihuQuestionEntity();
         BeanUtils.copyProperties(vo,entity);
+        entity.setId(id);
+        entity.setQuestionComment(Integer.parseInt(vo.getQuestionComment()));
         entity.setTopics(JSON.toJSONString(vo.getTopics()));
-        entity.setTopics(JSON.toJSONString(vo.getSimilarQuestionsList()));
+        entity.setSimilarQuestionsList(JSON.toJSONString(vo.getSimilarQuestionsList()));
         return zhihuQuestionMapper.insert(entity);
     }
 }
