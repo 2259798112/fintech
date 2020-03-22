@@ -25,5 +25,6 @@ public class ZhihuQuestionAnswerPageEntity {
     private Integer authorFollowerCount;//` int(11) NOT NULL DEFAULT '0' COMMENT '作者粉丝',
     private Integer questionId;//` int(11) DEFAULT NULL COMMENT '问题id',
     private String questionTitle;//` varchar(255) DEFAULT NULL COMMENT '问题标题',
+    private String content;
 
 }
