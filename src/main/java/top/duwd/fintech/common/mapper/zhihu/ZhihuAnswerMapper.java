@@ -1,7 +1,7 @@
 package top.duwd.fintech.common.mapper.zhihu;
 
 import tk.mybatis.mapper.common.Mapper;
-import top.duwd.fintech.sc.zhihu.model.entity.ZhihuAnswerEntity;
+import top.duwd.fintech.sc.zhihu.model.entity.ZhihuQuestionAnswerPageEntity;
 
-public interface ZhihuAnswerMapper extends Mapper<ZhihuAnswerEntity> {
+public interface ZhihuAnswerMapper extends Mapper<ZhihuQuestionAnswerPageEntity> {
 }
