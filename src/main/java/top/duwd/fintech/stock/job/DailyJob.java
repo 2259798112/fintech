@@ -3,6 +3,7 @@ package top.duwd.fintech.stock.job;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 import top.duwd.dutil.date.DateUtil;
 import top.duwd.dutil.stock.tushare.model.StockCandleModel;
 import top.duwd.fintech.stock.model.entity.KdjStockEntity;
@@ -14,7 +15,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-//@Component
+@Component
 public class DailyJob {
 
     @Autowired

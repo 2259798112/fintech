@@ -3,12 +3,13 @@ package top.duwd.fintech.stock.job;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 import top.duwd.fintech.stock.service.StockBasicService;
 
 /**
  * 每日更新 新增股票
  */
-//@Component
+@Component
 @Slf4j
 public class StockBaseJob {
     @Autowired
