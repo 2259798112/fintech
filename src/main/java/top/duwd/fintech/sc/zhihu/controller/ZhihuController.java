@@ -26,12 +26,14 @@ public class ZhihuController {
 
     @GetMapping(value = "/question/add")
     public ApiResult question(@RequestParam Integer id) {
+        log.info("/question/add");
         int count = zhihuQuestionService.parse(id);
         return apm.success(count);
     }
 
     @PostMapping(value = "/question/add/page", consumes = "application/json", produces = "application/json")
-    public ApiResult question(@RequestBody String json) {
+    public ApiResult questionAddPage(@RequestBody String json) {
+        log.info("/question/add/page");
         int count =0;
         count = zhihuQuestionService.parseQuestion(count,JSONObject.parseObject(json));
         log.info(json);
@@ -40,6 +42,7 @@ public class ZhihuController {
 
     @PostMapping(value = "/answer/add/page", consumes = "application/json", produces = "application/json")
     public ApiResult answer(@RequestBody ZhihuQuestionAnswerPageEntity answer) {
+        log.info("/answer/add/page");
         int save = zhihuAnswerService.save(answer);
         return apm.success(save);
     }
