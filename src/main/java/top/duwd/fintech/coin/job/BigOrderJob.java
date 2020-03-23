@@ -1,4 +1,4 @@
-package top.duwd.fintech.coin.service;
+package top.duwd.fintech.coin.job;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -8,7 +8,6 @@ import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
@@ -29,7 +28,7 @@ import java.util.*;
 
 @Service
 @Slf4j
-public class BigOrderService {
+public class BigOrderJob {
 
     @Autowired
     private BigOrderMapper mapper;
@@ -65,9 +64,8 @@ public class BigOrderService {
     public static final Integer MIN_QTY = 100;
     public static final ArrayList<String> ids = new ArrayList<>();
 
-    //
-    @Async("bigOK")
-    @Scheduled(fixedDelay = 150)
+//    @Async("bigOK")
+//    @Scheduled(fixedDelay = 150)
     public void okRun() {
         List<BigOrderModel> okList = okexApiUtil.tradeList(requestBuilder, "BTC-USD-200626", 100, MIN_QTY);
         if (okList != null) {
@@ -80,9 +78,8 @@ public class BigOrderService {
             }
         }
     }
-
-    @Async("bigHB")
-    @Scheduled(fixedDelay = 150)
+//    @Async("bigHB")
+//    @Scheduled(fixedDelay = 150)
     public void hbRun() {
         List<BigOrderModel> hbList = huobiApiUtil.tradeList(requestBuilder, HuobiApiUtil.BTC_CQ, 100, MIN_QTY);
         if (hbList != null) {
@@ -215,7 +212,7 @@ public class BigOrderService {
     }
 
     public static void main(String[] args) {
-        BigOrderService bigOrderService = new BigOrderService();
-        bigOrderService.bigOrderFilterByMinutes(null, 15, DateUtil.addDay(new Date(), -1), new Date());
+        BigOrderJob bigOrderJob = new BigOrderJob();
+        bigOrderJob.bigOrderFilterByMinutes(null, 15, DateUtil.addDay(new Date(), -1), new Date());
     }
 }

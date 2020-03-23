@@ -17,7 +17,7 @@ import top.duwd.dutil.http.RequestBuilder;
 import top.duwd.dutil.http.api.ApiResult;
 import top.duwd.dutil.http.api.ApiResultManager;
 import top.duwd.dutil.math.MathUtil;
-import top.duwd.fintech.coin.service.BigOrderService;
+import top.duwd.fintech.coin.job.BigOrderJob;
 import top.duwd.fintech.common.domain.BigOrderEntity;
 
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ import java.util.List;
 public class BigOrderController {
 
     @Autowired
-    private BigOrderService bigOrderService;
+    private BigOrderJob bigOrderJob;
     @Autowired
     private HuobiApiUtil huobiApiUtil;
     @Autowired
@@ -42,14 +42,14 @@ public class BigOrderController {
 //            end = new Date();
 //            start = DateUtil.addMin(end, -last);
 //        }
-        JSONObject cal = bigOrderService.cal(start, end, plat, min);
+        JSONObject cal = bigOrderJob.cal(start, end, plat, min);
         return new ApiResultManager().success(cal);
     }
 
     @GetMapping("/list")
     public ApiResult list(@RequestParam String plat, @RequestParam Date start, @RequestParam Date end, @RequestParam Integer min, Integer last) {
 
-        List<BigOrderEntity> list = bigOrderService.list(start, end, plat, min);
+        List<BigOrderEntity> list = bigOrderJob.list(start, end, plat, min);
         return new ApiResultManager().success(list);
     }
 
@@ -63,7 +63,7 @@ public class BigOrderController {
         double[] sellVolumes = new double[size - 1];
         List<Double> allVolumes = new ArrayList<>();
         //获取 对应的K线
-        List<BigOrderEntity> list = bigOrderService.list(start, end, plat, min,1000000);
+        List<BigOrderEntity> list = bigOrderJob.list(start, end, plat, min,1000000);
         for (int i = 0; i < size - 1; i++) {
             for (BigOrderEntity entity : list) {
                 Date ts = entity.getTs();

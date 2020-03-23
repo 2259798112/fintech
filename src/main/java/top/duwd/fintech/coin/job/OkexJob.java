@@ -24,7 +24,7 @@ public class OkexJob {
 
     @Autowired
     private OkexKdjCoinService okexKdjCoinService;
-    private String END = "-USD-200327";
+    private String END = "-USD-200626";
     private String BTC = "BTC" + END;
     private String LTC = "LTC" + END;
     private String BCH = "BCH" + END;
