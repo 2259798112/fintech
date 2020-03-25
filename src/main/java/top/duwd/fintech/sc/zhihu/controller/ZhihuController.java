@@ -11,6 +11,8 @@ import top.duwd.fintech.sc.zhihu.ZhihuPeopleService;
 import top.duwd.fintech.sc.zhihu.ZhihuQuestionService;
 import top.duwd.fintech.sc.zhihu.model.entity.ZhihuQuestionAnswerPageEntity;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequestMapping("/zhihu")
@@ -47,6 +49,12 @@ public class ZhihuController {
         return apm.success(save);
     }
 
+    @GetMapping(value = "/answer/book")
+    public ApiResult answerBook(@RequestParam(value = "id")Integer id) {
+        log.info("question id={}",id);
+        List<JSONObject> list = zhihuAnswerService.filter(id);
+        return apm.success(list);
+    }
 
     @PostMapping(value = "/people")
     public ApiResult people() {
