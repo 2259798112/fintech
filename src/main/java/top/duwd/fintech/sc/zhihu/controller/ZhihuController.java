@@ -9,6 +9,7 @@ import top.duwd.dutil.http.api.ApiResultManager;
 import top.duwd.fintech.sc.zhihu.ZhihuAnswerService;
 import top.duwd.fintech.sc.zhihu.ZhihuPeopleService;
 import top.duwd.fintech.sc.zhihu.ZhihuQuestionService;
+import top.duwd.fintech.sc.zhihu.model.dto.AnswerDto;
 import top.duwd.fintech.sc.zhihu.model.entity.ZhihuQuestionAnswerPageEntity;
 
 import java.util.List;
@@ -50,9 +51,9 @@ public class ZhihuController {
     }
 
     @GetMapping(value = "/answer/book")
-    public ApiResult answerBook(@RequestParam(value = "id")Integer id) {
+    public ApiResult answerBook(@RequestParam(value = "id")Integer id,int limit) {
         log.info("question id={}",id);
-        List<JSONObject> list = zhihuAnswerService.filter(id);
+        List<AnswerDto> list = zhihuAnswerService.findBook(id,limit);
         return apm.success(list);
     }
 

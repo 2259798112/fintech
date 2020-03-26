@@ -1,17 +1,21 @@
 package top.duwd.fintech.sc.zhihu;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 import top.duwd.dutil.reg.ExtractMessage;
 import top.duwd.fintech.common.mapper.zhihu.ZhihuAnswerMapper;
+import top.duwd.fintech.sc.zhihu.model.dto.AnswerDto;
 import top.duwd.fintech.sc.zhihu.model.entity.ZhihuQuestionAnswerPageEntity;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -31,75 +35,94 @@ public class ZhihuAnswerService {
         }
     }
 
-    public List<JSONObject> filter(Integer qid) {
-        ArrayList<JSONObject> arrayList = new ArrayList<>();
+    public static final String AnswerBase = "https://www.zhihu.com/question/333995687/answer/";
+    public static final String SEP = "###";
+
+    public List<AnswerDto> findBook(Integer qid,int limit) {
+
+        ArrayList<AnswerDto> arrayList = new ArrayList<>();
 
         Example example = new Example(ZhihuQuestionAnswerPageEntity.class);
         example.createCriteria().andEqualTo("questionId", qid);
-        List<ZhihuQuestionAnswerPageEntity> list = zhihuAnswerMapper.selectByExample(example);
 
-        Map<String, HashSet<String>> map = new HashMap<>();
-        Map<String, HashSet<String>> mapWithoutMark = new HashMap<>();
+        RowBounds rowBounds = new RowBounds(RowBounds.NO_ROW_OFFSET, limit);
+        List<ZhihuQuestionAnswerPageEntity> list = zhihuAnswerMapper.selectByExampleAndRowBounds(example,rowBounds);
 
-        //筛选《》内部的名字
-        HashSet<String> bookNames = new HashSet<>();
-        long s1 = System.currentTimeMillis();
-
-        for (ZhihuQuestionAnswerPageEntity entity : list) {
-            List<String> books = ExtractMessage.extractMessage(entity.getContent(), '《', '》');
-            for (String book : books) {
-                bookNames.add(book);
-                Set<String> urls = map.get(book);
-                if (urls == null) {
-                    HashSet<String> set = new HashSet<>();
-                    set.add(entity.getAuthorImage());
-                    map.put(book, set);
-                } else {
-                    urls.add(entity.getAuthorImage());
+        HashMap<String, List<String>> map = new HashMap<>();//书名号 作者
+        for (ZhihuQuestionAnswerPageEntity answer : list) {//遍历获取书名
+            List<String> bookNames = ExtractMessage.extractMessage(answer.getContent(), '《', '》');
+            if (bookNames.size() > 0) {
+                for (String bookName : bookNames) {
+                    bookAnswerAuthor(map, bookName, answer);
                 }
             }
         }
 
-        ArrayList<String> bookNamesArrayList = new ArrayList<>(bookNames);
-        Collections.sort(bookNamesArrayList);
-        long e1 = System.currentTimeMillis();
-        log.info("1 = {}ms",e1-s1);
+        ArrayList<String> bookNameArrayList = new ArrayList<>(map.keySet());
+        Collections.sort(bookNameArrayList);
+        HashMap<String, List<String>> mapAnother = new HashMap<>();//书名号 作者
 
-
-        long s2 = System.currentTimeMillis();
-        //根据 bookName 去掉《》 查询作者
-        for (String bookName : bookNamesArrayList) {
-            HashSet<String> names = map.get(bookName);
-            HashSet<String> namesWithoutMark = mapWithoutMark.get(bookName);
-
-            for (ZhihuQuestionAnswerPageEntity entity : list) {
-                int i = entity.getContent().indexOf(bookName);
-                if (i >= 0) {
-                    if (names.contains(entity.getAuthorImage())){
-                        //重复 回答者
-                    }else {
-                        //新发现的 回答者
-
-                        if (namesWithoutMark == null) {
-                            namesWithoutMark = new HashSet<>();
-                            mapWithoutMark.put(bookName, namesWithoutMark);
-                        }
-                        namesWithoutMark.add(entity.getAuthorImage());
+        for (String bookName : bookNameArrayList) {
+            for (ZhihuQuestionAnswerPageEntity answer : list) {
+                if (answer.getContent().contains(bookName)) {
+                    //包含书名，是否包含在之前集合
+                    String author = answer.getAuthorImage() + SEP + AnswerBase + answer.getId();
+                    if (!map.get(bookName).contains(author)) {
+                        bookAnswerAuthor(mapAnother, bookName, answer);
                     }
                 }
             }
-
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("bookName",bookName);
-            jsonObject.put("author",map.get(bookName));
-            jsonObject.put("authorWithoutMark",mapWithoutMark.get(bookName));
-            arrayList.add(jsonObject);
         }
-        long e2 = System.currentTimeMillis();
-        log.info("2 = {}ms",e2-s2);
 
-        log.info(JSON.toJSONString(arrayList));
+        for (String bookName : bookNameArrayList) {
+
+            AnswerDto answerDto = new AnswerDto();
+            answerDto.setBookName(bookName);
+            ArrayList<String> authorIconUrl = new ArrayList<>();
+            ArrayList<String> authorAnswerUrl = new ArrayList<>();
+            answerDto.setAuthorIconUrl(authorIconUrl);
+            answerDto.setAuthorAnswerUrl(authorAnswerUrl);
+
+            ArrayList<String> authorAnotherIconUrl = new ArrayList<>();
+            ArrayList<String> authorAnswerAnotherUrl = new ArrayList<>();
+            answerDto.setAuthorAnotherIconUrl(authorAnotherIconUrl);
+            answerDto.setAuthorAnswerAnotherUrl(authorAnswerAnotherUrl);
+
+
+            List<String> imageArrayList = map.get(bookName);
+            for (String imageId : imageArrayList) {
+                String[] split = imageId.split(SEP);
+                authorIconUrl.add(split[0].replaceAll("pic3","pic2"));
+                authorAnswerUrl.add(split[1]);
+            }
+
+            List<String> imageAnotherArrayList = mapAnother.get(bookName);
+            if (imageAnotherArrayList !=null){
+                for (String imageId : imageAnotherArrayList) {
+                    String[] split = imageId.split(SEP);
+                    authorAnotherIconUrl.add(split[0].replaceAll("pic3","pic2"));
+                    authorAnswerAnotherUrl.add(split[1]);
+                }
+            }
+
+            arrayList.add(answerDto);
+        }
+
+
         return arrayList;
+    }
+
+    private void bookAnswerAuthor(HashMap<String, List<String>> mapAnother, String bookName, ZhihuQuestionAnswerPageEntity answer) {
+        List<String> anotherAnswerAuthorImageArrayList = mapAnother.get(bookName);
+        if (anotherAnswerAuthorImageArrayList == null) {
+            anotherAnswerAuthorImageArrayList = new ArrayList<>();
+            mapAnother.put(bookName, anotherAnswerAuthorImageArrayList);
+        }
+
+        String author = answer.getAuthorImage() + SEP + AnswerBase + answer.getId();
+        if (!anotherAnswerAuthorImageArrayList.contains(author)){
+            anotherAnswerAuthorImageArrayList.add(author);
+        }
     }
 
 }
