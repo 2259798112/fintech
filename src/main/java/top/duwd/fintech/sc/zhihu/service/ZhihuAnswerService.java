@@ -1,4 +1,4 @@
-package top.duwd.fintech.sc.zhihu;
+package top.duwd.fintech.sc.zhihu.service;
 
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
@@ -8,9 +8,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 import top.duwd.dutil.reg.ExtractMessage;
+import top.duwd.fintech.common.domain.zhihu.dto.AnswerDto;
+import top.duwd.fintech.common.domain.zhihu.entity.ZhihuQuestionAnswerPageEntity;
 import top.duwd.fintech.common.mapper.zhihu.ZhihuAnswerMapper;
-import top.duwd.fintech.sc.zhihu.model.dto.AnswerDto;
-import top.duwd.fintech.sc.zhihu.model.entity.ZhihuQuestionAnswerPageEntity;
 
 import java.util.ArrayList;
 import java.util.Collections;

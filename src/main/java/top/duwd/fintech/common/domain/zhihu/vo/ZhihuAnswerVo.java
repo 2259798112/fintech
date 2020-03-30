@@ -1,15 +1,11 @@
-package top.duwd.fintech.sc.zhihu.model.entity;
+package top.duwd.fintech.common.domain.zhihu.vo;
 
 import lombok.Data;
 
-import javax.persistence.Id;
 import java.util.Date;
 
 @Data
-public class ZhihuAnswerEntity {
-     @Id
-     private Integer id;
-     private Integer qid;
+public class ZhihuAnswerVo {
      private String authorName;//"木子淇",
      private String authorImg;//"https://pic1.zhimg.com/v2-be9add353ac5a628a1ef7a762ef141b6_is.jpg",
      private String authorUrl;//"https://www.zhihu.com/people/lbj520",

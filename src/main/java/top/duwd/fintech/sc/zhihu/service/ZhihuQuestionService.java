@@ -1,4 +1,4 @@
-package top.duwd.fintech.sc.zhihu;
+package top.duwd.fintech.sc.zhihu.service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -11,10 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.duwd.dutil.http.RequestBuilder;
+import top.duwd.fintech.common.domain.zhihu.entity.ZhihuQuestionEntity;
+import top.duwd.fintech.common.domain.zhihu.entity.ZhihuQuestionTopicEntity;
 import top.duwd.fintech.common.mapper.zhihu.ZhihuQuestionMapper;
 import top.duwd.fintech.common.mapper.zhihu.ZhihuQuestionTopicMapper;
-import top.duwd.fintech.sc.zhihu.model.entity.ZhihuQuestionEntity;
-import top.duwd.fintech.sc.zhihu.model.entity.ZhihuQuestionTopicEntity;
 
 import java.io.IOException;
 import java.util.Date;

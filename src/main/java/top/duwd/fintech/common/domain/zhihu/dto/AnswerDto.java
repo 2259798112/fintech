@@ -1,4 +1,4 @@
-package top.duwd.fintech.sc.zhihu.model.dto;
+package top.duwd.fintech.common.domain.zhihu.dto;
 
 import lombok.Data;
 

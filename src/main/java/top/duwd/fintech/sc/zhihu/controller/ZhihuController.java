@@ -6,11 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.duwd.dutil.http.api.ApiResult;
 import top.duwd.dutil.http.api.ApiResultManager;
-import top.duwd.fintech.sc.zhihu.ZhihuAnswerService;
-import top.duwd.fintech.sc.zhihu.ZhihuPeopleService;
-import top.duwd.fintech.sc.zhihu.ZhihuQuestionService;
-import top.duwd.fintech.sc.zhihu.model.dto.AnswerDto;
-import top.duwd.fintech.sc.zhihu.model.entity.ZhihuQuestionAnswerPageEntity;
+import top.duwd.fintech.common.domain.zhihu.dto.AnswerDto;
+import top.duwd.fintech.common.domain.zhihu.entity.ZhihuQuestionAnswerPageEntity;
+import top.duwd.fintech.sc.zhihu.service.ZhihuAnswerService;
+import top.duwd.fintech.sc.zhihu.service.ZhihuQuestionService;
 
 import java.util.List;
 
@@ -24,8 +23,6 @@ public class ZhihuController {
     private ZhihuQuestionService zhihuQuestionService;
     @Autowired
     private ZhihuAnswerService zhihuAnswerService;
-    @Autowired
-    private ZhihuPeopleService zhihuPeopleService;
 
     @GetMapping(value = "/question/add")
     public ApiResult question(@RequestParam Integer id) {
@@ -34,6 +31,11 @@ public class ZhihuController {
         return apm.success(count);
     }
 
+    /**
+     * 网页 问题主页 添加问题
+     * @param json
+     * @return
+     */
     @PostMapping(value = "/question/add/page", consumes = "application/json", produces = "application/json")
     public ApiResult questionAddPage(@RequestBody String json) {
         log.info("/question/add/page");
@@ -43,6 +45,11 @@ public class ZhihuController {
         return apm.success(count);
     }
 
+    /**
+     * 网页 问题主页 添加答案
+     * @param answer
+     * @return
+     */
     @PostMapping(value = "/answer/add/page", consumes = "application/json", produces = "application/json")
     public ApiResult answer(@RequestBody ZhihuQuestionAnswerPageEntity answer) {
         log.info("/answer/add/page");
@@ -57,8 +64,5 @@ public class ZhihuController {
         return apm.success(list);
     }
 
-    @PostMapping(value = "/people")
-    public ApiResult people() {
-        return apm.success();
-    }
+
 }

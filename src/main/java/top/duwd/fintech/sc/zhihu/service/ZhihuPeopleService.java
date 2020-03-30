@@ -1,4 +1,4 @@
-package top.duwd.fintech.sc.zhihu;
+package top.duwd.fintech.sc.zhihu.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import top.duwd.dutil.http.RequestBuilder;
+import top.duwd.fintech.common.domain.zhihu.entity.ZhihuPeopleEntity;
 import top.duwd.fintech.common.mapper.zhihu.ZhihuPeopleMapper;
-import top.duwd.fintech.sc.zhihu.model.entity.ZhihuPeopleEntity;
 
 import java.io.IOException;
 import java.util.ArrayList;
