@@ -57,13 +57,13 @@ public class BookService {
             return null;
         } else {
             if (StringUtils.isEmpty(bookName) && !StringUtils.isEmpty(bookName)) {
-                example.createCriteria().andLike("bookAuthor", bookAuthor);
+                example.createCriteria().andLike("bookAuthor", "%" + bookAuthor + "%");
             } else if (!StringUtils.isEmpty(bookName) && StringUtils.isEmpty(bookName)) {
-                example.createCriteria().andLike("bookName", bookName);
+                example.createCriteria().andLike("bookName", "%" + bookName + "%");
             } else {
                 example.createCriteria()
-                        .andLike("bookName", bookName)
-                        .andLike("bookAuthor", bookAuthor);
+                        .andLike("bookName", "%" + bookName + "%")
+                        .andLike("bookAuthor", "%" + bookAuthor + "%");
             }
             List<BookEntity> list = bookMapper.selectByExample(example);
             return list;

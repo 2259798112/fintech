@@ -19,8 +19,6 @@ public class ZhihuBookService {
     @Autowired
     private ZhihuBookMapper zhihuBookMapper;
 
-    private static Example example = new Example(ZhihuBookEntity.class);
-
 
     /**
      * 将本书关联至标准书单
@@ -55,11 +53,12 @@ public class ZhihuBookService {
     }
 
     @Transactional
-    private void save(ZhihuBookEntity entity) {
+    void save(ZhihuBookEntity entity) {
         String id = DigestUtils.md5DigestAsHex((entity.getBookNameAnswer() + entity.getZhihuQuestionId()).getBytes());
         entity.setId(id);
         String md = DigestUtils.md5DigestAsHex(JSON.toJSONBytes(entity));
 
+        Example example = new Example(ZhihuBookEntity.class);
         example.createCriteria().andEqualTo("id", id);
         ZhihuBookEntity dbEntity = zhihuBookMapper.selectOneByExample(example);
         if (dbEntity == null) {

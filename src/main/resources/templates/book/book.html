@@ -57,10 +57,6 @@
                     <input type="radio" name="like">
                     模糊
                 </label>
-                <label class="radio">
-                    <input type="radio" name="like" checked>
-                    精确
-                </label>
             </div>
             <div class="control">
                 <button class="button is-info" id="iBtnSearchBook">
@@ -70,10 +66,9 @@
         </div>
     </div>
     <div class="container">
-
         <div class="field">
-            <table class="table is-bordered" id="iTable">
-                <thead>
+            <table class="table is-hoverable is-bordered is-fullwidth" id="iTable">
+                <thead >
                 <tr>
                     <th>#</th>
                     <th>ID</th>
@@ -189,11 +184,15 @@
 <script>
 
 
-    $('#iBtnSubmit').click(function () {
-        $('#iBtnSubmit').addClass('is-loading');
+    $('#iBtnSearchBook').click(function () {
+        // $('#iBtnSearchBook').addClass('is-loading');
         let bookName = $("#iSearchBookName").val();
         let bookAuthor = $("#iSearchBookAuthor").val();
-        let like = $("input[name='like']:checked").val();
+        let like = $("input[name=like]:checked").val();
+        if (""=== bookName && "" === bookAuthor){
+            alert("书名、作者 不能同时为空")
+        }
+        alert(like);
 
         let url = "/book/search";
 
@@ -212,7 +211,7 @@
     });
 
     function renderTable(data) {
-        $('#iBtnSubmit').removeClass('is-loading');
+        // $('#iBtnSearchBook').removeClass('is-loading');
         let arr = [];
         if (data != null) {
             arr = data.data;
