@@ -19,11 +19,30 @@ public class BookService {
     private BookMapper bookMapper;
 
     public int save(BookEntity entity) {
-        Date date = new Date();
-        entity.setCreateTime(date);
-        entity.setUpdateTime(date);
-
-        return bookMapper.insert(entity);
+        //根据书名+作者获取
+        Example example = new Example(BookEntity.class);
+        example.createCriteria()
+                .andEqualTo("bookName",entity.getBookName())
+                .andEqualTo("bookAuthor",entity.getBookAuthor());
+        List<BookEntity> list = bookMapper.selectByExample(example);
+        if (list == null || list.size() == 0){
+            entity.setId(null);
+            Date date = new Date();
+            entity.setCreateTime(date);
+            entity.setUpdateTime(date);
+            return bookMapper.insert(entity);
+        }else {
+            return 1;
+        }
+    }
+    public int update(BookEntity book) {
+        BookEntity dbEntity = bookMapper.selectByPrimaryKey(book.getId());
+        if (dbEntity==null){
+            return 0;
+        }else {
+            book.setUpdateTime(new Date());
+            return bookMapper.updateByPrimaryKeySelective(book);
+        }
     }
 
     /**
@@ -37,9 +56,9 @@ public class BookService {
         if (StringUtils.isEmpty(bookName) && StringUtils.isEmpty(bookAuthor)) {
             return null;
         } else {
-            if (StringUtils.isEmpty(bookName) && !StringUtils.isEmpty(bookName)) {
+            if (StringUtils.isEmpty(bookName) && !StringUtils.isEmpty(bookAuthor)) {
                 example.createCriteria().andEqualTo("bookAuthor", bookAuthor);
-            } else if (!StringUtils.isEmpty(bookName) && StringUtils.isEmpty(bookName)) {
+            } else if (!StringUtils.isEmpty(bookName) && StringUtils.isEmpty(bookAuthor)) {
                 example.createCriteria().andEqualTo("bookName", bookName);
             } else {
                 example.createCriteria()
@@ -56,9 +75,9 @@ public class BookService {
         if (StringUtils.isEmpty(bookName) && StringUtils.isEmpty(bookAuthor)) {
             return null;
         } else {
-            if (StringUtils.isEmpty(bookName) && !StringUtils.isEmpty(bookName)) {
+            if (StringUtils.isEmpty(bookName) && !StringUtils.isEmpty(bookAuthor)) {
                 example.createCriteria().andLike("bookAuthor", "%" + bookAuthor + "%");
-            } else if (!StringUtils.isEmpty(bookName) && StringUtils.isEmpty(bookName)) {
+            } else if (!StringUtils.isEmpty(bookName) && StringUtils.isEmpty(bookAuthor)) {
                 example.createCriteria().andLike("bookName", "%" + bookName + "%");
             } else {
                 example.createCriteria()

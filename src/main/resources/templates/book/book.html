@@ -65,10 +65,11 @@
             </div>
         </div>
     </div>
+    <hr>
     <div class="container">
         <div class="field">
             <table class="table is-hoverable is-bordered is-fullwidth" id="iTable">
-                <thead >
+                <thead>
                 <tr>
                     <th>#</th>
                     <th>ID</th>
@@ -83,11 +84,13 @@
             </table>
         </div>
     </div>
-    <div class="container">
-
-        <div class="field">
-            <label class="label">书名</label>
+    <hr>
+    <div class="container" id="iBookInfo">
+        <div class="field has-addons">
             <div class="control">
+                <input class="input" type="number" placeholder="ID">
+            </div>
+            <div class="control is-expanded">
                 <input class="input" type="text" placeholder="书名">
             </div>
         </div>
@@ -105,13 +108,6 @@
                         <input class="input" type="text" placeholder="译者">
                     </div>
                 </div>
-            </div>
-        </div>
-
-
-        <div class="field is-horizontal">
-            <div class="field-body">
-
                 <div class="field">
                     <label class="label">出版社</label>
                     <div class="control">
@@ -152,8 +148,6 @@
         </div>
         <div class="field is-horizontal">
             <div class="field-body">
-
-
                 <div class="field">
                     <label class="label">淘宝页面</label>
                     <div class="control">
@@ -172,6 +166,7 @@
                         <input class="input" type="text" placeholder="联盟长链接">
                     </div>
                 </div>
+
             </div>
         </div>
         <div class="buttons">
@@ -185,33 +180,32 @@
 
 
     $('#iBtnSearchBook').click(function () {
-        // $('#iBtnSearchBook').addClass('is-loading');
         let bookName = $("#iSearchBookName").val();
         let bookAuthor = $("#iSearchBookAuthor").val();
         let like = $("input[name=like]:checked").val();
-        if (""=== bookName && "" === bookAuthor){
+
+        if ("" === bookName && "" === bookAuthor) {
             alert("书名、作者 不能同时为空")
+        } else {
+            let url = "/book/search";
+            $('#iBtnSearchBook').addClass('is-loading');
+            $.ajax({
+                url: url,
+                type: "get", //send it through get method
+                data: {
+                    bookName: bookName,
+                    bookAuthor: bookAuthor,
+                    like: like
+                },
+                success: function (response) {
+                    renderTable(response)
+                }
+            });
         }
-        alert(like);
-
-        let url = "/book/search";
-
-        $.ajax({
-            url: url,
-            type: "get", //send it through get method
-            data: {
-                bookName: bookName,
-                bookAuthor: bookAuthor,
-                like: like
-            },
-            success: function(response) {
-                renderTable(response)
-            }
-        });
     });
 
     function renderTable(data) {
-        // $('#iBtnSearchBook').removeClass('is-loading');
+        $('#iBtnSearchBook').removeClass('is-loading');
         let arr = [];
         if (data != null) {
             arr = data.data;
@@ -240,6 +234,65 @@
             });
         }
 
+    }
+
+    $('#iBtnSave').click(function () {
+        let obj = getBookInfo();
+        let url = "/book/save";
+        console.log(JSON.stringify(obj));
+        $.ajax({
+            url: url,
+            type: "POST", //send it through get method
+            data: JSON.stringify(obj),
+            contentType:"application/json; charset=utf-8",
+            dataType:"json",
+            success: function (response) {
+                if (response['code'] === 0){
+                    alert('添加成功')
+                }else {
+                    alert(JSON.stringify(response))
+                }
+            }
+        });
+    });
+
+
+    $('#iBtnUpdate').click(function () {
+        let obj = getBookInfo();
+        let url = "/book/update";
+        console.log(JSON.stringify(obj));
+        $.ajax({
+            url: url,
+            type: "POST", //send it through get method
+            data: JSON.stringify(obj),
+            contentType:"application/json; charset=utf-8",
+            dataType:"json",
+            success: function (response) {
+                if (response['code'] === 0){
+                    alert('添加成功')
+                }else {
+                    alert(JSON.stringify(response))
+                }
+            }
+        });
+    });
+
+    function getBookInfo() {
+        let inputArr = $('#iBookInfo').find("input");
+        let obj = new Object();
+        obj.id = inputArr[0].value;
+        obj.bookName = inputArr[1].value.trim();
+        obj.bookAuthor = inputArr[2].value.trim();
+        obj.bookAuthorTranslate = inputArr[3].value.trim();
+        obj.bookPress = inputArr[4].value.trim();
+        obj.bookType = inputArr[5].value.trim();
+        obj.jdLink = inputArr[6].value.trim();
+        obj.jdLinkUnionLong = inputArr[7].value.trim();
+        obj.jdLinkUnionShort = inputArr[8].value.trim();
+        obj.tbLink = inputArr[9].value.trim();
+        obj.tbLinkUnionLong = inputArr[10].value.trim();
+        obj.tbLinkUnionShort = inputArr[11].value.trim();
+        return obj;
     }
 
 </script>
