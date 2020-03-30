@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Book List</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://dwdcsv.oss-cn-shanghai.aliyuncs.com/fintech/bulma.min.css">
+
+    <script type="text/javascript" src="https://dwdcsv.oss-cn-shanghai.aliyuncs.com/fintech/all.js"></script>
+    <script type="text/javascript" src="https://dwdcsv.oss-cn-shanghai.aliyuncs.com/fintech/jquery-1.11.1.js"></script>
+
+</head>
+<body>
+<nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+        <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false"
+           data-target="navbarBasicExample">
+            <span aria-hidden="true"></span>
+        </a>
+    </div>
+
+    <div id="navbarBasicExample" class="navbar-menu">
+        <div class="navbar-start">
+            <a class="navbar-item">
+                首页
+            </a>
+        </div>
+
+        <div class="navbar-end">
+            <div class="navbar-item">
+                <div class="buttons">
+                    <a class="button is-primary">
+                        <strong>Sign up</strong>
+                    </a>
+                    <a class="button is-light">
+                        Log in
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<section class="section">
+    <div class="container">
+        <div class="field is-grouped">
+            <div class="control is-expanded">
+                <input id="iSearchBookName" class="input" type="text" placeholder="书名">
+            </div>
+            <div class="control">
+                <input id="iSearchBookAuthor" class="input" type="text" placeholder="作者">
+            </div>
+
+            <div class="control">
+                <label class="radio">
+                    <input type="radio" name="like">
+                    模糊
+                </label>
+                <label class="radio">
+                    <input type="radio" name="like" checked>
+                    精确
+                </label>
+            </div>
+            <div class="control">
+                <button class="button is-info" id="iBtnSearchBook">
+                    查找
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+
+        <div class="field">
+            <table class="table is-bordered" id="iTable">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>ID</th>
+                    <th>书名</th>
+                    <th>作者</th>
+                    <th>译者</th>
+                    <th>出版社</th>
+                </tr>
+                </thead>
+                <tbody id="iTableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="container">
+
+        <div class="field">
+            <label class="label">书名</label>
+            <div class="control">
+                <input class="input" type="text" placeholder="书名">
+            </div>
+        </div>
+        <div class="field is-horizontal">
+            <div class="field-body">
+                <div class="field">
+                    <label class="label">作者</label>
+                    <div class="control">
+                        <input class="input" type="text" placeholder="作者">
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">译者</label>
+                    <div class="control">
+                        <input class="input" type="text" placeholder="译者">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="field is-horizontal">
+            <div class="field-body">
+
+                <div class="field">
+                    <label class="label">出版社</label>
+                    <div class="control">
+                        <input class="input" type="text" placeholder="出版社">
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">分类</label>
+                    <div class="control">
+                        <input class="input" type="text" placeholder="分类">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="field is-horizontal">
+            <div class="field-body">
+
+                <div class="field">
+                    <label class="label">京东页面</label>
+                    <div class="control">
+                        <input class="input" type="text" placeholder="京东页面">
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">长链</label>
+                    <div class="control">
+                        <input class="input" type="text" placeholder="联盟长链接">
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">短链接</label>
+                    <div class="control">
+                        <input class="input" type="text" placeholder="联盟长链接">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="field is-horizontal">
+            <div class="field-body">
+
+
+                <div class="field">
+                    <label class="label">淘宝页面</label>
+                    <div class="control">
+                        <input class="input" type="text" placeholder="淘宝页面">
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">长链</label>
+                    <div class="control">
+                        <input class="input" type="text" placeholder="联盟长链接">
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">短链接</label>
+                    <div class="control">
+                        <input class="input" type="text" placeholder="联盟长链接">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="buttons">
+            <button class="button is-success" id="iBtnSave">添加</button>
+            <button class="button" id="iBtnUpdate">修改</button>
+        </div>
+    </div>
+</section>
+
+<script>
+
+
+    $('#iBtnSubmit').click(function () {
+        $('#iBtnSubmit').addClass('is-loading');
+        let bookName = $("#iSearchBookName").val();
+        let bookAuthor = $("#iSearchBookAuthor").val();
+        let like = $("input[name='like']:checked").val();
+
+        let url = "/book/search";
+
+        $.ajax({
+            url: url,
+            type: "get", //send it through get method
+            data: {
+                bookName: bookName,
+                bookAuthor: bookAuthor,
+                like: like
+            },
+            success: function(response) {
+                renderTable(response)
+            }
+        });
+    });
+
+    function renderTable(data) {
+        $('#iBtnSubmit').removeClass('is-loading');
+        let arr = [];
+        if (data != null) {
+            arr = data.data;
+        } else {
+            return
+        }
+        //data is arr
+        $('#iTableBody').empty();
+        if (arr != null && arr.length > 0) {
+            $.each(arr, function (i, item) {
+                item.id;
+                item.bookName;
+                item.bookAuthor;
+                item.bookAuthorTranslate;
+                item.bookPress;
+
+                let $tr = $('<tr>').append(
+                    $('<td>').text(i + 1),
+                    $('<td>').text(item.id),
+                    $('<td>').text(item.bookName),
+                    $('<td>').text(item.bookAuthor),
+                    $('<td>').text(item.bookAuthorTranslate),
+                    $('<td>').text(item.bookPress)
+                );
+                $("#iTableBody").append($tr);
+            });
+        }
+
+    }
+
+</script>
+</body>

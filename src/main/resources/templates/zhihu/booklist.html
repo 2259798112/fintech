@@ -90,6 +90,73 @@
             </table>
         </div>
     </div>
+    <div class="modal is-active">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Book</p>
+                <button class="delete" aria-label="close"></button>
+            </header>
+            <section class="modal-card-body">
+                <div class="container">
+                    <div class="field has-addons ">
+                        <div class="control is-expanded" id="iSearchBookName">
+                            <input class="input" type="text" placeholder="书名">
+                        </div>
+                        <div class="control" id="iSearchBookAuthor">
+                            <input class="input" type="text" placeholder="作者">
+                        </div>
+                        <div class="control">
+                            <button class="button is-info" id="iBtnSearch">
+                                查找
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="container">
+                    <div class="field is-horizontal">
+                        <div class="field-body" id="iSelectBook">
+                            <div class="field">
+                                <label class="label">Id</label>
+                                <input class="input" type="text" readonly placeholder="Id">
+                            </div>
+                            <div class="field">
+                                <label class="label">当前书名</label>
+                                <div class="control is-expanded">
+                                    <input class="input" type="text" readonly placeholder="当前书名">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="container">
+                    <div class="field is-horizontal" id="iSearchBook">
+                        <div class="field-body">
+                            <div class="field">
+                                <label class="label">Id</label>
+                                <input class="input" type="number" readonly placeholder="Id">
+                            </div>
+                            <div class="field">
+                                <label class="label">标准书名</label>
+                                <div class="control is-expanded">
+                                    <input class="input" type="text" placeholder="书名">
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label class="label">作者</label>
+                                <input class="input" type="text" placeholder="作者">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button is-success" id="iBtnBind">绑定</button>
+                <button class="button" id="iBtnUnbind">解绑</button>
+            </footer>
+        </div>
+    </div>
 </section>
 
 <script>
@@ -175,10 +242,11 @@
                 $("#iTableBody").append($tr);
             });
 
-            $('#iTableBody a').click(this,move);
+            $('#iTableBody a').click(this, move);
         }
 
     }
+
 
     function move(event) {
         console.log(event);
