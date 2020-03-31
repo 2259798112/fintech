@@ -2,15 +2,18 @@ package top.duwd.fintech.common.domain.zhihu.dto;
 
 import lombok.Data;
 
-import java.util.ArrayList;
+import java.util.List;
 
 @Data
 public class AnswerDto {
     private String bookName;
 
-    private ArrayList<String> authorIconUrl;// 书名号 回答者 头像
-    private ArrayList<String> authorAnswerUrl;// 书名号 回答者 回答url
+    private List<String> authorIconUrl;// 书名号 回答者 头像
+    private List<String> authorAnswerUrl;// 书名号 回答者 回答url
 
-    private ArrayList<String> authorAnotherIconUrl;
-    private ArrayList<String> authorAnswerAnotherUrl;
+    private List<String> authorAnotherIconUrl;
+    private List<String> authorAnswerAnotherUrl;
+
+    private Integer db;
+    private Integer link;
 }

@@ -245,8 +245,20 @@
                 $(btnDiv).append(btnAdd).append(btnUpdate).append(btnIgnore);
                 $(_op).append(btnDiv);
 
+                let td0 = document.createElement("td");
+                $(td0).text(i+1);
+                if (item.db === 1){
+
+                    if (item.link === 1){
+                        $(td0).addClass("is-success")
+                    }else {
+                        $(td0).addClass("is-info")
+                    }
+                }
+
+
                 let $tr = $('<tr>').append(
-                    $('<td>').text(i + 1),
+                    td0,
                     $('<td>').text(bookName),
                     _answerAuthor,
                     _answerAuthorAnother,
@@ -439,8 +451,6 @@
         });
     }
 
-
-
     $('#iModalOpen').click(function () {
         $('#iModal').addClass('is-active');
     });
@@ -448,6 +458,7 @@
     $('#iModalClose').click(function () {
         $('#iModal').removeClass('is-active');
     });
+
 
 </script>
 </body>
