@@ -10,7 +10,7 @@ import tk.mybatis.mapper.entity.Example;
 import top.duwd.fintech.common.domain.zhihu.entity.ZhihuBookEntity;
 import top.duwd.fintech.common.mapper.zhihu.ZhihuBookMapper;
 
-import java.util.List;
+import java.util.Date;
 
 @Slf4j
 @Service
@@ -26,8 +26,16 @@ public class ZhihuBookService {
      * @param sourceId
      * @param targetBookId
      */
-    public void bind(String sourceId, Integer targetBookId) {
-
+    public int bind(String sourceId, Integer targetBookId) {
+        ZhihuBookEntity dbEntity = zhihuBookMapper.selectByPrimaryKey(sourceId);
+        if (dbEntity == null) {
+            return 0;
+        } else {
+            dbEntity.setLinkBookId(targetBookId);
+            dbEntity.setUpdateTime(new Date());
+            dbEntity.setMd(DigestUtils.md5DigestAsHex(JSON.toJSONBytes(dbEntity)));
+            return zhihuBookMapper.updateByPrimaryKey(dbEntity);
+        }
     }
 
 
@@ -36,54 +44,80 @@ public class ZhihuBookService {
      *
      * @param sourceId
      */
-    public void unbind(String sourceId) {
-
-    }
-
-    /**
-     * 保存 回答id 提到的书 列表
-     *
-     * @param list
-     */
-    public void saveList(List<ZhihuBookEntity> list) {
-        //根据 id 获取所有
-        for (ZhihuBookEntity entity : list) {
-            save(entity);
+    public int unbind(String sourceId) {
+        ZhihuBookEntity dbEntity = zhihuBookMapper.selectByPrimaryKey(sourceId);
+        if (dbEntity == null) {
+            return 0;
+        } else {
+            dbEntity.setLinkBookId(null);
+            dbEntity.setUpdateTime(new Date());
+            dbEntity.setMd(DigestUtils.md5DigestAsHex(JSON.toJSONBytes(dbEntity)));
+            return zhihuBookMapper.updateByPrimaryKey(dbEntity);
         }
     }
 
     @Transactional
-    void save(ZhihuBookEntity entity) {
+    public int saveOrUpdate(ZhihuBookEntity entity) {
         String id = DigestUtils.md5DigestAsHex((entity.getBookNameAnswer() + entity.getZhihuQuestionId()).getBytes());
         entity.setId(id);
         String md = DigestUtils.md5DigestAsHex(JSON.toJSONBytes(entity));
+        entity.setMd(md);
+
+        int count = 0;
 
         Example example = new Example(ZhihuBookEntity.class);
         example.createCriteria().andEqualTo("id", id);
         ZhihuBookEntity dbEntity = zhihuBookMapper.selectOneByExample(example);
+        Date date = new Date();
+
         if (dbEntity == null) {
-            //新增
-            try {
-                zhihuBookMapper.insert(entity);
-            } catch (Exception e) {
-                e.printStackTrace();
-                log.error("保存异常 {}", JSON.toJSONString(entity));
-            }
+            count = save(entity, md, count, date);
         } else {
-            if (md.equalsIgnoreCase(dbEntity.getMd())) {
-                //不变
-                log.info("不变数据");
-            } else {
-                //修改
-                try {
-                    zhihuBookMapper.updateByPrimaryKey(entity);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    log.error("修改异常 {}", JSON.toJSONString(entity));
-                }
-            }
+            count = update(entity, md, count, dbEntity, date);
         }
+        return count;
     }
 
+    private int update(ZhihuBookEntity entity, String md, int count, ZhihuBookEntity dbEntity, Date date) {
+        if (md.equalsIgnoreCase(dbEntity.getMd())) {
+            //不变
+            log.info("不变数据");
+        } else {
+            //修改
+            try {
+                entity.setCreateTime(dbEntity.getCreateTime());
+                entity.setUpdateTime(date);
+                count = zhihuBookMapper.updateByPrimaryKey(entity);
+            } catch (Exception e) {
+                e.printStackTrace();
+                log.error("修改异常 {}", JSON.toJSONString(entity));
+            }
+        }
+        return count;
+    }
+
+    private int save(ZhihuBookEntity entity, String md, int count, Date date) {
+        try {
+            entity.setCreateTime(date);
+            entity.setUpdateTime(date);
+            count = zhihuBookMapper.insert(entity);
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("保存异常 {}", JSON.toJSONString(entity));
+        }
+        return count;
+    }
+
+    public int ignore(String sourceId){
+        ZhihuBookEntity dbEntity = zhihuBookMapper.selectByPrimaryKey(sourceId);
+        if (dbEntity == null) {
+            return 0;
+        } else {
+            dbEntity.setValid(0);
+            dbEntity.setUpdateTime(new Date());
+            dbEntity.setMd(DigestUtils.md5DigestAsHex(JSON.toJSONBytes(dbEntity)));
+            return zhihuBookMapper.updateByPrimaryKey(dbEntity);
+        }
+    }
 
 }

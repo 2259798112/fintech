@@ -12,7 +12,8 @@
     <script type="text/javascript"
             src="https://dwdcsv.oss-cn-shanghai.aliyuncs.com/fintech/bulma-calendar.min.js"></script>
     <script type="text/javascript" src="https://dwdcsv.oss-cn-shanghai.aliyuncs.com/fintech/jquery-1.11.1.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/core.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/md5.js"></script>
 </head>
 <body>
 <nav class="navbar" role="navigation" aria-label="main navigation">
@@ -52,7 +53,7 @@
                 <div class="field">
                     <label class="label">问题id</label>
                     <div class="control">
-                        <input class="input" type="text" placeholder="问题id" id="qid">
+                        <input class="input" type="text" placeholder="问题id" id="qid" value="333995687">
                     </div>
                 </div>
                 <div class="field">
@@ -70,19 +71,24 @@
             <div class="control">
                 <button class="button is-link is-light">Cancel</button>
             </div>
+            <div class="control">
+                <button class="button" id="iModalOpen">open</button>
+            </div>
         </div>
         <div class="field">
             <table class="table is-bordered" id="iTable">
-                <col width="10%">
+                <col width="5%">
                 <col width="20%">
                 <col width="40%">
-                <col width="30%">
+                <col width="20%">
+                <col width="15%">
                 <thead>
                 <tr>
                     <th>#</th>
                     <th>书名</th>
                     <th>回答者</th>
                     <th>额外</th>
+                    <th>操作</th>
                 </tr>
                 </thead>
                 <tbody id="iTableBody">
@@ -90,71 +96,82 @@
             </table>
         </div>
     </div>
-    <div class="modal is-active">
+    <div class="modal" id="iModal">
         <div class="modal-background"></div>
         <div class="modal-card">
             <header class="modal-card-head">
                 <p class="modal-card-title">Book</p>
-                <button class="delete" aria-label="close"></button>
+                <button class="delete" aria-label="close" id="iModalClose"></button>
             </header>
             <section class="modal-card-body">
                 <div class="container">
                     <div class="field has-addons ">
-                        <div class="control is-expanded" id="iSearchBookName">
-                            <input class="input" type="text" placeholder="书名">
-                        </div>
-                        <div class="control" id="iSearchBookAuthor">
-                            <input class="input" type="text" placeholder="作者">
+                        <div class="control is-expanded">
+                            <input class="input" type="text" placeholder="书名" id="iSearchBookName">
                         </div>
                         <div class="control">
-                            <button class="button is-info" id="iBtnSearch">
-                                查找
-                            </button>
+                            <input class="input" type="text" placeholder="作者" id="iSearchBookAuthor">
+                        </div>
+                        <div class="control">
+                            <button class="button is-info" id="iBtnSearchBook">查找</button>
+                        </div>
+                        <div class="control">
+                            <button class="button is-success" id="iBtnBind">绑定</button>
+                        </div>
+                        <div class="control">
+                            <button class="button" id="iBtnUnbind">解绑</button>
+                        </div>
+                        <div class="control">
+                            <label class="radio">
+                                <input type="radio" name="like">
+                            </label>
                         </div>
                     </div>
                 </div>
 
+                <HR>
                 <div class="container">
                     <div class="field is-horizontal">
-                        <div class="field-body" id="iSelectBook">
+                        <div class="field-body" id="iBookInfo">
                             <div class="field">
-                                <label class="label">Id</label>
-                                <input class="input" type="text" readonly placeholder="Id">
+                                <label class="label">当前Id</label>
+                                <input class="input" type="text" readonly placeholder="当前Id">
                             </div>
                             <div class="field">
-                                <label class="label">当前书名</label>
                                 <div class="control is-expanded">
+                                    <label class="label">当前书名</label>
                                     <input class="input" type="text" readonly placeholder="当前书名">
                                 </div>
                             </div>
+                            <div class="field">
+                                <div class="control is-expanded">
+                                    <label class="label">目标Id</label>
+                                    <input class="input" type="number" placeholder="目标Id" id="iLinkId">
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
+                <hr>
                 <div class="container">
-                    <div class="field is-horizontal" id="iSearchBook">
-                        <div class="field-body">
-                            <div class="field">
-                                <label class="label">Id</label>
-                                <input class="input" type="number" readonly placeholder="Id">
-                            </div>
-                            <div class="field">
-                                <label class="label">标准书名</label>
-                                <div class="control is-expanded">
-                                    <input class="input" type="text" placeholder="书名">
-                                </div>
-                            </div>
-                            <div class="field">
-                                <label class="label">作者</label>
-                                <input class="input" type="text" placeholder="作者">
-                            </div>
-                        </div>
+                    <div class="field">
+                        <table class="table is-hoverable is-bordered is-fullwidth" id="iModalTable">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>ID</th>
+                                <th>书名</th>
+                                <th>作者</th>
+                                <th>译者</th>
+                                <th>出版社</th>
+                            </tr>
+                            </thead>
+                            <tbody id="iModalTableBody">
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </section>
-            <footer class="modal-card-foot">
-                <button class="button is-success" id="iBtnBind">绑定</button>
-                <button class="button" id="iBtnUnbind">解绑</button>
-            </footer>
         </div>
     </div>
 </section>
@@ -163,6 +180,7 @@
 
     $('#iBtnSubmit').click(function () {
         $('#iBtnSubmit').addClass('is-loading');
+        //333995687
         let qid = $("#qid").val();
         let limit = $("#iLimit").val();
         let url = "/zhihu/answer/book?id=" + qid + '&limit=' + limit;
@@ -190,26 +208,12 @@
                 let authorAnswerUrlArr = item.authorAnswerUrl;
                 let _answerAuthor = document.createElement('td');
                 for (let j = 0; j < authorIconUrlArr.length; j++) {
-
-                    /*
-                    let _img = document.createElement("img");
-                    _img.src = authorIconUrlArr[j];
-                    $(_img).attr('class', 'is-rounded');
-                    $(_img).attr('loading', 'lazy');
-                    let _figure = document.createElement('figure');
-                    $(_figure).addClass('image').addClass('is-32x32').append(_img);
-                    $(_a).append(_figure);
-
-                     */
                     let _a = document.createElement("a");
                     _a.href = authorAnswerUrlArr[j];
                     $(_a).attr('target', '_blank');
                     let _img = document.createElement("img");
                     _img.src = authorIconUrlArr[j];
-                    $(_img).attr('width', '32px');
-                    $(_img).attr('height', '32px');
-                    $(_img).attr('loading', 'lazy');
-                    $(_img).attr('class', 'is-rounded');
+                    $(_img).attr('width', '32px').attr('height', '32px').attr('loading', 'lazy').attr('class', 'is-rounded');
                     $(_a).append(_img);
                     $(_answerAuthor).append(_a);
                 }
@@ -224,29 +228,41 @@
                     _a.href = authorAnswerAnotherUrlArr[j];
                     let _img = document.createElement("img");
                     _img.src = authorAnotherIconUrlArr[j];
-                    $(_img).attr('width', '32px');
-                    $(_img).attr('height', '32px');
-                    $(_img).attr('loading', 'lazy');
-                    $(_img).attr('class', 'is-rounded');
+                    $(_img).attr('width', '32px').attr('height', '32px').attr('loading', 'lazy').attr('class', 'is-rounded');
                     $(_a).append(_img);
                     $(_answerAuthorAnother).append(_a);
                 }
+
+                let _op = document.createElement('td');
+                let btnDiv = document.createElement('div');
+                $(btnDiv).addClass("buttons").addClass("has-addons");
+                let btnAdd = document.createElement('button');
+                $(btnAdd).addClass("button").addClass("is-small").addClass("add").addClass("is-success").text("增");
+                let btnUpdate = document.createElement('button');
+                $(btnUpdate).addClass("button").addClass("is-small").addClass("update").addClass("is-info").text("改");
+                let btnIgnore = document.createElement('button');
+                $(btnIgnore).addClass("button").addClass("is-small").addClass("ignore").addClass("is-grey").text("忽");
+                $(btnDiv).append(btnAdd).append(btnUpdate).append(btnIgnore);
+                $(_op).append(btnDiv);
 
                 let $tr = $('<tr>').append(
                     $('<td>').text(i + 1),
                     $('<td>').text(bookName),
                     _answerAuthor,
-                    _answerAuthorAnother
+                    _answerAuthorAnother,
+                    _op
                 );
+
 
                 $("#iTableBody").append($tr);
             });
 
             $('#iTableBody a').click(this, move);
+            $('#iTableBody tr').dblclick(this, renderModal);
+            $('#iTableBody button').click(this, op);
         }
 
     }
-
 
     function move(event) {
         console.log(event);
@@ -261,5 +277,177 @@
             item.parentElement.nextElementSibling.append(item);
         }
     }
+
+    function renderModal(event) {
+        $("input:radio[name='like']").prop("checked", false);
+        $('#iModal').addClass('is-active');
+        //
+        let inputArr = $('#iBookInfo').find("input");
+
+        let item = event.currentTarget;
+        let bookName = item.cells[1].innerText;
+        let qid = $("#qid").val();
+        let id = CryptoJS.MD5(bookName + qid).toString();
+
+        $(inputArr[0]).val(id);
+        $(inputArr[1]).val(bookName);
+        $('#iSearchBookName').val(bookName);
+    }
+
+    function op(event) {
+        let item = event.currentTarget;
+        let obj = getZhihuBookObj(item);
+        console.log("op obj=" + JSON.stringify(obj));
+        let url = "";
+        if (item.innerText === '增') {
+            url = "/zhihu/book/add";
+        }
+        if (item.innerText === '改') {
+            url = "/zhihu/book/update";
+        }
+        if (item.innerText === '忽') {
+            url = "/zhihu/book/ignore";
+            obj.valid = 0;
+        }
+
+        $.ajax({
+            url: url,
+            type: "POST", //send it through get method
+            data: JSON.stringify(obj),
+            contentType:"application/json; charset=utf-8",
+            dataType:"json",
+            success: function (response) {
+                if (response['code'] === 0){
+                    alert('成功')
+                }else {
+                    alert(JSON.stringify(response))
+                }
+            }
+        });
+
+    }
+
+    function getZhihuBookObj(item) { //item 为button
+        let tr = item.parentNode.parentNode.parentNode;
+        let tdArr = $(tr).find("td");
+
+        let authorIconList = [];
+        let authorNameList = [];
+        $.each($(tdArr[2]).find("a"), function (index, item) {
+            authorNameList.push(item.href);
+            authorIconList.push(item.firstChild.src);
+        });
+        let authorAllIconList = [];
+        let authorAllNameList = [];
+        $.each($(tdArr[3]).find("a"), function (index, item) {
+            authorAllNameList.push(item.href);
+            authorAllIconList.push(item.firstChild.src);
+        });
+
+        let obj = new Object();
+        obj.bookNameAnswer = tdArr[1].innerText;
+        obj.authorIconList = authorIconList;
+        obj.authorNameList = authorNameList;
+        obj.authorAllIconList = authorAllIconList;
+        obj.authorAllNameList = authorAllNameList;
+        let qid = $("#qid").val();
+        let id = CryptoJS.MD5(obj.bookNameAnswer + qid).toString();
+        obj.id = id;
+        obj.valid = 1;
+        obj.zhihuQuestionId =qid;
+
+        return obj;
+    }
+
+    $('#iBtnSearchBook').click(function () {
+        let bookName = $("#iSearchBookName").val();
+        let bookAuthor = $("#iSearchBookAuthor").val();
+        let like = $("input[name=like]:checked").val();
+
+        if ("" === bookName && "" === bookAuthor) {
+            alert("书名、作者 不能同时为空")
+        } else {
+            let url = "/book/search";
+            $('#iBtnSearchBook').addClass('is-loading');
+            $.ajax({
+                url: url,
+                type: "get", //send it through get method
+                data: {
+                    bookName: bookName,
+                    bookAuthor: bookAuthor,
+                    like: like
+                },
+                success: function (response) {
+                    renderModalTable(response)
+                }
+            });
+        }
+    });
+
+    function renderModalTable(data) {
+        $('#iBtnSearchBook').removeClass('is-loading');
+        let arr = [];
+        if (data != null) {
+            arr = data.data;
+        } else {
+            return
+        }
+        //data is arr
+        $('#iModalTableBody').empty();
+        if (arr != null && arr.length > 0) {
+            $.each(arr, function (i, item) {
+                if(i === 0){
+                    $('#iLinkId').val(item.id);
+                }
+
+                let $tr = $('<tr>').append(
+                    $('<td>').text(i + 1),
+                    $('<td>').text(item.id),
+                    $('<td>').text(item.bookName),
+                    $('<td>').text(item.bookAuthor),
+                    $('<td>').text(item.bookAuthorTranslate),
+                    $('<td>').text(item.bookPress)
+                );
+                $("#iModalTableBody").append($tr);
+            });
+        }
+
+    }
+
+    $('#iBtnBind').click(function () {
+        let url = "/zhihu/book/bind";
+        let inputArr = $('#iBookInfo').find("input");
+        bindOrUnbind(url,inputArr[0].value,inputArr[2].value)
+    });
+    $('#iBtnUnbind').click(function () {
+        let url = "/zhihu/book/unbind";
+        let inputArr = $('#iBookInfo').find("input");
+        bindOrUnbind(url,inputArr[0].value,inputArr[2].value)
+    });
+
+    function bindOrUnbind(url,sourceId,targetId){
+        $.ajax({
+            url: url,
+            type: "get", //send it through get method
+            data: {
+                sourceId: sourceId,
+                targetId: targetId
+            },
+            success: function (response) {
+                alert(JSON.stringify(response))
+            }
+        });
+    }
+
+
+
+    $('#iModalOpen').click(function () {
+        $('#iModal').addClass('is-active');
+    });
+
+    $('#iModalClose').click(function () {
+        $('#iModal').removeClass('is-active');
+    });
+
 </script>
 </body>

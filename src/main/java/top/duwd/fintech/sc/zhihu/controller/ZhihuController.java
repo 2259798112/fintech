@@ -1,14 +1,19 @@
 package top.duwd.fintech.sc.zhihu.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.duwd.dutil.http.api.ApiResult;
 import top.duwd.dutil.http.api.ApiResultManager;
 import top.duwd.fintech.common.domain.zhihu.dto.AnswerDto;
+import top.duwd.fintech.common.domain.zhihu.entity.ZhihuBookEntity;
 import top.duwd.fintech.common.domain.zhihu.entity.ZhihuQuestionAnswerPageEntity;
+import top.duwd.fintech.common.domain.zhihu.vo.ZhihuBookVo;
 import top.duwd.fintech.sc.zhihu.service.ZhihuAnswerService;
+import top.duwd.fintech.sc.zhihu.service.ZhihuBookService;
 import top.duwd.fintech.sc.zhihu.service.ZhihuQuestionService;
 
 import java.util.List;
@@ -23,6 +28,8 @@ public class ZhihuController {
     private ZhihuQuestionService zhihuQuestionService;
     @Autowired
     private ZhihuAnswerService zhihuAnswerService;
+    @Autowired
+    private ZhihuBookService zhihuBookService;
 
     @GetMapping(value = "/question/add")
     public ApiResult question(@RequestParam Integer id) {
@@ -64,5 +71,47 @@ public class ZhihuController {
         return apm.success(list);
     }
 
+    private ZhihuBookEntity voToEntity(ZhihuBookVo book){
+        ZhihuBookEntity entity = new ZhihuBookEntity();
+        BeanUtils.copyProperties(book,entity);
+        entity.setAuthorIconList(JSON.toJSONString(book.getAuthorIconList()));
+        entity.setAuthorNameList(JSON.toJSONString(book.getAuthorNameList()));
+        entity.setAuthorAllIconList(JSON.toJSONString(book.getAuthorAllIconList()));
+        entity.setAuthorAllNameList(JSON.toJSONString(book.getAuthorAllNameList()));
+        return entity;
+    }
+    @PostMapping(value = "/book/add", consumes = "application/json", produces = "application/json")
+    public ApiResult bookAdd(@RequestBody ZhihuBookVo book) {
+        log.info("/book/add {}", JSON.toJSONString(book));
+        int i = zhihuBookService.saveOrUpdate(voToEntity(book));
+        return apm.success(i);
+    }
 
+    @PostMapping(value = "/book/update", consumes = "application/json", produces = "application/json")
+    public ApiResult bookUpdate(@RequestBody ZhihuBookVo book) {
+        log.info("/book/update {}", JSON.toJSONString(book));
+        int i = zhihuBookService.saveOrUpdate(voToEntity(book));
+        return apm.success(i);
+    }
+
+    @PostMapping(value = "/book/ignore", consumes = "application/json", produces = "application/json")
+    public ApiResult bookIgnore(@RequestBody ZhihuBookVo book) {
+        log.info("/book/ignore {}", JSON.toJSONString(book));
+        int ignore = zhihuBookService.ignore(book.getId());
+        return apm.success(ignore);
+    }
+
+
+    @GetMapping(value = "/book/bind")
+    public ApiResult bookBind(@RequestParam String sourceId,@RequestParam Integer targetId) {
+        log.info("/book/bind sourceId={},targetId={}",sourceId,targetId);
+        int bind = zhihuBookService.bind(sourceId, targetId);
+        return apm.success(bind);
+    }
+    @GetMapping(value = "/book/unbind")
+    public ApiResult bookUnbind(@RequestParam String sourceId,@RequestParam Integer targetId) {
+        log.info("/book/unbind sourceId={},targetId={}",sourceId,targetId);
+        int unbind = zhihuBookService.unbind(sourceId);
+        return apm.success(unbind);
+    }
 }
