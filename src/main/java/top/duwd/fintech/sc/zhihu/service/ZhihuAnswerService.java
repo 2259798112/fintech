@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
+import org.springframework.util.StringUtils;
 import tk.mybatis.mapper.entity.Example;
 import top.duwd.dutil.reg.ExtractMessage;
 import top.duwd.fintech.common.domain.zhihu.dto.AnswerDto;
@@ -109,8 +110,11 @@ public class ZhihuAnswerService {
                     authorAnswerAnotherUrl.add(split[1]);
                 }
             }
+            if (StringUtils.isEmpty(answerDto.getBookName().replaceAll("\n",""))){
 
-            arrayList.add(answerDto);
+            }else {
+                arrayList.add(answerDto);
+            }
         }
 
 
@@ -125,7 +129,7 @@ public class ZhihuAnswerService {
         zhihuBookExample.createCriteria().andEqualTo("zhihuQuestionId", qid);
         List<ZhihuBookEntity> dbList = zhihuBookMapper.selectByExample(zhihuBookExample);
         if (dbList== null || dbList.size() == 0){
-            return list;
+            return arrayList;
         }
 
         HashMap<String, ZhihuBookEntity> hashMap = new HashMap<>();
@@ -134,7 +138,8 @@ public class ZhihuAnswerService {
         }
 
         for (AnswerDto answerDto : arrayList) {
-            ZhihuBookEntity dbEntity = hashMap.get(DigestUtils.md5DigestAsHex((answerDto.getBookName() + qid).getBytes()));
+            String md = DigestUtils.md5DigestAsHex((answerDto.getBookName() + qid).getBytes());
+            ZhihuBookEntity dbEntity = hashMap.get(md);
             if (dbEntity != null) {
                 if (dbEntity.getLinkBookId() !=null && dbEntity.getLinkBookId() > 0){
                     answerDto.setLink(1);
@@ -144,6 +149,7 @@ public class ZhihuAnswerService {
 
                 if (dbEntity.getValid() == 0) {
                     //remove list
+                    continue;
                 } else {
                     answerDto.setDb(1);
                     answerDto.setAuthorIconUrl(JSONArray.parseArray(dbEntity.getAuthorIconList()).toJavaList(String.class));
@@ -173,6 +179,11 @@ public class ZhihuAnswerService {
         if (!anotherAnswerAuthorImageArrayList.contains(author)) {
             anotherAnswerAuthorImageArrayList.add(author);
         }
+    }
+
+    public static void main(String[] args) {
+        String s = DigestUtils.md5DigestAsHex(("\n\n" + 333995687).getBytes());
+        System.out.println(s);
     }
 
 }
