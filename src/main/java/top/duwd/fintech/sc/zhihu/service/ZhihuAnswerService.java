@@ -181,9 +181,5 @@ public class ZhihuAnswerService {
         }
     }
 
-    public static void main(String[] args) {
-        String s = DigestUtils.md5DigestAsHex(("\n\n" + 333995687).getBytes());
-        System.out.println(s);
-    }
 
 }

@@ -91,7 +91,10 @@
                 <input class="input" type="number" placeholder="ID">
             </div>
             <div class="control is-expanded">
-                <input class="input" type="text" placeholder="书名">
+                <input class="input is-info" type="text" placeholder="书名">
+            </div>
+            <div class="control">
+                <input class="input" type="text" placeholder="原名">
             </div>
         </div>
         <div class="field is-horizontal">
@@ -99,7 +102,7 @@
                 <div class="field">
                     <label class="label">作者</label>
                     <div class="control">
-                        <input class="input" type="text" placeholder="作者">
+                        <input class="input is-info" type="text" placeholder="作者">
                     </div>
                 </div>
                 <div class="field">
@@ -129,19 +132,19 @@
                 <div class="field">
                     <label class="label">京东页面</label>
                     <div class="control">
-                        <input class="input" type="text" placeholder="京东页面">
+                        <input class="input is-danger" type="text" placeholder="京东页面">
                     </div>
                 </div>
                 <div class="field">
                     <label class="label">长链</label>
                     <div class="control">
-                        <input class="input" type="text" placeholder="联盟长链接">
+                        <input class="input is-danger" type="text" placeholder="联盟长链接">
                     </div>
                 </div>
                 <div class="field">
                     <label class="label">短链接</label>
                     <div class="control">
-                        <input class="input" type="text" placeholder="联盟长链接">
+                        <input class="input is-danger" type="text" placeholder="联盟长链接">
                     </div>
                 </div>
             </div>
@@ -151,19 +154,19 @@
                 <div class="field">
                     <label class="label">淘宝页面</label>
                     <div class="control">
-                        <input class="input" type="text" placeholder="淘宝页面">
+                        <input class="input is-warning" type="text" placeholder="淘宝页面">
                     </div>
                 </div>
                 <div class="field">
                     <label class="label">长链</label>
                     <div class="control">
-                        <input class="input" type="text" placeholder="联盟长链接">
+                        <input class="input is-warning" type="text" placeholder="联盟长链接">
                     </div>
                 </div>
                 <div class="field">
                     <label class="label">短链接</label>
                     <div class="control">
-                        <input class="input" type="text" placeholder="联盟长链接">
+                        <input class="input is-warning" type="text" placeholder="联盟长链接">
                     </div>
                 </div>
 
@@ -282,16 +285,17 @@
         let obj = new Object();
         obj.id = inputArr[0].value;
         obj.bookName = inputArr[1].value.trim();
-        obj.bookAuthor = inputArr[2].value.trim();
-        obj.bookAuthorTranslate = inputArr[3].value.trim();
-        obj.bookPress = inputArr[4].value.trim();
-        obj.bookType = inputArr[5].value.trim();
-        obj.jdLink = inputArr[6].value.trim();
-        obj.jdLinkUnionLong = inputArr[7].value.trim();
-        obj.jdLinkUnionShort = inputArr[8].value.trim();
-        obj.tbLink = inputArr[9].value.trim();
-        obj.tbLinkUnionLong = inputArr[10].value.trim();
-        obj.tbLinkUnionShort = inputArr[11].value.trim();
+        obj.bookNameRaw = inputArr[2].value.trim();
+        obj.bookAuthor = inputArr[3].value.trim();
+        obj.bookAuthorTranslate = inputArr[4].value.trim();
+        obj.bookPress = inputArr[5].value.trim();
+        obj.bookType = inputArr[6].value.trim();
+        obj.jdLink = inputArr[7].value.trim();
+        obj.jdLinkUnionLong = inputArr[8].value.trim();
+        obj.jdLinkUnionShort = inputArr[9].value.trim();
+        obj.tbLink = inputArr[10].value.trim();
+        obj.tbLinkUnionLong = inputArr[11].value.trim();
+        obj.tbLinkUnionShort = inputArr[12].value.trim();
         return obj;
     }
 

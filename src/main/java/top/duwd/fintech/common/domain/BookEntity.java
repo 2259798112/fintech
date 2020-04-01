@@ -12,6 +12,7 @@ public class BookEntity {
     @Id
     private Integer id;// int(11) unsigned NOT NULL AUTO_INCREMENT,
     private String bookName;// varchar(255) NOT NULL DEFAULT '',
+    private String bookNameRaw;// varchar(255) NOT NULL DEFAULT '',
     private String bookAuthor;// varchar(255) NOT NULL DEFAULT '',
     private String bookAuthorTranslate;// varchar(255) NOT NULL DEFAULT '',
     private String bookType;// varchar(255) DEFAULT NULL,
