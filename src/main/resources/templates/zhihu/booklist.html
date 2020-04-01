@@ -62,14 +62,23 @@
                         <input class="input" type="text" placeholder="最大数量" id="iLimit">
                     </div>
                 </div>
+                <div class="field">
+                    <label class="label">开始</label>
+                    <div class="control">
+                        <input class="input" type="text" placeholder="分页开始" id="iStart">
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">结束</label>
+                    <div class="control">
+                        <input class="input" type="text" placeholder="分页结束" id="iEnd">
+                    </div>
+                </div>
             </div>
         </div>
         <div class="field is-grouped">
             <div class="control">
-                <button class="button is-link" id="iBtnSubmit">Submit</button>
-            </div>
-            <div class="control">
-                <button class="button is-link is-light">Cancel</button>
+                <button class="button is-link" id="iBtnSubmit">查询</button>
             </div>
             <div class="control">
                 <button class="button" id="iModalOpen">open</button>
@@ -183,10 +192,27 @@
         //333995687
         let qid = $("#qid").val();
         let limit = $("#iLimit").val();
-        let url = "/zhihu/answer/book?id=" + qid + '&limit=' + limit;
-        $.get(url, function (data) {
-            renderTable(data);
+        let start = $("#iStart").val();
+        let end = $("#iEnd").val();
+        let url = "/zhihu/answer/book"//?id=" + qid + '&limit=' + limit;
+
+        $.ajax({
+            url: url,
+            type: "get", //send it through get method
+            data: {
+                qid: qid,
+                limit: limit,
+                start: start,
+                end: end
+            },
+            success: function (data) {
+                renderTable(data)
+            },
+            error : function () {
+                $('#iBtnSubmit').removeClass('is-loading');
+            }
         });
+
     });
 
     function renderTable(data) {

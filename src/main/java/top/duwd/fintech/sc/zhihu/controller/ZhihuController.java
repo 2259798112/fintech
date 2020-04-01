@@ -40,20 +40,22 @@ public class ZhihuController {
 
     /**
      * 网页 问题主页 添加问题
+     *
      * @param json
      * @return
      */
     @PostMapping(value = "/question/add/page", consumes = "application/json", produces = "application/json")
     public ApiResult questionAddPage(@RequestBody String json) {
         log.info("/question/add/page");
-        int count =0;
-        count = zhihuQuestionService.parseQuestion(count,JSONObject.parseObject(json));
+        int count = 0;
+        count = zhihuQuestionService.parseQuestion(count, JSONObject.parseObject(json));
         log.info(json);
         return apm.success(count);
     }
 
     /**
      * 网页 问题主页 添加答案
+     *
      * @param answer
      * @return
      */
@@ -65,21 +67,24 @@ public class ZhihuController {
     }
 
     @GetMapping(value = "/answer/book")
-    public ApiResult answerBook(@RequestParam(value = "id")Integer id,int limit) {
-        log.info("question id={}",id);
-        List<AnswerDto> list = zhihuAnswerService.findBook(id,limit);
-        return apm.success(list);
+    public ApiResult answerBook(@RequestParam(value = "id") Integer id, int limit, int start, int end) {
+        log.info("question id={}", id);
+        List<AnswerDto> list = zhihuAnswerService.findBook(id, limit);
+        start = start < 0 ? 0 : start;
+        end = (end > list.size() - 1) ? list.size() - 1 : end;
+        return apm.success(list.subList(start, end));
     }
 
-    private ZhihuBookEntity voToEntity(ZhihuBookVo book){
+    private ZhihuBookEntity voToEntity(ZhihuBookVo book) {
         ZhihuBookEntity entity = new ZhihuBookEntity();
-        BeanUtils.copyProperties(book,entity);
+        BeanUtils.copyProperties(book, entity);
         entity.setAuthorIconList(JSON.toJSONString(book.getAuthorIconList()));
         entity.setAuthorNameList(JSON.toJSONString(book.getAuthorNameList()));
         entity.setAuthorAllIconList(JSON.toJSONString(book.getAuthorAllIconList()));
         entity.setAuthorAllNameList(JSON.toJSONString(book.getAuthorAllNameList()));
         return entity;
     }
+
     @PostMapping(value = "/book/add", consumes = "application/json", produces = "application/json")
     public ApiResult bookAdd(@RequestBody ZhihuBookVo book) {
         log.info("/book/add {}", JSON.toJSONString(book));
@@ -103,14 +108,15 @@ public class ZhihuController {
 
 
     @GetMapping(value = "/book/bind")
-    public ApiResult bookBind(@RequestParam String sourceId,@RequestParam Integer targetId) {
-        log.info("/book/bind sourceId={},targetId={}",sourceId,targetId);
+    public ApiResult bookBind(@RequestParam String sourceId, @RequestParam Integer targetId) {
+        log.info("/book/bind sourceId={},targetId={}", sourceId, targetId);
         int bind = zhihuBookService.bind(sourceId, targetId);
         return apm.success(bind);
     }
+
     @GetMapping(value = "/book/unbind")
-    public ApiResult bookUnbind(@RequestParam String sourceId,@RequestParam Integer targetId) {
-        log.info("/book/unbind sourceId={},targetId={}",sourceId,targetId);
+    public ApiResult bookUnbind(@RequestParam String sourceId, @RequestParam Integer targetId) {
+        log.info("/book/unbind sourceId={},targetId={}", sourceId, targetId);
         int unbind = zhihuBookService.unbind(sourceId);
         return apm.success(unbind);
     }
