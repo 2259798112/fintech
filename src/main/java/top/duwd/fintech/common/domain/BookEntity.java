@@ -23,6 +23,7 @@ public class BookEntity {
     private String tbLink;// varchar(255) DEFAULT NULL,
     private String tbLinkUnionLong;// varchar(255) DEFAULT NULL,
     private String tbLinkUnionShort;// varchar(255) DEFAULT NULL,
+    private String doubanLink;// varchar(255) DEFAULT NULL,
     private Date createTime;// datetime NOT NULL,
     private Date updateTime;// datetime NOT NULL,
     private String ext;// varchar(10000) DEFAULT NULL,

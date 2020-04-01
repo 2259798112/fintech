@@ -172,6 +172,17 @@
 
             </div>
         </div>
+
+        <div class="field is-horizontal">
+            <div class="field-body">
+                <div class="field">
+                    <label class="label">豆瓣页面</label>
+                    <div class="control">
+                        <input class="input is-success" type="text" placeholder="豆瓣页面">
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="buttons">
             <button class="button is-success" id="iBtnSave">添加</button>
             <button class="button" id="iBtnUpdate">修改</button>
@@ -296,6 +307,7 @@
         obj.tbLink = inputArr[10].value.trim();
         obj.tbLinkUnionLong = inputArr[11].value.trim();
         obj.tbLinkUnionShort = inputArr[12].value.trim();
+        obj.doubanLink = inputArr[13].value.trim();
         return obj;
     }
 
