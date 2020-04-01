@@ -67,9 +67,9 @@ public class ZhihuController {
     }
 
     @GetMapping(value = "/answer/book")
-    public ApiResult answerBook(@RequestParam(value = "id") Integer id, int limit, int start, int end) {
-        log.info("question id={}", id);
-        List<AnswerDto> list = zhihuAnswerService.findBook(id, limit);
+    public ApiResult answerBook(@RequestParam(value = "qid") Integer qid, int limit, int start, int end) {
+        log.info("question id={}", qid);
+        List<AnswerDto> list = zhihuAnswerService.findBook(qid, limit);
         start = start < 0 ? 0 : start;
         end = (end > list.size() - 1) ? list.size() - 1 : end;
         return apm.success(list.subList(start, end));
