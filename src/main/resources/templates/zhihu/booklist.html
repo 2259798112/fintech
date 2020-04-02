@@ -75,6 +75,12 @@
                         <input class="input" type="text" placeholder="分页结束" id="iEnd">
                     </div>
                 </div>
+                <div class="field">
+                    <label class="label">排序</label>
+                    <div class="control">
+                        <input class="input" type="number" placeholder="分页结束" id="iSort">
+                    </div>
+                </div>
             </div>
         </div>
         <div class="field is-grouped">
@@ -195,6 +201,7 @@
         let limit = $("#iLimit").val();
         let start = $("#iStart").val();
         let end = $("#iEnd").val();
+        let sort = $("#iSort").val();
         let url = "/zhihu/answer/book"//?id=" + qid + '&limit=' + limit;
 
         $.ajax({
@@ -204,7 +211,8 @@
                 qid: qid,
                 limit: limit,
                 start: start,
-                end: end
+                end: end,
+                sort: sort,
             },
             success: function (data) {
                 renderTable(data)

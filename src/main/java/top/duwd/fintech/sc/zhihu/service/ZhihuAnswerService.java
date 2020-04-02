@@ -110,14 +110,12 @@ public class ZhihuAnswerService {
                     authorAnswerAnotherUrl.add(split[1]);
                 }
             }
-            if (StringUtils.isEmpty(answerDto.getBookName().replaceAll("\n",""))){
+            if (StringUtils.isEmpty(answerDto.getBookName().replaceAll("\n", ""))) {
 
-            }else {
+            } else {
                 arrayList.add(answerDto);
             }
         }
-
-
         //filter list
         List<AnswerDto> filterList = filterList(qid, arrayList);
         return filterList;
@@ -128,22 +126,22 @@ public class ZhihuAnswerService {
         Example zhihuBookExample = new Example(ZhihuBookEntity.class);
         zhihuBookExample.createCriteria().andEqualTo("zhihuQuestionId", qid);
         List<ZhihuBookEntity> dbList = zhihuBookMapper.selectByExample(zhihuBookExample);
-        if (dbList== null || dbList.size() == 0){
+        if (dbList == null || dbList.size() == 0) {
             return arrayList;
         }
 
         HashMap<String, ZhihuBookEntity> hashMap = new HashMap<>();
         for (ZhihuBookEntity entity : dbList) {
-            hashMap.put(entity.getId(),entity);
+            hashMap.put(entity.getId(), entity);
         }
 
         for (AnswerDto answerDto : arrayList) {
             String md = DigestUtils.md5DigestAsHex((answerDto.getBookName() + qid).getBytes());
             ZhihuBookEntity dbEntity = hashMap.get(md);
             if (dbEntity != null) {
-                if (dbEntity.getLinkBookId() !=null && dbEntity.getLinkBookId() > 0){
+                if (dbEntity.getLinkBookId() != null && dbEntity.getLinkBookId() > 0) {
                     answerDto.setLink(1);
-                }else {
+                } else {
                     answerDto.setLink(0);
                 }
 
@@ -158,7 +156,7 @@ public class ZhihuAnswerService {
                     answerDto.setAuthorAnswerAnotherUrl(JSONArray.parseArray(dbEntity.getAuthorAllNameList()).toJavaList(String.class));
                     list.add(answerDto);
                 }
-            }else {
+            } else {
                 answerDto.setDb(0);
                 answerDto.setLink(0);
                 list.add(answerDto);
