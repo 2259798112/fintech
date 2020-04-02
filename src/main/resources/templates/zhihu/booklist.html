@@ -379,7 +379,7 @@
                 if (response['code'] === 0) {
                     alert('成功')
                 } else {
-                    alert(response)
+                    alert(JSON.stringify(response))
                 }
             }
         });
@@ -493,7 +493,7 @@
                 targetId: targetId
             },
             success: function (response) {
-                alert(response)
+                alert(JSON.stringify(response))
             }
         });
     }
