@@ -29,6 +29,7 @@
             <a class="navbar-item">
                 首页
             </a>
+            <div id="iNotify"></div>
         </div>
 
         <div class="navbar-end">
@@ -208,7 +209,7 @@
             success: function (data) {
                 renderTable(data)
             },
-            error : function () {
+            error: function () {
                 $('#iBtnSubmit').removeClass('is-loading');
             }
         });
@@ -272,12 +273,12 @@
                 $(_op).append(btnDiv);
 
                 let td0 = document.createElement("td");
-                $(td0).text(i+1);
-                if (item.db === 1){
+                $(td0).text(i + 1);
+                if (item.db === 1) {
 
-                    if (item.link === 1){
+                    if (item.link === 1) {
                         $(td0).addClass("is-success")
-                    }else {
+                    } else {
                         $(td0).addClass("is-info")
                     }
                 }
@@ -307,7 +308,7 @@
         event.preventDefault();
         let item = event.currentTarget;
         let index = $(item.parentElement).index();
-        // alert(index);
+        // notify(index);
         if (index === 3) {//第四个 向左移动
             item.parentElement.previousElementSibling.append(item);
         }
@@ -352,13 +353,13 @@
             url: url,
             type: "POST", //send it through get method
             data: JSON.stringify(obj),
-            contentType:"application/json; charset=utf-8",
-            dataType:"json",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
             success: function (response) {
-                if (response['code'] === 0){
-                    alert('成功')
-                }else {
-                    alert(JSON.stringify(response))
+                if (response['code'] === 0) {
+                    notify('成功')
+                } else {
+                    notify(response)
                 }
             }
         });
@@ -392,7 +393,7 @@
         let id = CryptoJS.MD5(obj.bookNameAnswer + qid).toString();
         obj.id = id;
         obj.valid = 1;
-        obj.zhihuQuestionId =qid;
+        obj.zhihuQuestionId = qid;
 
         return obj;
     }
@@ -403,7 +404,7 @@
         let like = $("input[name=like]:checked").val();
 
         if ("" === bookName && "" === bookAuthor) {
-            alert("书名、作者 不能同时为空")
+            notify("书名、作者 不能同时为空")
         } else {
             let url = "/book/search";
             $('#iBtnSearchBook').addClass('is-loading');
@@ -434,7 +435,7 @@
         $('#iModalTableBody').empty();
         if (arr != null && arr.length > 0) {
             $.each(arr, function (i, item) {
-                if(i === 0){
+                if (i === 0) {
                     $('#iLinkId').val(item.id);
                 }
 
@@ -455,15 +456,15 @@
     $('#iBtnBind').click(function () {
         let url = "/zhihu/book/bind";
         let inputArr = $('#iBookInfo').find("input");
-        bindOrUnbind(url,inputArr[0].value,inputArr[2].value)
+        bindOrUnbind(url, inputArr[0].value, inputArr[2].value)
     });
     $('#iBtnUnbind').click(function () {
         let url = "/zhihu/book/unbind";
         let inputArr = $('#iBookInfo').find("input");
-        bindOrUnbind(url,inputArr[0].value,inputArr[2].value)
+        bindOrUnbind(url, inputArr[0].value, inputArr[2].value)
     });
 
-    function bindOrUnbind(url,sourceId,targetId){
+    function bindOrUnbind(url, sourceId, targetId) {
         $.ajax({
             url: url,
             type: "get", //send it through get method
@@ -472,19 +473,32 @@
                 targetId: targetId
             },
             success: function (response) {
-                alert(JSON.stringify(response))
+                notify(response)
             }
         });
     }
 
     $('#iModalOpen').click(function () {
-        $('#iModal').addClass('is-active');
+        notify('test')
     });
 
     $('#iModalClose').click(function () {
         $('#iModal').removeClass('is-active');
     });
 
+    function notify(data) {
+        let div = document.createElement("div");
+        $(div).addClass("notification").addClass("is-success").addClass('is-light');
+        let btn = document.createElement("button");
+        $(btn).addClass('delete').text(JSON.stringify(data));
+        $(div).append(btn);
+        $('#iNotify').append(div)
+
+        let id = setInterval(function(){
+            clearInterval(id)
+            $('.notification').remove();
+        },1000);
+    }
 
 </script>
 </body>
