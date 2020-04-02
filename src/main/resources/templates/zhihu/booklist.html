@@ -206,7 +206,9 @@
         <div class="modal-background"></div>
         <div class="modal-card">
             <header class="modal-card-head">
-                <p class="modal-card-title">回答文字</p>
+                <p class="modal-card-title">回答文字
+                    <img id="iModelContentImg" src="#" width="32px" height="32px" loading="lazy" class="is-rounded">
+                </p>
                 <button class="delete" aria-label="close" id="iModelContentClose"></button>
             </header>
             <section class="modal-card-body">
@@ -348,6 +350,9 @@
         //获取内容，展示模态框
         event.preventDefault();
         let item = event.currentTarget;
+        let src = item.firstChild.src;
+        $('iModelContentImg').src("").src(src);
+
         let arr = item.href.split('/');
         let id = arr[arr.length-1];
 
