@@ -351,7 +351,8 @@
         event.preventDefault();
         let item = event.currentTarget;
         let src = item.firstChild.src;
-        $('#iModelContentImg').src("").src(src);
+        $("#iModelContentImg").attr("src",src);
+
 
         let arr = item.href.split('/');
         let id = arr[arr.length-1];
