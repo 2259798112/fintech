@@ -212,12 +212,8 @@
                 </p>
                 <button class="delete" aria-label="close" id="iModelContentClose"></button>
             </header>
-            <section class="modal-card-body">
-                <div class="container">
-                    <div class="field">
-                        <textarea id="iModelContentTextarea" class="textarea" placeholder="e.g. Hello world" rows="20"></textarea>
-                    </div>
-                </div>
+            <section class="modal-card-body" id="iModelContentTextarea">
+                        <textarea class="textarea" placeholder="e.g. Hello world" rows="20"></textarea>
             </section>
         </div>
     </div>
@@ -367,8 +363,12 @@
             },
             success: function (response) {
                 $('#iModelContent').addClass("is-active");
-                $('#iModelContentTextarea').empty();
-                $('#iModelContentTextarea').text(response.data);
+                $('#iModelContentTextarea').children().remove();
+                let textAreaElement = document.createElement("textarea");
+                $(textAreaElement).attr("rows",20);
+                $(textAreaElement).attr("class","textarea");
+                $(textAreaElement).text(response.data);
+                $('#iModelContentTextarea').append(textAreaElement);
             }
         });
 
