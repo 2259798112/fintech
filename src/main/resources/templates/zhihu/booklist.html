@@ -509,7 +509,8 @@
         let div = document.createElement("div");
         $(div).addClass("notification").addClass("is-success").addClass('is-light');
         let btn = document.createElement("button");
-        $(btn).addClass('delete').text(JSON.stringify(data));
+        $(btn).addClass('delete');
+        $(div).text(JSON.stringify(data));
         $(div).append(btn);
         $('#iNotify').append(div)
 
