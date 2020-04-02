@@ -125,7 +125,7 @@
         </div>
     </div>
     <div class="modal" id="iModal">
-        <div class="modal-background"></div>
+<!--        <div class="modal-background"></div>-->
         <div class="modal-card">
             <header class="modal-card-head">
                 <p class="modal-card-title">Book</p>
@@ -149,11 +149,11 @@
                         <div class="control">
                             <button class="button" id="iBtnUnbind">解绑</button>
                         </div>
-                        <div class="control">
-                            <label class="radio">
-                                <input type="radio" name="like">
-                            </label>
-                        </div>
+<!--                        <div class="control">-->
+<!--                            <label class="radio">-->
+<!--                                <input type="radio" name="like">-->
+<!--                            </label>-->
+<!--                        </div>-->
                     </div>
                 </div>
 
@@ -421,7 +421,7 @@
     $('#iBtnSearchBook').click(function () {
         let bookName = $("#iSearchBookName").val();
         let bookAuthor = $("#iSearchBookAuthor").val();
-        let like = $("input[name=like]:checked").val();
+        // let like = $("input[name=like]:checked").val();
 
         if ("" === bookName && "" === bookAuthor) {
             notify("书名、作者 不能同时为空")
@@ -434,7 +434,7 @@
                 data: {
                     bookName: bookName,
                     bookAuthor: bookAuthor,
-                    like: like
+                    like: true
                 },
                 success: function (response) {
                     renderModalTable(response)
