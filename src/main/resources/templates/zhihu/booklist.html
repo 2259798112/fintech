@@ -14,6 +14,17 @@
     <script type="text/javascript" src="https://dwdcsv.oss-cn-shanghai.aliyuncs.com/fintech/jquery-1.11.1.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/core.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/md5.js"></script>
+
+    <style>
+        #iNotify {
+            position: absolute;
+            left: 40%;
+            bottom: 90%;
+            right: 40%;
+            top: 10%;
+            margin: auto;
+        }
+    </style>
 </head>
 <body>
 <nav class="navbar" role="navigation" aria-label="main navigation">
@@ -502,10 +513,10 @@
         $(div).append(btn);
         $('#iNotify').append(div)
 
-        let id = setInterval(function(){
+        let id = setInterval(function () {
             clearInterval(id)
             $('.notification').remove();
-        },1000);
+        }, 1000);
     }
 
 </script>
