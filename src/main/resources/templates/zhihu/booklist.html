@@ -377,9 +377,9 @@
             dataType: "json",
             success: function (response) {
                 if (response['code'] === 0) {
-                    notify('成功')
+                    alert('成功')
                 } else {
-                    notify(response)
+                    alert(response)
                 }
             }
         });
@@ -424,7 +424,7 @@
         // let like = $("input[name=like]:checked").val();
 
         if ("" === bookName && "" === bookAuthor) {
-            notify("书名、作者 不能同时为空")
+            alert("书名、作者 不能同时为空")
         } else {
             let url = "/book/search";
             $('#iBtnSearchBook').addClass('is-loading');
@@ -493,7 +493,7 @@
                 targetId: targetId
             },
             success: function (response) {
-                notify(response)
+                alert(response)
             }
         });
     }
