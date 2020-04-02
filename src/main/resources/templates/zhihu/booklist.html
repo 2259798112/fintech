@@ -125,7 +125,7 @@
         </div>
     </div>
     <div class="modal" id="iModal">
-<!--        <div class="modal-background"></div>-->
+        <div class="modal-background"></div>
         <div class="modal-card">
             <header class="modal-card-head">
                 <p class="modal-card-title">Book</p>
@@ -508,7 +508,7 @@
 
     function notify(data) {
         let div = document.createElement("div");
-        $(div).addClass("notification").addClass("is-success").addClass('is-light');
+        $(div).addClass("notification").addClass("is-primary").addClass('is-light');
         let btn = document.createElement("button");
         $(btn).addClass('delete');
         $(div).text(JSON.stringify(data));
