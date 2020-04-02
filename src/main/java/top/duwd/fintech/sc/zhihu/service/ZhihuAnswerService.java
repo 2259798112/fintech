@@ -14,8 +14,8 @@ import top.duwd.dutil.reg.ExtractMessage;
 import top.duwd.fintech.common.domain.zhihu.dto.AnswerDto;
 import top.duwd.fintech.common.domain.zhihu.entity.ZhihuBookEntity;
 import top.duwd.fintech.common.domain.zhihu.entity.ZhihuQuestionAnswerPageEntity;
-import top.duwd.fintech.common.mapper.zhihu.ZhihuAnswerMapper;
 import top.duwd.fintech.common.mapper.zhihu.ZhihuBookMapper;
+import top.duwd.fintech.common.mapper.zhihu.ZhihuQuestionAnswerPageMapper;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,16 +26,16 @@ import java.util.List;
 @Slf4j
 public class ZhihuAnswerService {
     @Autowired
-    private ZhihuAnswerMapper zhihuAnswerMapper;
+    private ZhihuQuestionAnswerPageMapper zhihuQuestionAnswerPageMapper;
     @Autowired
     private ZhihuBookMapper zhihuBookMapper;
 
     @Transactional
     public int save(ZhihuQuestionAnswerPageEntity entity) {
         log.info("save = {}", JSON.toJSONString(entity));
-        ZhihuQuestionAnswerPageEntity db = zhihuAnswerMapper.selectByPrimaryKey(entity.getId());
+        ZhihuQuestionAnswerPageEntity db = zhihuQuestionAnswerPageMapper.selectByPrimaryKey(entity.getId());
         if (db == null) {
-            return zhihuAnswerMapper.insert(entity);
+            return zhihuQuestionAnswerPageMapper.insert(entity);
         } else {
             log.info("answer already in DB");
             return 1;
@@ -52,7 +52,7 @@ public class ZhihuAnswerService {
         example.createCriteria().andEqualTo("questionId", qid);
 
         RowBounds rowBounds = new RowBounds(RowBounds.NO_ROW_OFFSET, limit);
-        List<ZhihuQuestionAnswerPageEntity> list = zhihuAnswerMapper.selectByExampleAndRowBounds(example, rowBounds);
+        List<ZhihuQuestionAnswerPageEntity> list = zhihuQuestionAnswerPageMapper.selectByExampleAndRowBounds(example, rowBounds);
 
         HashMap<String, List<String>> map = new HashMap<>();//书名号 作者
         for (ZhihuQuestionAnswerPageEntity answer : list) {//遍历获取书名
@@ -180,4 +180,12 @@ public class ZhihuAnswerService {
     }
 
 
+    public String findContent(Integer id) {
+        if(id != null && id > 0){
+            ZhihuQuestionAnswerPageEntity entity = zhihuQuestionAnswerPageMapper.selectByPrimaryKey(id);
+            return entity.getContent();
+        }else {
+            return "id 异常";
+        }
+    }
 }

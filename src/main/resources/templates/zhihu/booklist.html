@@ -202,6 +202,24 @@
             </section>
         </div>
     </div>
+    <div class="modal" id="iModelContent">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">回答文字</p>
+                <button class="delete" aria-label="close" id="iModelContentClose"></button>
+            </header>
+            <section class="modal-card-body">
+                <div class="container">
+                    <div class="field">
+                        <textarea id="iModelContentTextarea" class="textarea" placeholder="e.g. Hello world"></textarea>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+
 </section>
 
 <script>
@@ -303,10 +321,13 @@
                     }
                 }
 
+                let tdBookName = document.createElement("td");
+                $(tdBookName).text(bookName);
+                $(tdBookName).dblclick(this, renderModal);
 
                 let $tr = $('<tr>').append(
                     td0,
-                    $('<td>').text(bookName),
+                    tdBookName,
                     _answerAuthor,
                     _answerAuthorAnother,
                     _op
@@ -317,9 +338,31 @@
             });
 
             $('#iTableBody a').click(this, move);
-            $('#iTableBody tr').dblclick(this, renderModal);
+            $('#iTableBody a').contextmenu(this, showContent);
             $('#iTableBody button').click(this, op);
         }
+
+    }
+
+    function showContent(event) {
+        //获取内容，展示模态框
+        event.preventDefault();
+        let item = event.currentTarget;
+        let arr = item.href.split('/');
+        let id = arr[arr.length-1];
+
+        let url = "/zhihu/answer/content";
+        $.ajax({
+            url: url,
+            type: "get", //send it through get method
+            data: {
+                id: id
+            },
+            success: function (response) {
+                $('#iModelContent').addClass("is-active");
+                $('#iModelContentTextarea').text("").text(response.data);
+            }
+        });
 
     }
 
@@ -343,8 +386,8 @@
         //
         let inputArr = $('#iBookInfo').find("input");
 
-        let item = event.currentTarget;
-        let bookName = item.cells[1].innerText;
+        // let item = event.currentTarget;
+        let bookName = event.currentTarget.innerText;
         let qid = $("#qid").val();
         let id = CryptoJS.MD5(bookName + qid).toString();
 
@@ -504,6 +547,10 @@
 
     $('#iModalClose').click(function () {
         $('#iModal').removeClass('is-active');
+    });
+
+    $('#iModelContentClose').click(function () {
+        $('#iModelContent').removeClass('is-active');
     });
 
     function notify(data) {
