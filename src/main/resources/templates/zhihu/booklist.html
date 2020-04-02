@@ -367,7 +367,8 @@
             },
             success: function (response) {
                 $('#iModelContent').addClass("is-active");
-                $('#iModelContentTextarea').text("").text(response.data);
+                $('#iModelContentTextarea').empty();
+                $('#iModelContentTextarea').text(response.data);
             }
         });
 
