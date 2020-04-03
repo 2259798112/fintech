@@ -102,7 +102,10 @@ public class ZhihuController {
                         answer.getAuthorAnotherIconUrl().addAll(answerDto.getAuthorAnotherIconUrl());
                         answer.getAuthorAnswerAnotherUrl().addAll(answerDto.getAuthorAnotherIconUrl());
                     }
+                }else {
+                    list.add(answerDto);
                 }
+
             }
 
             start = start < 0 ? 0 : start;
