@@ -89,14 +89,14 @@ public class ZhihuController {
 
             ArrayList<BookDto> list = new ArrayList<>();
             for (BookDto bookDto : sourceList) {
-                Integer link = bookDto.getLink();
+                Integer link = bookDto.getLinkBookId();
                 if (link != null && link > 0) {
                     BookDto answer = linkMap.get(link);
                     if (answer == null) {
                         linkMap.put(link, bookDto);
                         list.add(bookDto);
                     } else {
-                        answer.setBookName(answer.getBookName() + "\n" + bookDto.getBookName());
+                        answer.setBookName(answer.getBookName() + "<br>" + bookDto.getBookName());
                         answer.getAuthorIconUrl().addAll(bookDto.getAuthorIconUrl());
                         answer.getAuthorAnswerUrl().addAll(bookDto.getAuthorAnswerUrl());
                         answer.getAuthorAnotherIconUrl().addAll(bookDto.getAuthorAnotherIconUrl());
