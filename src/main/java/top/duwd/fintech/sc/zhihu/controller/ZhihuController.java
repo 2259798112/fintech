@@ -71,45 +71,60 @@ public class ZhihuController {
     }
 
     @GetMapping(value = "/answer/book")
-    public ApiResult answerBook(@RequestParam(value = "qid") Integer qid, int limit, int start, int end, int sort,int merge) {
+    public ApiResult answerBook(@RequestParam(value = "qid") Integer qid, int limit, int start, int end, int sort, int merge) {
         log.info("question id={}", qid);
         List<AnswerDto> sourceList = zhihuAnswerService.findBook(qid, limit);
-        List<AnswerDto> result = merge(start, end, sort, sourceList);
+
+        List<AnswerDto> result = merge(start, end, sort, merge, sourceList);
         return apm.success(result);
     }
 
     @NotNull
-    private List<AnswerDto> merge(int start, int end, int sort, List<AnswerDto> sourceList) {
-        Map<Integer, AnswerDto> linkMap = new HashMap<>();
+    private List<AnswerDto> merge(int start, int end, int sort, int merge, List<AnswerDto> sourceList) {
+        if (merge == 1) {
 
-        //是否合并
-        //查找是否有关联id
+            Map<Integer, AnswerDto> linkMap = new HashMap<>();
+            //是否合并
+            //查找是否有关联id
 
-        ArrayList<AnswerDto> list = new ArrayList<>();
-        for (AnswerDto answerDto : sourceList) {
-            Integer link = answerDto.getLink();
-            if (link != null && link > 0) {
-                AnswerDto answer = linkMap.get(link);
-                if (answer == null){
-                    linkMap.put(link,answerDto);
-                    list.add(answerDto);
-                }else {
-                    answer.setBookName(answer.getBookName() + "\n" + answerDto.getBookName());
-                    answer.getAuthorIconUrl().addAll(answerDto.getAuthorIconUrl());
-                    answer.getAuthorAnswerUrl().addAll(answerDto.getAuthorAnswerUrl());
-                    answer.getAuthorAnotherIconUrl().addAll(answerDto.getAuthorAnotherIconUrl());
-                    answer.getAuthorAnswerAnotherUrl().addAll(answerDto.getAuthorAnotherIconUrl());
+            ArrayList<AnswerDto> list = new ArrayList<>();
+            for (AnswerDto answerDto : sourceList) {
+                Integer link = answerDto.getLink();
+                if (link != null && link > 0) {
+                    AnswerDto answer = linkMap.get(link);
+                    if (answer == null) {
+                        linkMap.put(link, answerDto);
+                        list.add(answerDto);
+                    } else {
+                        answer.setBookName(answer.getBookName() + "\n" + answerDto.getBookName());
+                        answer.getAuthorIconUrl().addAll(answerDto.getAuthorIconUrl());
+                        answer.getAuthorAnswerUrl().addAll(answerDto.getAuthorAnswerUrl());
+                        answer.getAuthorAnotherIconUrl().addAll(answerDto.getAuthorAnotherIconUrl());
+                        answer.getAuthorAnswerAnotherUrl().addAll(answerDto.getAuthorAnotherIconUrl());
+                    }
                 }
             }
-        }
 
-        start = start < 0 ? 0 : start;
-        end = (end > list.size() - 1) ? list.size() - 1 : end;
-        if (sort == 1) {
-            list.sort((l1, l2) -> l2.getAuthorIconUrl().size() - l1.getAuthorIconUrl().size());
-        }
+            start = start < 0 ? 0 : start;
+            end = (end > list.size() - 1) ? list.size() - 1 : end;
+            if (sort == 1) {
+                list.sort((l1, l2) -> l2.getAuthorIconUrl().size() - l1.getAuthorIconUrl().size());
+            }
 
-        return list.subList(start, end);
+            return list.subList(start, end);
+
+        } else {
+
+            List<AnswerDto> list = sourceList;
+
+            start = start < 0 ? 0 : start;
+            end = (end > list.size() - 1) ? list.size() - 1 : end;
+            if (sort == 1) {
+                list.sort((l1, l2) -> l2.getAuthorIconUrl().size() - l1.getAuthorIconUrl().size());
+            }
+
+            return list.subList(start, end);
+        }
     }
 
 
