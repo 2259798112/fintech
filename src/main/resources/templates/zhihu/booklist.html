@@ -329,9 +329,9 @@
                 }
 
                 let tdBookName = document.createElement("td");
-                let pre = document.createElement("pre");
-                $(pre).html(bookName);
-                $(tdBookName).append(pre);
+                let p = document.createElement("p");
+                $(p).html(bookName);
+                $(tdBookName).append(p);
                 $(tdBookName).dblclick(this, renderModal);
 
                 let $tr = $('<tr>').append(
