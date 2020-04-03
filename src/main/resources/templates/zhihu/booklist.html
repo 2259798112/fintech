@@ -93,6 +93,12 @@
                         <input class="input" type="number" placeholder="分页结束" id="iSort">
                     </div>
                 </div>
+                <div class="field">
+                    <label class="label">合并</label>
+                    <div class="control">
+                        <input class="input" type="number" placeholder="合并" id="iMerge">
+                    </div>
+                </div>
             </div>
         </div>
         <div class="field is-grouped">
@@ -231,6 +237,7 @@
         let start = $("#iStart").val();
         let end = $("#iEnd").val();
         let sort = $("#iSort").val();
+        let merge = $("#iMerge").val();
         let url = "/zhihu/answer/book"//?id=" + qid + '&limit=' + limit;
 
         $.ajax({
@@ -242,6 +249,7 @@
                 start: start,
                 end: end,
                 sort: sort,
+                merge: merge
             },
             success: function (data) {
                 renderTable(data)

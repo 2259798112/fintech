@@ -3,6 +3,7 @@ package top.duwd.fintech.sc.zhihu.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +17,10 @@ import top.duwd.fintech.sc.zhihu.service.ZhihuAnswerService;
 import top.duwd.fintech.sc.zhihu.service.ZhihuBookService;
 import top.duwd.fintech.sc.zhihu.service.ZhihuQuestionService;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -67,15 +71,45 @@ public class ZhihuController {
     }
 
     @GetMapping(value = "/answer/book")
-    public ApiResult answerBook(@RequestParam(value = "qid") Integer qid, int limit, int start, int end, int sort) {
+    public ApiResult answerBook(@RequestParam(value = "qid") Integer qid, int limit, int start, int end, int sort,int merge) {
         log.info("question id={}", qid);
-        List<AnswerDto> list = zhihuAnswerService.findBook(qid, limit);
+        List<AnswerDto> sourceList = zhihuAnswerService.findBook(qid, limit);
+        List<AnswerDto> result = merge(start, end, sort, sourceList);
+        return apm.success(result);
+    }
+
+    @NotNull
+    private List<AnswerDto> merge(int start, int end, int sort, List<AnswerDto> sourceList) {
+        Map<Integer, AnswerDto> linkMap = new HashMap<>();
+
+        //是否合并
+        //查找是否有关联id
+
+        ArrayList<AnswerDto> list = new ArrayList<>();
+        for (AnswerDto answerDto : sourceList) {
+            Integer link = answerDto.getLink();
+            if (link != null && link > 0) {
+                AnswerDto answer = linkMap.get(link);
+                if (answer == null){
+                    linkMap.put(link,answerDto);
+                    list.add(answerDto);
+                }else {
+                    answer.setBookName(answer.getBookName() + "\n" + answerDto.getBookName());
+                    answer.getAuthorIconUrl().addAll(answerDto.getAuthorIconUrl());
+                    answer.getAuthorAnswerUrl().addAll(answerDto.getAuthorAnswerUrl());
+                    answer.getAuthorAnotherIconUrl().addAll(answerDto.getAuthorAnotherIconUrl());
+                    answer.getAuthorAnswerAnotherUrl().addAll(answerDto.getAuthorAnotherIconUrl());
+                }
+            }
+        }
+
         start = start < 0 ? 0 : start;
         end = (end > list.size() - 1) ? list.size() - 1 : end;
         if (sort == 1) {
             list.sort((l1, l2) -> l2.getAuthorIconUrl().size() - l1.getAuthorIconUrl().size());
         }
-        return apm.success(list.subList(start, end));
+
+        return list.subList(start, end);
     }
 
 
