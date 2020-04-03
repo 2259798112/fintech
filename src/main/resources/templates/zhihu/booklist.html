@@ -329,10 +329,17 @@
                 }
 
                 let tdBookName = document.createElement("td");
-                let p = document.createElement("p");
-                $(p).html(bookName);
-                $(tdBookName).append(p);
                 $(tdBookName).dblclick(this, renderModal);
+                let names = bookName.split('\n');
+                for (let j = 0; j < names.length; j++) {
+                    let p = document.createElement("p");
+                    $(p).text(names[j]);
+                    $(tdBookName).append(p);
+                    if (j < names.length-1){
+                        let br = document.createElement("br");
+                        $(tdBookName).append(br);
+                    }
+                }
 
                 let $tr = $('<tr>').append(
                     td0,
