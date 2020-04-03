@@ -329,7 +329,7 @@
                 }
 
                 let tdBookName = document.createElement("td");
-                $(tdBookName).text(bookName);
+                $(tdBookName).html(bookName);
                 $(tdBookName).dblclick(this, renderModal);
 
                 let $tr = $('<tr>').append(

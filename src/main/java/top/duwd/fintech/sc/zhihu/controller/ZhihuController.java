@@ -96,7 +96,7 @@ public class ZhihuController {
                         linkMap.put(link, bookDto);
                         list.add(bookDto);
                     } else {
-                        answer.setBookName(answer.getBookName() + "<br>" + bookDto.getBookName());
+                        answer.setBookName(answer.getBookName() + "\n" + bookDto.getBookName());
                         answer.getAuthorIconUrl().addAll(bookDto.getAuthorIconUrl());
                         answer.getAuthorAnswerUrl().addAll(bookDto.getAuthorAnswerUrl());
                         answer.getAuthorAnotherIconUrl().addAll(bookDto.getAuthorAnotherIconUrl());
