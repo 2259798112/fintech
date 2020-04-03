@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.duwd.dutil.http.api.ApiResult;
 import top.duwd.dutil.http.api.ApiResultManager;
-import top.duwd.fintech.common.domain.zhihu.dto.AnswerDto;
+import top.duwd.fintech.common.domain.zhihu.dto.BookDto;
 import top.duwd.fintech.common.domain.zhihu.entity.ZhihuBookEntity;
 import top.duwd.fintech.common.domain.zhihu.entity.ZhihuQuestionAnswerPageEntity;
 import top.duwd.fintech.common.domain.zhihu.vo.ZhihuBookVo;
@@ -73,37 +73,37 @@ public class ZhihuController {
     @GetMapping(value = "/answer/book")
     public ApiResult answerBook(@RequestParam(value = "qid") Integer qid, int limit, int start, int end, int sort, int merge) {
         log.info("question id={}", qid);
-        List<AnswerDto> sourceList = zhihuAnswerService.findBook(qid, limit);
+        List<BookDto> sourceList = zhihuAnswerService.findBook(qid, limit);
 
-        List<AnswerDto> result = merge(start, end, sort, merge, sourceList);
+        List<BookDto> result = merge(start, end, sort, merge, sourceList);
         return apm.success(result);
     }
 
     @NotNull
-    private List<AnswerDto> merge(int start, int end, int sort, int merge, List<AnswerDto> sourceList) {
+    private List<BookDto> merge(int start, int end, int sort, int merge, List<BookDto> sourceList) {
         if (merge == 1) {
 
-            Map<Integer, AnswerDto> linkMap = new HashMap<>();
+            Map<Integer, BookDto> linkMap = new HashMap<>();
             //是否合并
             //查找是否有关联id
 
-            ArrayList<AnswerDto> list = new ArrayList<>();
-            for (AnswerDto answerDto : sourceList) {
-                Integer link = answerDto.getLink();
+            ArrayList<BookDto> list = new ArrayList<>();
+            for (BookDto bookDto : sourceList) {
+                Integer link = bookDto.getLink();
                 if (link != null && link > 0) {
-                    AnswerDto answer = linkMap.get(link);
+                    BookDto answer = linkMap.get(link);
                     if (answer == null) {
-                        linkMap.put(link, answerDto);
-                        list.add(answerDto);
+                        linkMap.put(link, bookDto);
+                        list.add(bookDto);
                     } else {
-                        answer.setBookName(answer.getBookName() + "\n" + answerDto.getBookName());
-                        answer.getAuthorIconUrl().addAll(answerDto.getAuthorIconUrl());
-                        answer.getAuthorAnswerUrl().addAll(answerDto.getAuthorAnswerUrl());
-                        answer.getAuthorAnotherIconUrl().addAll(answerDto.getAuthorAnotherIconUrl());
-                        answer.getAuthorAnswerAnotherUrl().addAll(answerDto.getAuthorAnotherIconUrl());
+                        answer.setBookName(answer.getBookName() + "\n" + bookDto.getBookName());
+                        answer.getAuthorIconUrl().addAll(bookDto.getAuthorIconUrl());
+                        answer.getAuthorAnswerUrl().addAll(bookDto.getAuthorAnswerUrl());
+                        answer.getAuthorAnotherIconUrl().addAll(bookDto.getAuthorAnotherIconUrl());
+                        answer.getAuthorAnswerAnotherUrl().addAll(bookDto.getAuthorAnotherIconUrl());
                     }
                 }else {
-                    list.add(answerDto);
+                    list.add(bookDto);
                 }
 
             }
@@ -118,7 +118,7 @@ public class ZhihuController {
 
         } else {
 
-            List<AnswerDto> list = sourceList;
+            List<BookDto> list = sourceList;
 
             start = start < 0 ? 0 : start;
             end = (end > list.size() - 1) ? list.size() - 1 : end;

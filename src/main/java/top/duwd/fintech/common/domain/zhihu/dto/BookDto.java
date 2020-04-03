@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class AnswerDto {
+public class BookDto {
     private String bookName;
 
     private List<String> authorIconUrl;// 书名号 回答者 头像
@@ -16,4 +16,5 @@ public class AnswerDto {
 
     private Integer db;
     private Integer link;
+    private Integer linkBookId;
 }
