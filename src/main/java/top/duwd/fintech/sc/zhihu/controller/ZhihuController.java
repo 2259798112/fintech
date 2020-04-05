@@ -17,10 +17,7 @@ import top.duwd.fintech.sc.zhihu.service.ZhihuAnswerService;
 import top.duwd.fintech.sc.zhihu.service.ZhihuBookService;
 import top.duwd.fintech.sc.zhihu.service.ZhihuQuestionService;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @RestController
@@ -97,10 +94,18 @@ public class ZhihuController {
                         list.add(bookDto);
                     } else {
                         answer.setBookName(answer.getBookName() + "\n" + bookDto.getBookName());
+
                         answer.getAuthorIconUrl().addAll(bookDto.getAuthorIconUrl());
+                        answer.setAuthorIconUrl(new ArrayList<>(new HashSet<>(answer.getAuthorIconUrl())));
+
                         answer.getAuthorAnswerUrl().addAll(bookDto.getAuthorAnswerUrl());
+                        answer.setAuthorAnswerUrl(new ArrayList<>(new HashSet<>(answer.getAuthorAnswerUrl())));
+
                         answer.getAuthorAnotherIconUrl().addAll(bookDto.getAuthorAnotherIconUrl());
+                        answer.setAuthorAnotherIconUrl(new ArrayList<>(new HashSet<>(answer.getAuthorAnotherIconUrl())));
+
                         answer.getAuthorAnswerAnotherUrl().addAll(bookDto.getAuthorAnotherIconUrl());
+                        answer.setAuthorAnswerAnotherUrl(new ArrayList<>(new HashSet<>(answer.getAuthorAnswerAnotherUrl())));
                     }
                 }else {
                     list.add(bookDto);
@@ -114,8 +119,10 @@ public class ZhihuController {
                 list.sort((l1, l2) -> l2.getAuthorIconUrl().size() - l1.getAuthorIconUrl().size());
             }
 
-            return list.subList(start, end);
+            List<BookDto> bookDtos = list.subList(start, end);
 
+
+            return bookDtos;
         } else {
 
             List<BookDto> list = sourceList;
@@ -126,7 +133,8 @@ public class ZhihuController {
                 list.sort((l1, l2) -> l2.getAuthorIconUrl().size() - l1.getAuthorIconUrl().size());
             }
 
-            return list.subList(start, end);
+            List<BookDto> bookDtos = list.subList(start, end);
+            return bookDtos;
         }
     }
 
