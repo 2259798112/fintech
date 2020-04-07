@@ -129,7 +129,6 @@
                     <th>额外</th>
                     <th>操作</th>
                     <th>书名(标准)</th>
-                    <th>Link</th>
                 </tr>
                 </thead>
                 <tbody id="iTableBody">
@@ -352,16 +351,16 @@
                 let bookNameStandard = document.createElement('td');
                 let bookNameStandard_name = document.createElement('a');
                 bookNameStandard_name.href = item.jdUnionLink;
-                $(bookNameStandard_name).text("item.bookNameStandard");
+                $(bookNameStandard_name).text(item.bookNameStandard);
                 $(bookNameStandard).append(bookNameStandard_name);
 
                 let $tr = $('<tr>').append(
                     td0,
                     tdBookName,
+                    bookNameStandard,
                     _answerAuthor,
                     _answerAuthorAnother,
-                    _op,
-                    bookNameStandard
+                    _op
                 );
 
 
@@ -412,10 +411,10 @@
         let item = event.currentTarget;
         let index = $(item.parentElement).index();
         // notify(index);
-        if (index === 3) {//第四个 向左移动
+        if (index === 4) {//第四个 向左移动
             item.parentElement.previousElementSibling.append(item);
         }
-        if (index === 2) {//第三个 向右移动
+        if (index === 3) {//第三个 向右移动
             item.parentElement.nextElementSibling.append(item);
         }
     }
