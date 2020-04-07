@@ -350,7 +350,7 @@
 
                 let bookNameStandard = document.createElement('td');
                 let bookNameStandard_name = document.createElement('a');
-                bookNameStandard_name.href = item.jdUnionLink;
+                $(bookNameStandard_name).attr("href",item.jdUnionLink);//.href = item.jdUnionLink;
                 $(bookNameStandard_name).text(item.bookNameStandard);
                 $(bookNameStandard).append(bookNameStandard_name);
 
