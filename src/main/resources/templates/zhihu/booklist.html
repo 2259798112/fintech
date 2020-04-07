@@ -127,6 +127,8 @@
                     <th>回答者</th>
                     <th>额外</th>
                     <th>操作</th>
+                    <th>书名(标准)</th>
+                    <th>Link</th>
                 </tr>
                 </thead>
                 <tbody id="iTableBody">
@@ -345,12 +347,20 @@
                     }
                 }
 
+
+                let bookNameStandard = document.createElement('td');
+                $(bookNameStandard).text(item.bookNameStandard);
+                let jdUnionLink = document.createElement('td');
+                $(jdUnionLink).text(item.jdUnionLink);
+
                 let $tr = $('<tr>').append(
                     td0,
                     tdBookName,
                     _answerAuthor,
                     _answerAuthorAnother,
-                    _op
+                    _op,
+                    bookNameStandard,
+                    jdUnionLink
                 );
 
 

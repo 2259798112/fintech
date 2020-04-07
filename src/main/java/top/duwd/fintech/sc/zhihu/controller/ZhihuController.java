@@ -73,8 +73,11 @@ public class ZhihuController {
         List<BookDto> sourceList = zhihuAnswerService.findBook(qid, limit);
 
         List<BookDto> result = merge(start, end, sort, merge, sourceList);
-        return apm.success(result);
+        List<BookDto> list = zhihuBookService.setRawBookName(result);
+        return apm.success(list);
     }
+
+
 
     @NotNull
     private List<BookDto> merge(int start, int end, int sort, int merge, List<BookDto> sourceList) {
@@ -107,7 +110,7 @@ public class ZhihuController {
                         answer.getAuthorAnswerAnotherUrl().addAll(bookDto.getAuthorAnotherIconUrl());
                         answer.setAuthorAnswerAnotherUrl(new ArrayList<>(new HashSet<>(answer.getAuthorAnswerAnotherUrl())));
                     }
-                }else {
+                } else {
                     list.add(bookDto);
                 }
 
