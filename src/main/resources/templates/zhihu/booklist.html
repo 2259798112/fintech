@@ -29,10 +29,6 @@
         img {
             border-radius: 32px;
         }
-
-        td{
-            max-width: 150px
-        }
     </style>
 </head>
 <body>
@@ -120,11 +116,10 @@
         <div class="field">
             <table class="table is-bordered" id="iTable">
                 <col width="5%">
-                <col width="10%">
+                <col width="15%">
                 <col width="30%">
                 <col width="30%">
                 <col width="15%">
-                <col width="5%">
                 <col width="5%">
                 <thead>
                 <tr>
@@ -355,9 +350,10 @@
 
 
                 let bookNameStandard = document.createElement('td');
-                $(bookNameStandard).text(item.bookNameStandard);
-                let jdUnionLink = document.createElement('td');
-                $(jdUnionLink).text(item.jdUnionLink);
+                let bookNameStandard_name = document.createElement('a');
+                $(bookNameStandard_name).href("item.jdUnionLink");
+                $(bookNameStandard_name).text("item.bookNameStandard");
+                $(bookNameStandard).append(bookNameStandard_name);
 
                 let $tr = $('<tr>').append(
                     td0,
@@ -365,8 +361,7 @@
                     _answerAuthor,
                     _answerAuthorAnother,
                     _op,
-                    bookNameStandard,
-                    jdUnionLink
+                    bookNameStandard
                 );
 
 
