@@ -32,6 +32,7 @@ public class BaiduService {
 
     {
         hMap.put("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36");
+        hMap.put("Cookie", "BAIDUID=4858F47097AB263E62408DA0C8267EAD:FG=1; BIDUPSID=4858F47097AB263E62408DA0C8267EAD; PSTM=1585388447; BD_UPN=12314753; BDUSS=hGRWtjMXhpa1RsUVIydjVIQmVramx-a35seHZPT0FDMUJ3LVlSSWRia2sxN0JlSVFBQUFBJCQAAAAAAAAAAAEAAABRUDliRHV3ZDI1AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACRKiV4kSoleTk; BDORZ=B490B5EBF6F3CD402E515D22BCDA1598; BD_HOME=1; BDRCVFR^[feWj1Vr5u3D^]=I67x6TjHwwYf0; delPer=0; BD_CK_SAM=1; PSINO=3; sug=3; sugstore=0; ORIGIN=0; bdime=0; H_PS_PSSID=1462_31170_21118_31186_30904_31217_30823_31086_26350_31164; H_PS_645EC=1a5fWbFfIsw^%^2BBZsCmRlXyQkaUbAvRBpX7RKYW0eOCAsWPddUV0QFmUrKsjGhIdqbBz4b; COOKIE_SESSION=230_0_5_0_3_5_1_0_3_4_2_0_11_0_0_0_1586058540_0_1586358006^%^7C5^%^230_0_1586358006^%^7C1; BDSVRTM=581; WWW_ST=1586358015802");
     }
 
     public List<BaiduZhihuDto> parse(List<String> keywords, String keywordMain) {
@@ -42,7 +43,7 @@ public class BaiduService {
             pMap.put("wd", keyword);
 
             try {
-                Thread.sleep(1000 + (long) Math.random() * 100);
+                Thread.sleep(2000 + (long) Math.random() * 100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -58,8 +59,8 @@ public class BaiduService {
                 save(baiduZhihuDto);
 
             } catch (Exception e) {
-                e.printStackTrace();
-                log.error("wd={} 百度异常", keyword);
+//                e.printStackTrace();
+                log.error("wd={} 百度页面异常", keyword);
             }
         }
 
@@ -135,8 +136,8 @@ public class BaiduService {
                         baiduZhihuDto.setUrls(linkRealUpdateMap);
 
                     } catch (Exception e) {
-                        e.printStackTrace();
-                        log.error("获取知乎 真是url 异常");
+//                        e.printStackTrace();
+                        log.error("获取知乎 真实url 异常");
                     }
                 }
             }
@@ -144,10 +145,8 @@ public class BaiduService {
             if (linkRealUpdateMap.keySet().size() > 0) {
                 //取到了 updated 类型的url
                 for (String title : linkRealUpdateMap.keySet()) {
-                    String linkRaw = linkRawMap.get(title);
-                    String linkRawMd = DigestUtils.md5DigestAsHex(linkRaw.getBytes());
-                    BaiduZhihuEntity dbEntity = findByKV("linkRawMd", linkRawMd);
-                    if (dbEntity !=null){
+                    BaiduZhihuEntity dbEntity = findByKV("title", title);
+                    if (dbEntity !=null && !linkRealUpdateMap.get(title).equalsIgnoreCase(dbEntity.getLinkRealUpdate())){
                         dbEntity.setLinkRealUpdate(linkRealUpdateMap.get(title));
                         dbEntity.setUpdateTime(new Date());
                         baiduZhihuMapper.updateByPrimaryKey(dbEntity);
@@ -161,10 +160,8 @@ public class BaiduService {
             if (linkRealNotUpdateMap.keySet().size() > 0) {
                 //取到了 updated 类型的url
                 for (String title : linkRealNotUpdateMap.keySet()) {
-                    String linkRaw = linkRawMap.get(title);
-                    String linkRawMd = DigestUtils.md5DigestAsHex(linkRaw.getBytes());
-                    BaiduZhihuEntity dbEntity = findByKV("linkRawMd", linkRawMd);
-                    if (dbEntity !=null){
+                    BaiduZhihuEntity dbEntity = findByKV("title", title);
+                    if (dbEntity !=null && !linkRealNotUpdateMap.get(title).equalsIgnoreCase(dbEntity.getLinkReal())){
                         dbEntity.setLinkReal(linkRealNotUpdateMap.get(title));
                         dbEntity.setUpdateTime(new Date());
                         baiduZhihuMapper.updateByPrimaryKey(dbEntity);
@@ -215,7 +212,7 @@ public class BaiduService {
                 String linkRaw = baiduZhihuDto.getUrls().get(title);
                 String linkRawMd = DigestUtils.md5DigestAsHex(linkRaw.getBytes());
 
-                BaiduZhihuEntity dbEntity = findByKV("linkRawMd", linkRawMd);
+                BaiduZhihuEntity dbEntity = findByKV("title", title);
                 if (dbEntity == null) {
                     BaiduZhihuEntity entity = new BaiduZhihuEntity();
                     entity.setKeywordMain(baiduZhihuDto.getKeywordMain());
@@ -238,11 +235,32 @@ public class BaiduService {
 
 
     public BaiduZhihuEntity findByKV(String key, String value) {
-
+        log.info(key + "=" + value);
         Example example = new Example(BaiduZhihuEntity.class);
         example.createCriteria().andEqualTo(key, value);
 
-        BaiduZhihuEntity dbEntity = baiduZhihuMapper.selectOneByExample(example);
-        return dbEntity;
+        try {
+            BaiduZhihuEntity dbEntity = baiduZhihuMapper.selectOneByExample(example);
+            return dbEntity;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+
+    public List<BaiduZhihuEntity>  findListByKV(String key, String value) {
+        log.info(key + "=" + value);
+        Example example = new Example(BaiduZhihuEntity.class);
+        example.createCriteria().andEqualTo(key, value);
+
+        try {
+            List<BaiduZhihuEntity> list = baiduZhihuMapper.selectByExample(example);
+            return list;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

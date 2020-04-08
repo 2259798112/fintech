@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Book List</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://dwdcsv.oss-cn-shanghai.aliyuncs.com/fintech/bulma.min.css">
+    <script type="text/javascript" src="https://dwdcsv.oss-cn-shanghai.aliyuncs.com/fintech/all.js"></script>
+    <script type="text/javascript" src="https://dwdcsv.oss-cn-shanghai.aliyuncs.com/fintech/jquery-1.11.1.js"></script>
+
+    <style>
+    </style>
+</head>
+<body>
+<nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+        <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false"
+           data-target="navbarBasicExample">
+            <span aria-hidden="true"></span>
+        </a>
+    </div>
+
+    <div id="navbarBasicExample" class="navbar-menu">
+        <div class="navbar-start">
+            <a class="navbar-item">
+                首页
+            </a>
+            <div id="iNotify"></div>
+        </div>
+
+        <div class="navbar-end">
+            <div class="navbar-item">
+                <div class="buttons">
+                    <a class="button is-primary">
+                        <strong>Sign up</strong>
+                    </a>
+                    <a class="button is-light">
+                        Log in
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<section class="section">
+    <div class="container">
+        <div class="field is-horizontal">
+            <div class="field-body">
+                <div class="field">
+                    <label class="label">主关键词</label>
+                    <div class="control">
+                        <input class="input" type="text" placeholder="主关键词" id="iKeywordMain">
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">是否回答</label>
+                    <div class="control">
+                        <input class="input" type="text" placeholder="是否回答" id="iAnswered">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="field is-grouped">
+            <div class="control">
+                <button class="button is-link" id="iBtnSubmit">查询</button>
+            </div>
+        </div>
+        <div class="field">
+            <table class="table is-bordered" id="iTable">
+                <col width="5%">
+                <col width="15%">
+                <col width="15%">
+                <col width="30%">
+                <col width="20%">
+                <col width="15%">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>主关键词</th>
+                    <th>关键词</th>
+                    <th>标题</th>
+                    <th>原始链接</th>
+                    <th>知乎链接</th>
+                    <th>回答</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody id="iTableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</section>
+
+<script>
+
+    $('#iBtnSubmit').click(function () {
+        $('#iBtnSubmit').addClass('is-loading');
+        //333995687
+        let keywordMain = $("#iKeywordMain").val();
+        let answered = $("#iAnswered").val();
+
+        let url = "/baidu/search"//?id=" + qid + '&limit=' + limit;
+
+        $.ajax({
+            url: url,
+            type: "get", //send it through get method
+            data: {
+                keywordMain: keywordMain,
+                answered: answered
+            },
+            success: function (data) {
+                renderTable(data)
+            },
+            error: function () {
+                $('#iBtnSubmit').removeClass('is-loading');
+            }
+        });
+
+    });
+
+    function renderTable(data) {
+        $('#iBtnSubmit').removeClass('is-loading');
+        let arr = [];
+        if (data != null) {
+            arr = data.data;
+        } else {
+            return
+        }
+        //data is arr
+        $('#iTableBody').empty();
+        if (arr != null && arr.length > 0) {
+            $.each(arr, function (i, item) {
+                /*
+                                    <th>#</th>
+                    <th>主关键词</th>
+                    <th>关键词</th>
+                    <th>标题</th>
+                    <th>原始链接</th>
+                    <th>知乎链接</th>
+                    <th>回答</th>
+                    <th>操作</th>
+                 */
+                let td0 = document.createElement("td");
+                $(td0).text(i + 1);
+
+                let tdKeywordMain = document.createElement("td");
+                $(tdKeywordMain).text(item.keywordMain)
+
+                let tdKeyword = document.createElement("td");
+                $(tdKeyword).text(item.keywords)
+
+                let tdTitle = document.createElement("td");
+                $(tdTitle).text(item.title)
+
+                let tdBaiduLink = document.createElement("td");
+                let tdBaiduLinkA = document.createElement("a");
+                $(tdBaiduLinkA).text("百度原链").attr("href",item.linkRaw).attr("target","_blank");
+                $(tdBaiduLink).append(tdBaiduLinkA)
+
+                let tdZhihuReal = document.createElement("td");
+                let tdZhihuRealA = document.createElement("a");
+                if (item.linkRealUpdate === null) {
+                    $(tdZhihuRealA).text("知乎链接").attr("href",item.linkReal).attr("target","_blank");
+                } else {
+                    $(tdZhihuRealA).text("知乎链接").attr("href",item.linkRealUpdate).attr("target","_blank");
+                    $(tdZhihuReal).addClass("is-primary")
+                }
+                $(tdZhihuReal).append(tdZhihuRealA)
+
+                let tdOp = document.createElement("td");
+                $(tdOp).text("回答").attr("id",item.id).addClass("button");
+
+
+                let $tr = $('<tr>').append(
+                    td0,
+                    tdKeywordMain,
+                    tdKeyword,
+                    tdTitle,
+                    tdBaiduLink,
+                    tdZhihuReal,
+                    tdOp
+                );
+                $("#iTableBody").append($tr);
+            });
+        }
+    }
+
+</script>
+</body>

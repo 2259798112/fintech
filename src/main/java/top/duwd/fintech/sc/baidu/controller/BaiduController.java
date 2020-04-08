@@ -5,13 +5,11 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import top.duwd.dutil.http.api.ApiResult;
 import top.duwd.dutil.http.api.ApiResultManager;
 import top.duwd.fintech.common.domain.baidu.dto.BaiduZhihuDto;
+import top.duwd.fintech.common.domain.baidu.entity.BaiduZhihuEntity;
 import top.duwd.fintech.sc.baidu.service.BaiduService;
 
 import java.util.List;
@@ -38,5 +36,12 @@ public class BaiduController {
         List<BaiduZhihuDto> notEmptyList = baiduService.filterNotEmptyList(keywordMain, listRaw);
         log.info("finish");
         return apm.success(notEmptyList);
+    }
+
+    @GetMapping(value = "/search")
+    public ApiResult search(String keywordMain,Integer answered) {
+
+        List<BaiduZhihuEntity> list = baiduService.findListByKV("keywordMain", keywordMain);
+        return apm.success(list);
     }
 }
