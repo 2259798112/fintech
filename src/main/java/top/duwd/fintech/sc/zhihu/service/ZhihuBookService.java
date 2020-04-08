@@ -7,10 +7,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 import tk.mybatis.mapper.entity.Example;
+import top.duwd.fintech.common.domain.BookEntity;
+import top.duwd.fintech.common.domain.zhihu.dto.BookDto;
 import top.duwd.fintech.common.domain.zhihu.entity.ZhihuBookEntity;
+import top.duwd.fintech.common.mapper.BookMapper;
 import top.duwd.fintech.common.mapper.zhihu.ZhihuBookMapper;
 
-import java.util.Date;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -18,6 +22,52 @@ public class ZhihuBookService {
 
     @Autowired
     private ZhihuBookMapper zhihuBookMapper;
+
+    @Autowired
+    private BookMapper bookMapper;
+
+    public List<BookDto> setRawBookName(List<BookDto> result) {
+        if (result != null && result.size() > 0) {
+            List<String> names = new ArrayList<>();
+            for (BookDto bookDto : result) {
+                if (bookDto.getBookName().contains("\n")) {
+                    names.addAll(Arrays.asList(bookDto.getBookName().split("\n")));
+                } else {
+                    names.add(bookDto.getBookName());
+                }
+            }
+
+            Example example = new Example(BookEntity.class);
+            example.createCriteria().andIn("bookName", names);
+            List<BookEntity> list = bookMapper.selectByExample(example);
+            if (list != null && list.size() > 0) {
+                Map<String, String> map = list.stream().collect(
+                        Collectors.toMap(BookEntity::getBookName, BookEntity::getJdLinkUnionLong));
+
+                for (BookDto bookDto : result) {
+                    String bookName = bookDto.getBookName();
+                    if (bookName.contains("\n")) {
+                        String[] temp = bookName.split("\n");
+                        for (String name : temp) {
+                            if (map.get(name) != null) {
+                                bookDto.setBookNameStandard(name);
+                                bookDto.setJdUnionLink(map.get(name));
+                                break;
+                            }
+                        }
+                    } else {
+                        bookDto.setBookNameStandard(bookDto.getBookName());
+                        bookDto.setJdUnionLink(map.get(bookDto.getBookNameStandard()));
+                    }
+                }
+
+            }
+
+            return result;
+        }else {
+            return result;
+        }
+    }
 
 
     /**
@@ -108,7 +158,7 @@ public class ZhihuBookService {
         return count;
     }
 
-    public int ignore(String sourceId){
+    public int ignore(String sourceId) {
         ZhihuBookEntity dbEntity = zhihuBookMapper.selectByPrimaryKey(sourceId);
         if (dbEntity == null) {
             return 0;

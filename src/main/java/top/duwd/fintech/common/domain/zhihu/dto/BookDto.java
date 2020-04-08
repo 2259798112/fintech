@@ -17,4 +17,6 @@ public class BookDto {
     private Integer db;
     private Integer link;
     private Integer linkBookId;
+    private String bookNameStandard;
+    private String jdUnionLink;
 }

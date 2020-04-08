@@ -12,8 +12,8 @@
     <script type="text/javascript"
             src="https://dwdcsv.oss-cn-shanghai.aliyuncs.com/fintech/bulma-calendar.min.js"></script>
     <script type="text/javascript" src="https://dwdcsv.oss-cn-shanghai.aliyuncs.com/fintech/jquery-1.11.1.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/core.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/md5.js"></script>
+    <script type="text/javascript" src="/js/crypto/core.js"></script>
+    <script type="text/javascript" src="/js/crypto/md5.js"></script>
 
     <style>
         #iNotify {
@@ -116,14 +116,16 @@
         <div class="field">
             <table class="table is-bordered" id="iTable">
                 <col width="5%">
-                <col width="20%">
-                <col width="40%">
+                <col width="15%">
+                <col width="15%">
+                <col width="30%">
                 <col width="20%">
                 <col width="15%">
                 <thead>
                 <tr>
                     <th>#</th>
                     <th>书名</th>
+                    <th>书名(标准)</th>
                     <th>回答者</th>
                     <th>额外</th>
                     <th>操作</th>
@@ -345,9 +347,17 @@
                     }
                 }
 
+
+                let bookNameStandard = document.createElement('td');
+                let bookNameStandard_name = document.createElement('a');
+                $(bookNameStandard_name).attr("href",item.jdUnionLink).attr("target","_blank");//.href = item.jdUnionLink;
+                $(bookNameStandard_name).text(item.bookNameStandard);
+                $(bookNameStandard).append(bookNameStandard_name);
+
                 let $tr = $('<tr>').append(
                     td0,
                     tdBookName,
+                    bookNameStandard,
                     _answerAuthor,
                     _answerAuthorAnother,
                     _op
@@ -397,14 +407,14 @@
 
     function move(event) {
         console.log(event);
-        event.preventDefault();
+        // event.preventDefault();
         let item = event.currentTarget;
         let index = $(item.parentElement).index();
         // notify(index);
-        if (index === 3) {//第四个 向左移动
+        if (index === 4) {//第四个 向左移动
             item.parentElement.previousElementSibling.append(item);
         }
-        if (index === 2) {//第三个 向右移动
+        if (index === 3) {//第三个 向右移动
             item.parentElement.nextElementSibling.append(item);
         }
     }
