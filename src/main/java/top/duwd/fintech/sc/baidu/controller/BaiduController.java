@@ -11,10 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import top.duwd.dutil.http.api.ApiResult;
 import top.duwd.dutil.http.api.ApiResultManager;
-import top.duwd.fintech.common.domain.BaiduZhihuDto;
+import top.duwd.fintech.common.domain.baidu.dto.BaiduZhihuDto;
 import top.duwd.fintech.sc.baidu.service.BaiduService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -31,21 +30,12 @@ public class BaiduController {
     public ApiResult parse(@RequestBody String json) {
 
         JSONObject jsonObject = JSON.parseObject(json);
-        List<String> words = jsonObject.getJSONArray("words").toJavaList(String.class);
-        List<BaiduZhihuDto> list = baiduService.parse(words);
-        if (list != null && list.size() > 0) {
-            for (int i = 0; i < list.size(); i++) {
-                baiduService.parseZhihuLink(list.get(i));
-            }
-        }
+        List<String> keywords = jsonObject.getJSONArray("keywords").toJavaList(String.class);
+        String keywordMain = jsonObject.getString("keywordMain");
+        List<BaiduZhihuDto> listRaw = baiduService.parse(keywords,keywordMain);
+        baiduService.parseZhihuLink(listRaw);
 
-        ArrayList<BaiduZhihuDto> notEmptyList = new ArrayList<>();
-        for (BaiduZhihuDto baiduZhihuDto : notEmptyList) {
-            if (baiduZhihuDto.getUrls().keySet().size() >0){
-                notEmptyList.add(baiduZhihuDto);
-            }
-        }
-
+        List<BaiduZhihuDto> notEmptyList = baiduService.filterNotEmptyList(keywordMain, listRaw);
         log.info("finish");
         return apm.success(notEmptyList);
     }

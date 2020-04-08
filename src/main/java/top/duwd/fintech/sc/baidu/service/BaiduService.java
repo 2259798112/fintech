@@ -1,5 +1,6 @@
 package top.duwd.fintech.sc.baidu.service;
 
+import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -7,9 +8,13 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
+import tk.mybatis.mapper.entity.Example;
 import top.duwd.dutil.http.RequestBuilder;
-import top.duwd.fintech.common.domain.BaiduZhihuDto;
+import top.duwd.fintech.common.domain.baidu.dto.BaiduZhihuDto;
+import top.duwd.fintech.common.domain.baidu.entity.BaiduZhihuEntity;
+import top.duwd.fintech.common.mapper.baidu.BaiduZhihuMapper;
 
 import java.util.*;
 
@@ -17,6 +22,8 @@ import java.util.*;
 @Service
 public class BaiduService {
 
+    @Autowired
+    private BaiduZhihuMapper baiduZhihuMapper;
     @Autowired
     private RequestBuilder requestBuilder;
 
@@ -27,7 +34,7 @@ public class BaiduService {
         hMap.put("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36");
     }
 
-    public List<BaiduZhihuDto> parse(List<String> keywords) {
+    public List<BaiduZhihuDto> parse(List<String> keywords, String keywordMain) {
         HashSet<String> keywordsSet = new HashSet<>(keywords);
         ArrayList<BaiduZhihuDto> list = new ArrayList<>();
         HashMap<String, String> pMap = new HashMap<>();
@@ -43,13 +50,19 @@ public class BaiduService {
             try {
                 String htmlString = requestBuilder.get(url, hMap, pMap);
                 BaiduZhihuDto baiduZhihuDto = parseBaiduHtml(htmlString, "知乎");
-                baiduZhihuDto.setKeyword(keyword);
+                baiduZhihuDto.setKeywords(keyword);
+                baiduZhihuDto.setKeywordMain(keywordMain);
                 list.add(baiduZhihuDto);
+
+                //保存原始信息
+                save(baiduZhihuDto);
+
             } catch (Exception e) {
                 e.printStackTrace();
                 log.error("wd={} 百度异常", keyword);
             }
         }
+
         return list;
 
     }
@@ -58,6 +71,7 @@ public class BaiduService {
         if (StringUtils.isEmpty(htmlString)) {
             return null;
         }
+
         BaiduZhihuDto baiduZhihuDto = new BaiduZhihuDto();
         HashMap<String, String> map = new HashMap<>();
         //获取连接， 标题，url
@@ -81,47 +95,83 @@ public class BaiduService {
 
         }
         baiduZhihuDto.setUrls(map);
+
         return baiduZhihuDto;
     }
 
-    public void parseZhihuLink(BaiduZhihuDto baiduZhihuDto) {
+    public void parseZhihuLink(List<BaiduZhihuDto> list) {
 
-        //解析 获取真正link
-        Map<String, String> urls = baiduZhihuDto.getUrls();
-        Map<String, String> updateUrls = new HashMap<String, String>();
+        for (BaiduZhihuDto baiduZhihuDto : list) {
 
-        if (urls != null && urls.keySet().size() > 0) {
+            //解析 获取真正link
+            Map<String, String> linkRawMap = baiduZhihuDto.getUrls();
+            Map<String, String> linkRealMap = new HashMap<>();
+            Map<String, String> linkRealUpdateMap = new HashMap<>();
 
-            for (String title : urls.keySet()) {
-                try {
-                    Thread.sleep(1000 + (long) Math.random() * 1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+            if (linkRawMap != null && linkRawMap.keySet().size() > 0) {
 
-
-                String urlRaw = urls.get(title) + "&wd=";
-                try {
-                    String htmlString = requestBuilder.get(urlRaw, hMap, null);
-                    Document parse = Jsoup.parse(htmlString);
-                    Element noscript = parse.getElementsByTag("noscript").first().child(0);
-                    String content = noscript.attr("content");
-                    String url = content.split("'")[1];
-                    if (StringUtils.endsWithIgnoreCase(url, "updated")) {
-                        log.error("有效连接：{}",url);
-                        updateUrls.put(title, url);
-                    } else {
-                        System.out.println("无效连接：" + url);
+                for (String title : linkRawMap.keySet()) {
+                    try {
+                        Thread.sleep(1000 + (long) Math.random() * 1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
-                    baiduZhihuDto.setUrls(updateUrls);
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    log.error("获取知乎 真是url 异常");
+
+                    String urlRaw = linkRawMap.get(title) + "&wd=";
+                    try {
+                        String htmlString = requestBuilder.get(urlRaw, hMap, null);
+                        Document parse = Jsoup.parse(htmlString);
+                        Element noscript = parse.getElementsByTag("noscript").first().child(0);
+                        String content = noscript.attr("content");
+                        String url = content.split("'")[1];
+                        if (StringUtils.endsWithIgnoreCase(url, "updated")) {
+                            log.error("有效连接：{}", url);
+                            linkRealMap.put(title, url);
+                        } else {
+                            System.out.println("无效连接：" + url);
+                        }
+                        baiduZhihuDto.setUrls(linkRealMap);
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        log.error("获取知乎 真是url 异常");
+                    }
                 }
             }
 
+            if (linkRealMap.keySet().size() > 0) {
+                //取到了 updated 类型的url
+                for (String title : linkRealMap.keySet()) {
+                    String linkRaw = linkRawMap.get(title);
+                    String linkRawMd = DigestUtils.md5DigestAsHex(linkRaw.getBytes());
+                    BaiduZhihuEntity dbEntity = findByKV("linkRawMd", linkRawMd);
+                    if (dbEntity !=null){
+                        dbEntity.setLinkReal(linkRealMap.get(title));
+                        dbEntity.setUpdateTime(new Date());
+                        baiduZhihuMapper.updateByPrimaryKey(dbEntity);
+                    }else {
+                        log.info("db not in");
+                    }
+                }
+            }
+
+
+
         }
+
+    }
+
+    public List<BaiduZhihuDto> filterNotEmptyList(String keywordMain, List<BaiduZhihuDto> list) {
+        ArrayList<BaiduZhihuDto> notEmptyList = new ArrayList<>();
+        for (BaiduZhihuDto baiduZhihuDto : list) {
+            if (baiduZhihuDto.getUrls().keySet().size() > 0) {
+                baiduZhihuDto.setKeywordMain(keywordMain);
+                notEmptyList.add(baiduZhihuDto);
+            }
+        }
+        //更新 updated 类型的地址
+        return notEmptyList;
     }
 
     /*
@@ -142,4 +192,40 @@ public class BaiduService {
 
      */
 
+    public void save(BaiduZhihuDto baiduZhihuDto) {
+        if (baiduZhihuDto != null && baiduZhihuDto.getUrls() != null && baiduZhihuDto.getUrls().keySet().size() > 0) {
+            for (String title : baiduZhihuDto.getUrls().keySet()) {
+                String linkRaw = baiduZhihuDto.getUrls().get(title);
+                String linkRawMd = DigestUtils.md5DigestAsHex(linkRaw.getBytes());
+
+                BaiduZhihuEntity dbEntity = findByKV("linkRawMd", linkRawMd);
+                if (dbEntity == null) {
+                    BaiduZhihuEntity entity = new BaiduZhihuEntity();
+                    entity.setKeywordMain(baiduZhihuDto.getKeywordMain());
+                    entity.setKeywords(baiduZhihuDto.getKeywords());
+                    entity.setTitle(title);
+                    entity.setLinkRaw(linkRaw);
+                    entity.setLinkRawMd(linkRawMd);
+                    Date date = new Date();
+                    entity.setCreateTime(date);
+                    entity.setUpdateTime(date);
+
+                    baiduZhihuMapper.insert(entity);
+                } else {
+                    //老数据
+                    log.info("already in db ={}", JSON.toJSONString(dbEntity));
+                }
+            }
+        }
+    }
+
+
+    public BaiduZhihuEntity findByKV(String key, String value) {
+
+        Example example = new Example(BaiduZhihuEntity.class);
+        example.createCriteria().andEqualTo(key, value);
+
+        BaiduZhihuEntity dbEntity = baiduZhihuMapper.selectOneByExample(example);
+        return dbEntity;
+    }
 }
