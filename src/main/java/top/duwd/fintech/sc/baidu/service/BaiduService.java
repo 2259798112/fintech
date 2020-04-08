@@ -105,8 +105,8 @@ public class BaiduService {
 
             //解析 获取真正link
             Map<String, String> linkRawMap = baiduZhihuDto.getUrls();
-            Map<String, String> linkRealMap = new HashMap<>();
             Map<String, String> linkRealUpdateMap = new HashMap<>();
+            Map<String, String> linkRealNotUpdateMap = new HashMap<>();
 
             if (linkRawMap != null && linkRawMap.keySet().size() > 0) {
 
@@ -127,11 +127,12 @@ public class BaiduService {
                         String url = content.split("'")[1];
                         if (StringUtils.endsWithIgnoreCase(url, "updated")) {
                             log.error("有效连接：{}", url);
-                            linkRealMap.put(title, url);
+                            linkRealUpdateMap.put(title, url);
                         } else {
+                            linkRealNotUpdateMap.put(title, url);
                             System.out.println("无效连接：" + url);
                         }
-                        baiduZhihuDto.setUrls(linkRealMap);
+                        baiduZhihuDto.setUrls(linkRealUpdateMap);
 
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -140,14 +141,14 @@ public class BaiduService {
                 }
             }
 
-            if (linkRealMap.keySet().size() > 0) {
+            if (linkRealUpdateMap.keySet().size() > 0) {
                 //取到了 updated 类型的url
-                for (String title : linkRealMap.keySet()) {
+                for (String title : linkRealUpdateMap.keySet()) {
                     String linkRaw = linkRawMap.get(title);
                     String linkRawMd = DigestUtils.md5DigestAsHex(linkRaw.getBytes());
                     BaiduZhihuEntity dbEntity = findByKV("linkRawMd", linkRawMd);
                     if (dbEntity !=null){
-                        dbEntity.setLinkReal(linkRealMap.get(title));
+                        dbEntity.setLinkReal(linkRealUpdateMap.get(title));
                         dbEntity.setUpdateTime(new Date());
                         baiduZhihuMapper.updateByPrimaryKey(dbEntity);
                     }else {

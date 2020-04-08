@@ -18,6 +18,7 @@ public class BaiduZhihuEntity {
     private String linkRaw;
     private String linkRawMd;
     private String linkReal;
+    private String linkRealUpdate;
 
     private Date createTime;
     private Date updateTime;
