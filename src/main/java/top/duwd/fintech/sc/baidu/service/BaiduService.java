@@ -148,7 +148,7 @@ public class BaiduService {
                     String linkRawMd = DigestUtils.md5DigestAsHex(linkRaw.getBytes());
                     BaiduZhihuEntity dbEntity = findByKV("linkRawMd", linkRawMd);
                     if (dbEntity !=null){
-                        dbEntity.setLinkReal(linkRealUpdateMap.get(title));
+                        dbEntity.setLinkRealUpdate(linkRealUpdateMap.get(title));
                         dbEntity.setUpdateTime(new Date());
                         baiduZhihuMapper.updateByPrimaryKey(dbEntity);
                     }else {
@@ -157,6 +157,22 @@ public class BaiduService {
                 }
             }
 
+
+            if (linkRealNotUpdateMap.keySet().size() > 0) {
+                //取到了 updated 类型的url
+                for (String title : linkRealNotUpdateMap.keySet()) {
+                    String linkRaw = linkRawMap.get(title);
+                    String linkRawMd = DigestUtils.md5DigestAsHex(linkRaw.getBytes());
+                    BaiduZhihuEntity dbEntity = findByKV("linkRawMd", linkRawMd);
+                    if (dbEntity !=null){
+                        dbEntity.setLinkReal(linkRealNotUpdateMap.get(title));
+                        dbEntity.setUpdateTime(new Date());
+                        baiduZhihuMapper.updateByPrimaryKey(dbEntity);
+                    }else {
+                        log.info("db not in");
+                    }
+                }
+            }
 
 
         }
