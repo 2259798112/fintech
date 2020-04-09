@@ -46,7 +46,7 @@ public class BaiduController {
         List<String> keywords = jsonObject.getJSONArray("keywords").toJavaList(String.class);
         String keywordMain = jsonObject.getString("keywordMain");
         String cookie = jsonObject.getString("cookie");
-        if (StringUtils.isEmpty(cookie)){
+        if (!StringUtils.isEmpty(cookie)){
             BaiduService.hMap.put("Cookie", cookie);
         }
 

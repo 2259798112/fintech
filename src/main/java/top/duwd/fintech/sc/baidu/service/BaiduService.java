@@ -12,7 +12,9 @@ import tk.mybatis.mapper.entity.Example;
 import top.duwd.dutil.http.RequestBuilder;
 import top.duwd.fintech.common.domain.baidu.entity.BaiduZhihuEntity;
 import top.duwd.fintech.common.mapper.baidu.BaiduZhihuMapper;
+import top.duwd.fintech.common.proxy.ProxyService;
 
+import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -25,6 +27,8 @@ public class BaiduService {
     @Autowired
     private BaiduZhihuMapper baiduZhihuMapper;
     @Autowired
+    private ProxyService proxyService;
+    @Autowired
     private RequestBuilder requestBuilder;
 
     public static final String url = "https://www.baidu.com/s";
@@ -32,7 +36,6 @@ public class BaiduService {
 
     {
         hMap.put("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36");
-        hMap.put("Cookie", "BAIDUID=63A84884AF734A69CEBFF64A9599D792:FG=1; BIDUPSID=63A84884AF734A69CEBFF64A9599D792; PSTM=1584946566; BD_UPN=123253; BDORZ=B490B5EBF6F3CD402E515D22BCDA1598; BDUSS=nc1T01QaHltM3JhN3YyaHRIRmtleDdFWXQzLVFnQ082U2tnU0kzaWR6d0o1YlJlSVFBQUFBJCQAAAAAAAAAAAEAAABRUDliRHV3ZDI1AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlYjV4JWI1ec; delPer=0; BD_CK_SAM=1; PSINO=3; COOKIE_SESSION=1373_0_9_0_116_110_1_7_3_8_47_24_7435_0_0_0_1586325253_0_1586332200%7C9%230_0_1586332200%7C1; BD_HOME=1; BDRCVFR[feWj1Vr5u3D]=I67x6TjHwwYf0; H_PS_645EC=4836gg6d9q6tskPA8Z6QakudpkbCsVHLpKt3mHv5o0RTpFfxisSEHsoZP40ueuiACRDQ; sug=3; sugstore=0; ORIGIN=0; bdime=0; H_PS_PSSID=30971_1468_31122_21099_30840_31187_30824_26350_31164_31196; BDSVRTM=18; WWW_ST=1586395510953");
     }
 
 
@@ -90,21 +93,50 @@ public class BaiduService {
 
         String htmlString = null;
         try {
-            Thread.sleep(1000 + 5000 * (long) Math.random());
+            Thread.sleep(1000 + 1000 * (long) Math.random());
             htmlString = requestBuilder.get(url, hMap, pMap);
         } catch (Exception e) {
 //            e.printStackTrace();
             log.error("获取百度 {} 搜索页异常", keyword);
-            return null;
+            //重试一次
+            Proxy proxy = proxyService.getProxy(5);
+            if (proxy != null) {
+                try {
+                    htmlString = requestBuilder.getWithProxy(url, hMap, pMap, proxy);
+                } catch (Exception ex) {
+                    log.error("使用代理{} 获取百度 {} 搜索页异常", proxy.address().toString(), keyword);
+                    return null;
+                }
+            } else {
+                return null;
+            }
         }
 
         Document document = Jsoup.parse(htmlString);
         Element body = document.body();
         if (document.title().contains("安全")) {
             log.error("获取百度 {} 搜索页异常, title={}", keyword, document.title());
+
+            Proxy proxy = proxyService.getProxy(5);
+            if (proxy != null) {
+                try {
+                    htmlString = requestBuilder.getWithProxy(url, hMap, pMap, proxy);
+                    document = Jsoup.parse(htmlString);
+                    body = document.body();
+                } catch (Exception ex) {
+                    log.error("使用代理{} 获取百度 {} 搜索页异常", proxy.address().toString(), keyword);
+                    return null;
+                }
+            } else {
+                return null;
+            }
         }
 
         Element content_left = body.getElementById("content_left");
+        if (content_left == null){
+            log.error("异常 title={}",document.title());
+            return null;
+        }
         Elements contents = content_left.getElementsByClass("result");//搜索结果列表
         List<BaiduZhihuEntity> list = new ArrayList<>();
         Date date = new Date();
@@ -139,12 +171,24 @@ public class BaiduService {
 
             String htmlString = null;
             try {
-                Thread.sleep(1000 + 5000 * (long) Math.random());
+                Thread.sleep(1000 + 1000 * (long) Math.random());
                 htmlString = requestBuilder.get(baiduZhihuEntity.getLinkRaw() + "&wd=", hMap, null);
             } catch (Exception e) {
 //                e.printStackTrace();
                 log.error("解析百度原始连接异常 url={}", baiduZhihuEntity.getLinkRaw());
-                continue;
+                //重试一次
+                Proxy proxy = proxyService.getProxy(5);
+                if (proxy != null) {
+                    try {
+                        htmlString = requestBuilder.getWithProxy(baiduZhihuEntity.getLinkRaw() + "&wd=", hMap, null);
+                    } catch (Exception ex) {
+                        log.error("使用代理{},解析百度原始连接异常 url={}", proxy.address().toString(), baiduZhihuEntity.getLinkRaw());
+                        continue;
+                    }
+                } else {
+                    continue;
+                }
+
             }
 
             Document parse = Jsoup.parse(htmlString);
