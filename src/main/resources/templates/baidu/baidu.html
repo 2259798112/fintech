@@ -199,7 +199,7 @@
                 $(tdKeyword).text(item.keywords)
 
                 let tdTitle = document.createElement("td");
-                $(tdTitle).text(item.title)
+                $(tdTitle).text((item.title + '\n'+item.linkReal + item.linkRealUpdate).replace("null",""));
 
                 let tdBaiduLink = document.createElement("td");
                 let tdBaiduLinkA = document.createElement("a");
@@ -226,7 +226,8 @@
                 $(tdOp).append(tdOpBtn);
 
                 let tdTime = document.createElement("td");
-                $(tdTime).text(item.createTime);
+                $(tdTime).text(new Date(item.createTime).toLocaleString());
+
 
                 let $tr = $('<tr>').append(
                     td0,
@@ -291,6 +292,7 @@
             }
         });
     })
+
 
 </script>
 </body>
