@@ -1,6 +1,5 @@
 package top.duwd.fintech.sc.baidu.service;
 
-import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -8,15 +7,16 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
 import tk.mybatis.mapper.entity.Example;
 import top.duwd.dutil.http.RequestBuilder;
-import top.duwd.fintech.common.domain.baidu.dto.BaiduZhihuDto;
 import top.duwd.fintech.common.domain.baidu.entity.BaiduZhihuEntity;
 import top.duwd.fintech.common.mapper.baidu.BaiduZhihuMapper;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -32,205 +32,7 @@ public class BaiduService {
 
     {
         hMap.put("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36");
-        hMap.put("Cookie", "BAIDUID=4858F47097AB263E62408DA0C8267EAD:FG=1; BIDUPSID=4858F47097AB263E62408DA0C8267EAD; PSTM=1585388447; BD_UPN=12314753; BDUSS=hGRWtjMXhpa1RsUVIydjVIQmVramx-a35seHZPT0FDMUJ3LVlSSWRia2sxN0JlSVFBQUFBJCQAAAAAAAAAAAEAAABRUDliRHV3ZDI1AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACRKiV4kSoleTk; BDORZ=B490B5EBF6F3CD402E515D22BCDA1598; BD_HOME=1; BDRCVFR^[feWj1Vr5u3D^]=I67x6TjHwwYf0; delPer=0; BD_CK_SAM=1; PSINO=3; sug=3; sugstore=0; ORIGIN=0; bdime=0; H_PS_PSSID=1462_31170_21118_31186_30904_31217_30823_31086_26350_31164; H_PS_645EC=1a5fWbFfIsw^%^2BBZsCmRlXyQkaUbAvRBpX7RKYW0eOCAsWPddUV0QFmUrKsjGhIdqbBz4b; COOKIE_SESSION=230_0_5_0_3_5_1_0_3_4_2_0_11_0_0_0_1586058540_0_1586358006^%^7C5^%^230_0_1586358006^%^7C1; BDSVRTM=581; WWW_ST=1586358015802");
-    }
-
-    public List<BaiduZhihuDto> parse(List<String> keywords, String keywordMain) {
-        HashSet<String> keywordsSet = new HashSet<>(keywords);
-        ArrayList<BaiduZhihuDto> list = new ArrayList<>();
-        HashMap<String, String> pMap = new HashMap<>();
-        for (String keyword : keywordsSet) {
-            pMap.put("wd", keyword);
-
-            try {
-                Thread.sleep(2000 + (long) Math.random() * 100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            try {
-                String htmlString = requestBuilder.get(url, hMap, pMap);
-                BaiduZhihuDto baiduZhihuDto = parseBaiduHtml(htmlString, "知乎");
-                baiduZhihuDto.setKeywords(keyword);
-                baiduZhihuDto.setKeywordMain(keywordMain);
-                list.add(baiduZhihuDto);
-
-                //保存原始信息
-                save(baiduZhihuDto);
-
-            } catch (Exception e) {
-//                e.printStackTrace();
-                log.error("wd={} 百度页面异常", keyword);
-            }
-        }
-
-        return list;
-
-    }
-
-    private BaiduZhihuDto parseBaiduHtml(String htmlString, String targetSite) {
-        if (StringUtils.isEmpty(htmlString)) {
-            return null;
-        }
-
-        BaiduZhihuDto baiduZhihuDto = new BaiduZhihuDto();
-        HashMap<String, String> map = new HashMap<>();
-        //获取连接， 标题，url
-        Document document = Jsoup.parse(htmlString);
-        Element body = document.body();
-        Element content_left = body.getElementById("content_left");
-        Elements contents = content_left.getElementsByClass("result");
-        for (Element content : contents) {
-            Elements src = content.select("span[class=nor-src-wrap]");
-            if (src != null && src.size() > 0) {
-                if (src.first().text().equalsIgnoreCase(targetSite)) {
-                    Elements aTag = content.select("a[data-click]");
-                    if (aTag != null && aTag.size() > 0) {
-                        String url = aTag.first().attr("href");
-                        String title = aTag.first().text();
-                        map.put(title, url);
-                        System.out.println(title + "=" + url);
-                    }
-                }
-            }
-
-        }
-        baiduZhihuDto.setUrls(map);
-
-        return baiduZhihuDto;
-    }
-
-    public void parseZhihuLink(List<BaiduZhihuDto> list) {
-
-        for (BaiduZhihuDto baiduZhihuDto : list) {
-
-            //解析 获取真正link
-            Map<String, String> linkRawMap = baiduZhihuDto.getUrls();
-            Map<String, String> linkRealUpdateMap = new HashMap<>();
-            Map<String, String> linkRealNotUpdateMap = new HashMap<>();
-
-            if (linkRawMap != null && linkRawMap.keySet().size() > 0) {
-
-                for (String title : linkRawMap.keySet()) {
-                    try {
-                        Thread.sleep(1000 + (long) Math.random() * 1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-
-
-                    String urlRaw = linkRawMap.get(title) + "&wd=";
-                    try {
-                        String htmlString = requestBuilder.get(urlRaw, hMap, null);
-                        Document parse = Jsoup.parse(htmlString);
-                        Element noscript = parse.getElementsByTag("noscript").first().child(0);
-                        String content = noscript.attr("content");
-                        String url = content.split("'")[1];
-                        if (StringUtils.endsWithIgnoreCase(url, "updated")) {
-                            log.error("有效连接：{}", url);
-                            linkRealUpdateMap.put(title, url);
-                        } else {
-                            linkRealNotUpdateMap.put(title, url);
-                            System.out.println("无效连接：" + url);
-                        }
-                        baiduZhihuDto.setUrls(linkRealUpdateMap);
-
-                    } catch (Exception e) {
-//                        e.printStackTrace();
-                        log.error("获取知乎 真实url 异常");
-                    }
-                }
-            }
-
-            if (linkRealUpdateMap.keySet().size() > 0) {
-                //取到了 updated 类型的url
-                for (String title : linkRealUpdateMap.keySet()) {
-                    BaiduZhihuEntity dbEntity = findByKV("title", title);
-                    if (dbEntity !=null && !linkRealUpdateMap.get(title).equalsIgnoreCase(dbEntity.getLinkRealUpdate())){
-                        dbEntity.setLinkRealUpdate(linkRealUpdateMap.get(title));
-                        dbEntity.setUpdateTime(new Date());
-                        baiduZhihuMapper.updateByPrimaryKey(dbEntity);
-                    }else {
-                        log.info("db not in");
-                    }
-                }
-            }
-
-
-            if (linkRealNotUpdateMap.keySet().size() > 0) {
-                //取到了 updated 类型的url
-                for (String title : linkRealNotUpdateMap.keySet()) {
-                    BaiduZhihuEntity dbEntity = findByKV("title", title);
-                    if (dbEntity !=null && !linkRealNotUpdateMap.get(title).equalsIgnoreCase(dbEntity.getLinkReal())){
-                        dbEntity.setLinkReal(linkRealNotUpdateMap.get(title));
-                        dbEntity.setUpdateTime(new Date());
-                        baiduZhihuMapper.updateByPrimaryKey(dbEntity);
-                    }else {
-                        log.info("db not in");
-                    }
-                }
-            }
-
-
-        }
-
-    }
-
-    public List<BaiduZhihuDto> filterNotEmptyList(String keywordMain, List<BaiduZhihuDto> list) {
-        ArrayList<BaiduZhihuDto> notEmptyList = new ArrayList<>();
-        for (BaiduZhihuDto baiduZhihuDto : list) {
-            if (baiduZhihuDto.getUrls().keySet().size() > 0) {
-                baiduZhihuDto.setKeywordMain(keywordMain);
-                notEmptyList.add(baiduZhihuDto);
-            }
-        }
-        //更新 updated 类型的地址
-        return notEmptyList;
-    }
-
-    /*
-    public static void main(String[] args) {
-        RequestBuilder requestBuilder = new RequestBuilder();
-        BaiduService baiduService = new BaiduService();
-        ArrayList<String> list = new ArrayList<>();
-        list.add("降噪耳机");
-
-        List<BaiduZhihuDto> result = baiduService.parse(requestBuilder, list);
-        System.out.println(JSON.toJSONString(result));
-        for (int i = 0; i < result.size(); i++) {
-            baiduService.parseZhihuLink(requestBuilder,result.get(i));
-        }
-        System.out.println(JSON.toJSONString(result));
-
-    }
-
-     */
-
-    public void save(BaiduZhihuDto baiduZhihuDto) {
-        if (baiduZhihuDto != null && baiduZhihuDto.getUrls() != null && baiduZhihuDto.getUrls().keySet().size() > 0) {
-            for (String title : baiduZhihuDto.getUrls().keySet()) {
-                String linkRaw = baiduZhihuDto.getUrls().get(title);
-                String linkRawMd = DigestUtils.md5DigestAsHex(linkRaw.getBytes());
-
-                BaiduZhihuEntity dbEntity = findByKV("title", title);
-                if (dbEntity == null) {
-                    BaiduZhihuEntity entity = new BaiduZhihuEntity();
-                    entity.setKeywordMain(baiduZhihuDto.getKeywordMain());
-                    entity.setKeywords(baiduZhihuDto.getKeywords());
-                    entity.setTitle(title);
-                    entity.setLinkRaw(linkRaw);
-                    entity.setLinkRawMd(linkRawMd);
-                    Date date = new Date();
-                    entity.setCreateTime(date);
-                    entity.setUpdateTime(date);
-
-                    baiduZhihuMapper.insert(entity);
-                } else {
-                    //老数据
-                    log.info("already in db ={}", JSON.toJSONString(dbEntity));
-                }
-            }
-        }
+        hMap.put("Cookie", "BAIDUID=63A84884AF734A69CEBFF64A9599D792:FG=1; BIDUPSID=63A84884AF734A69CEBFF64A9599D792; PSTM=1584946566; BD_UPN=123253; BDORZ=B490B5EBF6F3CD402E515D22BCDA1598; BDUSS=nc1T01QaHltM3JhN3YyaHRIRmtleDdFWXQzLVFnQ082U2tnU0kzaWR6d0o1YlJlSVFBQUFBJCQAAAAAAAAAAAEAAABRUDliRHV3ZDI1AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlYjV4JWI1ec; delPer=0; BD_CK_SAM=1; PSINO=3; COOKIE_SESSION=1373_0_9_0_116_110_1_7_3_8_47_24_7435_0_0_0_1586325253_0_1586332200%7C9%230_0_1586332200%7C1; BD_HOME=1; BDRCVFR[feWj1Vr5u3D]=I67x6TjHwwYf0; H_PS_645EC=4836gg6d9q6tskPA8Z6QakudpkbCsVHLpKt3mHv5o0RTpFfxisSEHsoZP40ueuiACRDQ; sug=3; sugstore=0; ORIGIN=0; bdime=0; H_PS_PSSID=30971_1468_31122_21099_30840_31187_30824_26350_31164_31196; BDSVRTM=18; WWW_ST=1586395510953");
     }
 
 
@@ -249,11 +51,14 @@ public class BaiduService {
     }
 
 
-
-    public List<BaiduZhihuEntity>  findListByKV(String key, String value) {
+    public List<BaiduZhihuEntity> findListByKV(String key, String value, boolean like) {
         log.info(key + "=" + value);
         Example example = new Example(BaiduZhihuEntity.class);
-        example.createCriteria().andEqualTo(key, value);
+        if (like) {
+            example.createCriteria().andLike(key, "%" + value + "%");
+        } else {
+            example.createCriteria().andEqualTo(key, value);
+        }
 
         try {
             List<BaiduZhihuEntity> list = baiduZhihuMapper.selectByExample(example);
@@ -263,4 +68,183 @@ public class BaiduService {
             return null;
         }
     }
+
+    public List<BaiduZhihuEntity> searchKeyword(List<String> keywords, String keywordMain) {
+
+        List<BaiduZhihuEntity> list = new ArrayList<>();
+
+        for (String keyword : keywords) {
+            List<BaiduZhihuEntity> searchList = searchKeywordFromZhihu(keyword);
+            if (searchList != null) {
+                list.addAll(searchList);
+            }
+        }
+        return list;
+    }
+
+    public List<BaiduZhihuEntity> searchKeywordFromZhihu(String keyword) {
+
+        HashMap<String, String> pMap = new HashMap<>();
+        pMap.put("wd", keyword);
+        String targetSite = "知乎";
+
+        String htmlString = null;
+        try {
+            Thread.sleep(1000 + 5000 * (long) Math.random());
+            htmlString = requestBuilder.get(url, hMap, pMap);
+        } catch (Exception e) {
+//            e.printStackTrace();
+            log.error("获取百度 {} 搜索页异常", keyword);
+            return null;
+        }
+
+        Document document = Jsoup.parse(htmlString);
+        Element body = document.body();
+        if (document.title().contains("安全")) {
+            log.error("获取百度 {} 搜索页异常, title={}", keyword, document.title());
+        }
+
+        Element content_left = body.getElementById("content_left");
+        Elements contents = content_left.getElementsByClass("result");//搜索结果列表
+        List<BaiduZhihuEntity> list = new ArrayList<>();
+        Date date = new Date();
+        for (Element content : contents) {
+            BaiduZhihuEntity entity = new BaiduZhihuEntity();
+
+            Elements src = content.select("span[class=nor-src-wrap]");
+            if (src != null && src.size() > 0) {
+                if (src.first().text().equalsIgnoreCase(targetSite)) {
+                    Elements aTag = content.select("a[data-click]");//
+                    if (aTag != null && aTag.size() > 0) {
+                        //获取原始 百度 zhihu link
+
+                        String url = aTag.first().attr("href");
+                        String title = aTag.first().text();
+                        entity.setKeywords(keyword);
+                        entity.setTitle(title);
+                        entity.setLinkRaw(url);
+                        entity.setCreateTime(date);
+                        entity.setUpdateTime(date);
+                        list.add(entity);
+                        log.info(title + "=" + url);
+                    }
+                }
+            }
+        }
+        return list;
+    }
+
+    public void parseZhihuLink(List<BaiduZhihuEntity> listRaw) {
+        for (BaiduZhihuEntity baiduZhihuEntity : listRaw) {
+
+            String htmlString = null;
+            try {
+                Thread.sleep(1000 + 5000 * (long) Math.random());
+                htmlString = requestBuilder.get(baiduZhihuEntity.getLinkRaw() + "&wd=", hMap, null);
+            } catch (Exception e) {
+//                e.printStackTrace();
+                log.error("解析百度原始连接异常 url={}", baiduZhihuEntity.getLinkRaw());
+                continue;
+            }
+
+            Document parse = Jsoup.parse(htmlString);
+            Element noscript = parse.getElementsByTag("noscript").first().child(0);
+            String content = noscript.attr("content");
+            String url = content.split("'")[1];
+
+            if (StringUtils.endsWithIgnoreCase(url, "updated")) {
+                log.info("有效连接：{}", url);
+                baiduZhihuEntity.setLinkRealUpdate(url);
+            } else {
+                log.info("无效连接：" + url);
+                baiduZhihuEntity.setLinkReal(url);
+            }
+        }
+    }
+
+    public List<BaiduZhihuEntity> saveList(String keywordMain, List<BaiduZhihuEntity> listRaw) {
+        ArrayList<BaiduZhihuEntity> list = new ArrayList<>();
+
+        for (BaiduZhihuEntity baiduZhihuEntity : listRaw) {
+            baiduZhihuEntity.setKeywordMain(keywordMain);
+
+            //查询是否存在，
+            //数据库规则， linkReal linkRealUpdate 分别唯一，不能同时存在
+            String linkReal = baiduZhihuEntity.getLinkReal();
+            String linkRealUpdate = baiduZhihuEntity.getLinkRealUpdate();
+            if (StringUtils.isEmpty(linkReal) && StringUtils.isEmpty(linkRealUpdate)) {
+                //
+                List<BaiduZhihuEntity> titleList = findListByKV("title", baiduZhihuEntity.getTitle(), false);
+                if (titleList != null && titleList.size() > 0) {
+                    log.info("title={} already in DB", baiduZhihuEntity.getTitle());
+                } else {
+                    save(baiduZhihuEntity);
+                }
+            } else if (!StringUtils.isEmpty(linkReal) && StringUtils.isEmpty(linkRealUpdate)) {
+                BaiduZhihuEntity linkRealDB = findByKV("linkReal", linkReal);
+                if (linkRealDB == null) {
+                    save(baiduZhihuEntity);
+                }
+                list.add(baiduZhihuEntity);
+            } else if (StringUtils.isEmpty(linkReal) && !StringUtils.isEmpty(linkRealUpdate)) {
+                BaiduZhihuEntity linkRealDB = findByKV("linkRealUpdate", linkRealUpdate);
+                if (linkRealDB == null) {
+                    save(baiduZhihuEntity);
+                }
+                list.add(baiduZhihuEntity);
+            }
+        }
+        return list;
+    }
+
+    public int save(BaiduZhihuEntity entity) {
+        try {
+            return baiduZhihuMapper.insert(entity);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    public List<BaiduZhihuEntity> filterList(List<BaiduZhihuEntity> list, Integer answered, Integer updated) {
+        ArrayList<BaiduZhihuEntity> arrayList = new ArrayList<>();
+
+        for (BaiduZhihuEntity baiduZhihuEntity : list) {
+            if (answered != null) {
+                if (baiduZhihuEntity.getAnswered() != null && baiduZhihuEntity.getAnswered().intValue() == answered) {
+
+                } else {
+                    continue;
+                }
+            }
+
+            if (updated != null && updated == 1) {
+                if (baiduZhihuEntity.getLinkRealUpdate() != null && baiduZhihuEntity.getLinkRealUpdate().length() > 0) {
+
+                } else {
+                    continue;
+                }
+            }
+
+            arrayList.add(baiduZhihuEntity);
+        }
+
+        return arrayList;
+    }
+
+    public int updateAnsweredById(Integer id) {
+        BaiduZhihuEntity dbEntity = baiduZhihuMapper.selectByPrimaryKey(id);
+        if (dbEntity != null) {
+            dbEntity.setAnsweredTime(new Date());
+            if (dbEntity.getAnswered() != null && dbEntity.getAnswered() == 1) {
+                dbEntity.setAnswered(0);
+            } else {
+                dbEntity.setAnswered(1);
+            }
+            return baiduZhihuMapper.updateByPrimaryKey(dbEntity);
+        } else {
+            return 0;
+        }
+    }
 }
+

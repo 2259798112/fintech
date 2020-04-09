@@ -181,11 +181,18 @@
                         <input class="input is-success" type="text" placeholder="豆瓣页面">
                     </div>
                 </div>
+                <div class="field">
+                    <label class="label">命令</label>
+                    <div class="control">
+                        <input class="input is-danger" type="text" placeholder="命令" id="iCmd">
+                    </div>
+                </div>
             </div>
         </div>
         <div class="buttons">
             <button class="button is-success" id="iBtnSave">添加</button>
             <button class="button" id="iBtnUpdate">修改</button>
+            <button class="button" id="iBtnCmd">解析</button>
         </div>
     </div>
 </section>
@@ -310,6 +317,12 @@
         obj.doubanLink = inputArr[13].value.trim();
         return obj;
     }
+
+    $('#iBtnCmd').click(function () {
+        let cmd = $('iCmd').val().trim();
+
+    })
+
 
 </script>
 </body>

@@ -60,11 +60,50 @@
                         <input class="input" type="text" placeholder="是否回答" id="iAnswered">
                     </div>
                 </div>
+                <div class="field">
+                    <label class="label">是否为updated</label>
+                    <div class="control">
+                        <input class="input" type="text" placeholder="是否为updated" id="iUpdated">
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">模糊</label>
+                    <div class="control">
+                        <input class="input" type="text" placeholder="是否模糊" id="iLike" value=true>
+                    </div>
+                </div>
             </div>
         </div>
+
+        <div class="field is-horizontal">
+            <div class="field-body">
+                <div class="field">
+                    <label class="label">主关键词</label>
+                    <div class="control">
+                        <input class="input" type="text" placeholder="主关键词" id="iBaiduKeywordMain">
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">关键词列表</label>
+                    <div class="control">
+                        <input class="input" type="text" placeholder="关键词列表" id="iBaiduSearchKeywords">
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Cookie</label>
+                    <div class="control">
+                        <input class="input" type="text" placeholder="Cookie" id="iBaiduSearchCookie">
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="field is-grouped">
             <div class="control">
-                <button class="button is-link" id="iBtnSubmit">查询</button>
+                <button class="button is-success" id="iBtnSubmit">查询</button>
+            </div>
+            <div class="control">
+                <button class="button is-info" id="iBtnBaidu">百度</button>
             </div>
         </div>
         <div class="field">
@@ -84,7 +123,6 @@
                     <th>原始链接</th>
                     <th>知乎链接</th>
                     <th>回答</th>
-                    <th>操作</th>
                 </tr>
                 </thead>
                 <tbody id="iTableBody">
@@ -102,17 +140,22 @@
         //333995687
         let keywordMain = $("#iKeywordMain").val();
         let answered = $("#iAnswered").val();
+        let updated = $("#iUpdated").val();
+        let like = $("#iLike").val();
 
-        let url = "/baidu/search"//?id=" + qid + '&limit=' + limit;
+        let url = "/baidu/list"//?id=" + qid + '&limit=' + limit;
 
         $.ajax({
             url: url,
             type: "get", //send it through get method
             data: {
                 keywordMain: keywordMain,
-                answered: answered
+                answered: answered,
+                updated: updated,
+                like: like
             },
             success: function (data) {
+                $('#iBtnSubmit').removeClass('is-loading');
                 renderTable(data)
             },
             error: function () {
@@ -123,7 +166,7 @@
     });
 
     function renderTable(data) {
-        $('#iBtnSubmit').removeClass('is-loading');
+
         let arr = [];
         if (data != null) {
             arr = data.data;
@@ -132,6 +175,7 @@
         }
         //data is arr
         $('#iTableBody').empty();
+
         if (arr != null && arr.length > 0) {
             $.each(arr, function (i, item) {
                 /*
@@ -158,21 +202,26 @@
 
                 let tdBaiduLink = document.createElement("td");
                 let tdBaiduLinkA = document.createElement("a");
-                $(tdBaiduLinkA).text("百度原链").attr("href",item.linkRaw).attr("target","_blank");
+                $(tdBaiduLinkA).text("百度原链").attr("href", item.linkRaw).attr("target", "_blank");
                 $(tdBaiduLink).append(tdBaiduLinkA)
 
                 let tdZhihuReal = document.createElement("td");
                 let tdZhihuRealA = document.createElement("a");
                 if (item.linkRealUpdate === null) {
-                    $(tdZhihuRealA).text("知乎链接").attr("href",item.linkReal).attr("target","_blank");
+                    $(tdZhihuRealA).text("知乎链接").attr("href", item.linkReal).attr("target", "_blank");
                 } else {
-                    $(tdZhihuRealA).text("知乎链接").attr("href",item.linkRealUpdate).attr("target","_blank");
+                    $(tdZhihuRealA).text("知乎链接").attr("href", item.linkRealUpdate).attr("target", "_blank");
                     $(tdZhihuReal).addClass("is-primary")
                 }
                 $(tdZhihuReal).append(tdZhihuRealA)
 
                 let tdOp = document.createElement("td");
-                $(tdOp).text("回答").attr("id",item.id).addClass("button");
+                let tdOpBtn = document.createElement("button");
+                $(tdOpBtn).addClass("button").addClass("is-info").attr("id", item.id).text("回答");
+                $(tdOp).append(tdOpBtn);
+                if (item.answered === 1) {
+                    $(tdOp).addClass("has-background-primary");
+                }
 
 
                 let $tr = $('<tr>').append(
@@ -186,8 +235,57 @@
                 );
                 $("#iTableBody").append($tr);
             });
+            $('#iTableBody button').click(this, op);
         }
     }
+
+    function op(event) {
+        let item = event.currentTarget;
+        console.log(item.id)
+
+        $('#' + item.id).addClass("is-loading");
+
+        let url = "/baidu/list/update"//?id=" + qid + '&limit=' + limit;
+
+        $.ajax({
+            url: url,
+            type: "get", //send it through get method
+            data: {
+                id: item.id
+            },
+            success: function () {
+                $('#' + item.id).removeClass('is-loading');
+            },
+            error: function () {
+                $('#' + item.id).removeClass('is-loading');
+            }
+        });
+    }
+
+    $('#iBtnBaidu').click(function () {
+        $('#iBtnBaidu').addClass('is-loading');
+        //333995687
+        let obj = new Object();
+        obj.keywordMain = $("#iBaiduKeywordMain").val().replace(/"/g,'');
+        obj.keywords = $("#iBaiduSearchKeywords").val().replace('["','').replace('"]','').split('","');
+        obj.cookie = $("#iBaiduSearchCookie").val();
+
+        let url = "/baidu/search/keyword"//?id=" + qid + '&limit=' + limit;
+
+        $.ajax({
+            url: url,
+            type: "POST", //send it through get method
+            data: JSON.stringify(obj),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function () {
+                $('#iBtnBaidu').removeClass('is-loading');
+            },
+            error: function () {
+                $('#iBtnBaidu').removeClass('is-loading');
+            }
+        });
+    })
 
 </script>
 </body>

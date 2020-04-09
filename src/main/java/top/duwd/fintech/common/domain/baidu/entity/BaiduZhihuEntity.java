@@ -16,7 +16,6 @@ public class BaiduZhihuEntity {
     private String keywords;
     private String title;
     private String linkRaw;
-    private String linkRawMd;
     private String linkReal;
     private String linkRealUpdate;
 
