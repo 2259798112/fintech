@@ -214,14 +214,14 @@
                     $(tdZhihuReal).addClass("is-primary")
                 }
                 $(tdZhihuReal).append(tdZhihuRealA)
+                if (item.answered === 1) {
+                    $(tdZhihuReal).addClass("has-background-primary");
+                }
 
                 let tdOp = document.createElement("td");
                 let tdOpBtn = document.createElement("button");
                 $(tdOpBtn).addClass("button").addClass("is-info").attr("id", item.id).text("回答");
                 $(tdOp).append(tdOpBtn);
-                if (item.answered === 1) {
-                    $(tdOp).addClass("has-background-primary");
-                }
 
 
                 let $tr = $('<tr>').append(
