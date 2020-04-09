@@ -123,6 +123,7 @@
                     <th>原始链接</th>
                     <th>知乎链接</th>
                     <th>回答</th>
+                    <th>时间</th>
                 </tr>
                 </thead>
                 <tbody id="iTableBody">
@@ -192,7 +193,7 @@
                 $(td0).text(i + 1);
 
                 let tdKeywordMain = document.createElement("td");
-                $(tdKeywordMain).text(item.keywordMain)
+                $(tdKeywordMain).text(item.keywordMain + '#' + item.id)
 
                 let tdKeyword = document.createElement("td");
                 $(tdKeyword).text(item.keywords)
@@ -209,6 +210,7 @@
                 let tdZhihuRealA = document.createElement("a");
                 if (item.linkRealUpdate === null) {
                     $(tdZhihuRealA).text("知乎链接").attr("href", item.linkReal).attr("target", "_blank");
+
                 } else {
                     $(tdZhihuRealA).text("知乎链接").attr("href", item.linkRealUpdate).attr("target", "_blank");
                     $(tdZhihuReal).addClass("is-primary")
@@ -223,6 +225,8 @@
                 $(tdOpBtn).addClass("button").addClass("is-info").attr("id", item.id).text("回答");
                 $(tdOp).append(tdOpBtn);
 
+                let tdTime = document.createElement("td");
+                $(tdTime).text(item.createTime);
 
                 let $tr = $('<tr>').append(
                     td0,
@@ -231,7 +235,8 @@
                     tdTitle,
                     tdBaiduLink,
                     tdZhihuReal,
-                    tdOp
+                    tdOp,
+                    tdTime
                 );
                 $("#iTableBody").append($tr);
             });

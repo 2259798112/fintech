@@ -15,10 +15,8 @@ import top.duwd.fintech.common.mapper.baidu.BaiduZhihuMapper;
 import top.duwd.fintech.common.proxy.ProxyService;
 
 import java.net.Proxy;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -273,7 +271,8 @@ public class BaiduService {
             arrayList.add(baiduZhihuEntity);
         }
 
-        return arrayList;
+        List<BaiduZhihuEntity> reversedList = arrayList.stream().sorted(Comparator.comparing(BaiduZhihuEntity::getId).reversed()).collect(Collectors.toList());
+        return reversedList;
     }
 
     public int updateAnsweredById(Integer id) {
