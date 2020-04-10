@@ -63,7 +63,7 @@ public class BaiduController {
 
     @PostMapping(value = "/add/keyword", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResult addKeyword(@RequestBody String json) {
-
+        log.info("/add/keyword {}",json);
         JSONObject jsonObject = JSON.parseObject(json);
         List<String> keywords = jsonObject.getJSONArray("keywords").toJavaList(String.class);
         String keywordMain = jsonObject.getString("keywordMain");
