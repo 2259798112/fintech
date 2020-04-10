@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import top.duwd.dutil.http.api.ApiResult;
 import top.duwd.dutil.http.api.ApiResultManager;
 import top.duwd.fintech.common.domain.baidu.entity.BaiduZhihuEntity;
+import top.duwd.fintech.sc.baidu.service.BaiduKeywordService;
 import top.duwd.fintech.sc.baidu.service.BaiduService;
 
 import java.util.List;
@@ -22,18 +23,21 @@ public class BaiduController {
     @Autowired
     private BaiduService baiduService;
     @Autowired
+    private BaiduKeywordService baiduKeywordService;
+    @Autowired
     private ApiResultManager apm;
 
     @GetMapping(value = "/list")
-    public ApiResult list(String keywordMain,Integer answered,Integer updated,Boolean like) {
+    public ApiResult list(String keywordMain, Integer answered, Integer updated, Boolean like) {
 
-        List<BaiduZhihuEntity> list = baiduService.findListByKV("keywordMain", keywordMain,like);
-        List<BaiduZhihuEntity> listFilter  = baiduService.filterList(list,answered,updated);
+        List<BaiduZhihuEntity> list = baiduService.findListByKV("keywordMain", keywordMain, like);
+        List<BaiduZhihuEntity> listFilter = baiduService.filterList(list, answered, updated);
 
         return apm.success(listFilter);
     }
+
     @GetMapping(value = "/list/update")
-    public ApiResult list(Integer id){
+    public ApiResult list(Integer id) {
 
         int i = baiduService.updateAnsweredById(id);
         return apm.success(i);
@@ -46,13 +50,36 @@ public class BaiduController {
         List<String> keywords = jsonObject.getJSONArray("keywords").toJavaList(String.class);
         String keywordMain = jsonObject.getString("keywordMain");
         String cookie = jsonObject.getString("cookie");
-        if (!StringUtils.isEmpty(cookie)){
+        if (!StringUtils.isEmpty(cookie)) {
             BaiduService.hMap.put("Cookie", cookie);
         }
 
-        List<BaiduZhihuEntity> listRaw = baiduService.searchKeyword(keywords,keywordMain);
+        List<BaiduZhihuEntity> listRaw = baiduService.searchKeyword(keywords, keywordMain);
         baiduService.parseZhihuLink(listRaw);
         List<BaiduZhihuEntity> list = baiduService.saveList(keywordMain, listRaw);
         return apm.success(list);
     }
+
+
+    @PostMapping(value = "/add/keyword", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ApiResult addKeyword(@RequestBody String json) {
+
+        JSONObject jsonObject = JSON.parseObject(json);
+        List<String> keywords = jsonObject.getJSONArray("keywords").toJavaList(String.class);
+        String keywordMain = jsonObject.getString("keywordMain");
+
+        int count = baiduKeywordService.saveList(keywordMain, keywords);
+
+        return apm.success(count);
+    }
+
+    @PostMapping(value = "/add/cookie", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ApiResult addCookie(@RequestBody String json) {
+
+        JSONObject jsonObject = JSON.parseObject(json);
+        String cookie = jsonObject.getString("cookie");
+        int count = baiduKeywordService.setCookie(cookie);
+        return apm.success(count);
+    }
+
 }

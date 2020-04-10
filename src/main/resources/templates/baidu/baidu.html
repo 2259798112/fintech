@@ -105,6 +105,9 @@
             <div class="control">
                 <button class="button is-info" id="iBtnBaidu">百度</button>
             </div>
+            <div class="control">
+                <button class="button is-info" id="iBtnBaiduCookie">百度Cookie</button>
+            </div>
         </div>
         <div class="field">
             <table class="table is-bordered" id="iTable">
@@ -292,6 +295,31 @@
             }
         });
     })
+
+
+    $('#iBtnBaiduCookie').click(function () {
+        $('#iBtnBaiduCookie').addClass('is-loading');
+        //333995687
+        let obj = new Object();
+        obj.cookie = $("#iBaiduSearchCookie").val();
+
+        let url = "/baidu/add/cookie"//?id=" + qid + '&limit=' + limit;
+
+        $.ajax({
+            url: url,
+            type: "POST", //send it through get method
+            data: JSON.stringify(obj),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function () {
+                $('#iBtnBaiduCookie').removeClass('is-loading');
+            },
+            error: function () {
+                $('#iBtnBaiduCookie').removeClass('is-loading');
+            }
+        });
+    })
+
 
 
 </script>
