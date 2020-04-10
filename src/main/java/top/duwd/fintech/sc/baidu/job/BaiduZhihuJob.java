@@ -22,10 +22,10 @@ public class BaiduZhihuJob {
     @Autowired
     private BaiduService baiduService;
 
-    @Scheduled(fixedRate = 1000 * 60 * 5)//10minutes
+    @Scheduled(fixedRate = 1000 * 60 )//10minutes
     public void run() {
         log.info("baidu job 关键词查询");
-        List<BaiduKeywordEntity> list = baiduKeywordService.findList(50);
+        List<BaiduKeywordEntity> list = baiduKeywordService.findList(10);
         if (list != null && list.size() > 0) {
             BaiduCookieEntity cookie = baiduKeywordService.findOneCookieRandom();
             if (cookie != null){
