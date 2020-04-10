@@ -193,7 +193,8 @@
                     <th>操作</th>
                  */
                 let td0 = document.createElement("td");
-                $(td0).text(i + 1);
+                $(td0).text(i + 1).addClass("td0");
+
 
                 let tdKeywordMain = document.createElement("td");
                 $(tdKeywordMain).text(item.keywordMain + '#' + item.id)
@@ -202,12 +203,13 @@
                 $(tdKeyword).text(item.keywords)
 
                 let tdTitle = document.createElement("td");
-                $(tdTitle).text((item.title + '\n'+item.linkReal + item.linkRealUpdate).replace("null",""));
+                $(tdTitle).text((item.title + '\n' + item.linkReal + item.linkRealUpdate).replace("null", ""))
 
                 let tdBaiduLink = document.createElement("td");
                 let tdBaiduLinkA = document.createElement("a");
                 $(tdBaiduLinkA).text("百度原链").attr("href", item.linkRaw).attr("target", "_blank");
                 $(tdBaiduLink).append(tdBaiduLinkA)
+
 
                 let tdZhihuReal = document.createElement("td");
                 let tdZhihuRealA = document.createElement("a");
@@ -242,7 +244,17 @@
                     tdOp,
                     tdTime
                 );
+
+                $($tr).on("click", function () {
+                    if ($(td0).hasClass("is-success")){
+                        $(td0).removeClass("is-success")
+                    }else {
+                        $(td0).addClass("is-success")
+                    }
+                });
                 $("#iTableBody").append($tr);
+
+
             });
             $('#iTableBody button').click(this, op);
         }
@@ -275,8 +287,8 @@
         $('#iBtnBaidu').addClass('is-loading');
         //333995687
         let obj = new Object();
-        obj.keywordMain = $("#iBaiduKeywordMain").val().replace(/"/g,'');
-        obj.keywords = $("#iBaiduSearchKeywords").val().replace('["','').replace('"]','').split('","');
+        obj.keywordMain = $("#iBaiduKeywordMain").val().replace(/"/g, '');
+        obj.keywords = $("#iBaiduSearchKeywords").val().replace('["', '').replace('"]', '').split('","');
         obj.cookie = $("#iBaiduSearchCookie").val();
 
         let url = "/baidu/search/keyword"//?id=" + qid + '&limit=' + limit;
@@ -319,7 +331,6 @@
             }
         });
     })
-
 
 
 </script>
