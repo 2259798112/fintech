@@ -92,7 +92,7 @@ public class BaiduKeywordService {
         List<BaiduCookieEntity> list = baiduCookieMapper.selectByExample(example);
         if (list != null && list.size() > 0) {
             int index = (int) (Math.random() * 10);
-            if (index <= list.size()) {
+            if (index < list.size()) {
                 return list.get(index);
             } else {
                 return list.get(index % list.size());
