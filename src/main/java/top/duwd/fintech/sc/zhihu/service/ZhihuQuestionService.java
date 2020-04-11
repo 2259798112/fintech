@@ -15,8 +15,10 @@ import top.duwd.fintech.common.domain.zhihu.entity.ZhihuQuestionEntity;
 import top.duwd.fintech.common.domain.zhihu.entity.ZhihuQuestionTopicEntity;
 import top.duwd.fintech.common.mapper.zhihu.ZhihuQuestionMapper;
 import top.duwd.fintech.common.mapper.zhihu.ZhihuQuestionTopicMapper;
+import top.duwd.fintech.common.proxy.ProxyService;
 
 import java.io.IOException;
+import java.net.Proxy;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -29,12 +31,22 @@ public class ZhihuQuestionService {
     @Autowired
     private ZhihuQuestionTopicMapper zhihuQuestionTopicMapper;
     @Autowired
+    private ProxyService proxyService;
+    @Autowired
     private RequestBuilder requestBuilder;
 
     public static final String QUESTION_BASE = "https://www.zhihu.com/question/";
 
+
     @Transactional
     public int parse(int questionId) {
+
+        try {
+            Thread.sleep(1000 + 1000 * (long) Math.random());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         String url = QUESTION_BASE + questionId;
         int count = 0;
         String htmlString = null;
@@ -42,6 +54,20 @@ public class ZhihuQuestionService {
             htmlString = requestBuilder.get(url);
         } catch (IOException e) {
             e.printStackTrace();
+
+            log.info("获取代理,重试");
+            Proxy proxy = proxyService.getProxy(5);
+            if (proxy != null) {
+                try {
+                    htmlString = requestBuilder.getWithProxy(url, proxy);
+                } catch (Exception ex) {
+                    log.error("使用代理{} 获取知乎失败", proxy.address().toString());
+                    return 0;
+                }
+            } else {
+                return 0;
+            }
+
         }
 
         Document html = Jsoup.parse(htmlString);
@@ -84,8 +110,15 @@ public class ZhihuQuestionService {
 
                     entity.setCreated(new Date(questionsJSONObject.getLongValue("created") * 1000));
                     entity.setUpdatedTime(new Date(questionsJSONObject.getLongValue("updatedTime") * 1000));
+                    entity.setCreateTime(new Date());
+                    try {
+                        count = count + zhihuQuestionMapper.insert(entity);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        log.error("{} 保存数据库异常",JSON.toJSONString(entity));
+                        break;
+                    }
 
-                    count = count + zhihuQuestionMapper.insert(entity);
                     log.info("save = {}", JSON.toJSONString(entity));
                     JSONArray topics = questionsJSONObject.getJSONArray("topics");
                     if (topics != null && topics.size() > 0) {

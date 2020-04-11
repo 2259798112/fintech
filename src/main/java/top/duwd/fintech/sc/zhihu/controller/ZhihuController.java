@@ -35,7 +35,22 @@ public class ZhihuController {
     @GetMapping(value = "/question/add")
     public ApiResult question(@RequestParam Integer id) {
         log.info("/question/add");
+
         int count = zhihuQuestionService.parse(id);
+        return apm.success(count);
+    }
+
+
+    @PostMapping(value = "/question/add/list",consumes = "application/json", produces = "application/json")
+    public ApiResult questionAddList(@RequestBody String json) {
+        log.info("/question/add/list json={}",json);
+        List<Integer> ids = JSONObject.parseObject(json).getJSONArray("ids").toJavaList(Integer.class);
+
+        int count = 0;
+        for (Integer id : ids) {
+            count += zhihuQuestionService.parse(id);
+        }
+
         return apm.success(count);
     }
 
@@ -76,7 +91,6 @@ public class ZhihuController {
         List<BookDto> list = zhihuBookService.setRawBookName(result);
         return apm.success(list);
     }
-
 
 
     @NotNull
