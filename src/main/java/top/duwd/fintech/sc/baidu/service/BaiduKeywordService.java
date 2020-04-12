@@ -87,7 +87,7 @@ public class BaiduKeywordService {
 
     public BaiduCookieEntity findOneCookieRandom() {
         Example example = new Example(BaiduCookieEntity.class);
-        example.createCriteria().andBetween("createTime", DateUtil.addDay(new Date(), -3), new Date());
+        example.createCriteria().andBetween("createTime", DateUtil.addDay(new Date(), -1), new Date());
 
         List<BaiduCookieEntity> list = baiduCookieMapper.selectByExample(example);
         if (list != null && list.size() > 0) {
