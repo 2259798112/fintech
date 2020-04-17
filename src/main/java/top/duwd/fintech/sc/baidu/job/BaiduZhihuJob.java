@@ -12,6 +12,7 @@ import top.duwd.fintech.sc.baidu.service.BaiduService;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 @Component
 @Slf4j
@@ -22,10 +23,14 @@ public class BaiduZhihuJob {
     @Autowired
     private BaiduService baiduService;
 
-    @Scheduled(fixedDelay = 1000 * 60 )//1minutes
+    @Scheduled(fixedDelay = 1000 * 30 )//1minutes
     public void run() {
         log.info("baidu job 关键词查询");
-        List<BaiduKeywordEntity> list = baiduKeywordService.findList(10);
+
+        Random random = new Random();
+        int limit = 1 + random.nextInt(10);
+
+        List<BaiduKeywordEntity> list = baiduKeywordService.findList(limit);
         if (list != null && list.size() > 0) {
             BaiduCookieEntity cookie = baiduKeywordService.findOneCookieRandom();
             if (cookie != null){
