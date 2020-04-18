@@ -34,4 +34,5 @@ public class ZhihuQuestionEntity {
     private Boolean authorIsPrivacy;// tinyint(1) DEFAULT NULL,
     private Integer voteupCount;// int(11) DEFAULT NULL,
     private Date createTime;// int(11) DEFAULT NULL,
+    private Integer myAnswerCount;// int(11) DEFAULT NULL,
 }
