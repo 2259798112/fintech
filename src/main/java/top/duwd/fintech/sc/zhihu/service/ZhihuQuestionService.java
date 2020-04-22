@@ -41,6 +41,9 @@ public class ZhihuQuestionService {
     @Transactional
     public int parse(int questionId) {
 
+        ZhihuQuestionEntity dbEntity = zhihuQuestionMapper.selectByPrimaryKey(questionId);
+        if (dbEntity != null){return 1;}
+
         try {
             Thread.sleep(1000 + 1000 * (long) Math.random());
         } catch (Exception e) {
